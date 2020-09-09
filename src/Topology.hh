@@ -14,7 +14,14 @@ namespace AnalyticalBackend {
          * Constructor of torus topology.
          * @param width
          */
-        Topology(int width) : width(width), half_width(width / 2) { }
+        Topology() : width(-1), half_width(-1) { }
+
+        /**
+         * Set the width of the torus
+         * @param width width of 2d torus
+         * @param bandwidth bandwidth, in bytes/sec.
+         */
+        void initialize(int width, int bandwidth) noexcept;
 
         /**
          * Get the number of hops from src to dest.
@@ -23,6 +30,12 @@ namespace AnalyticalBackend {
          * @return number of total hops required
          */
         int get_hops_count(int src, int dest) const noexcept;
+
+        /**
+         * get bandwidth of a link.
+         * @return bandwidth, in bytes/sec.
+         */
+        int get_bandwidth() const noexcept;
 
     private:
         /**
@@ -34,6 +47,11 @@ namespace AnalyticalBackend {
          * Torus width in half
          */
          int half_width;
+
+         /**
+          * Bandwidth of a link, in bytes/sec.
+          */
+         int bandwidth;
     };
 }
 
