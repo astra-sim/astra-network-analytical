@@ -11,6 +11,10 @@ function cleanup {
   rm -rf "${SCRIPT_DIR:?}"/build
   rm -rf "${SCRIPT_DIR:?}"/lib
   rm -f "${SCRIPT_DIR:?}"/bin/AnalyticalBackend
+}
+
+function cleanup_result {
+  cleanup
   rm -f "${SCRIPT_DIR:?}"/results/*.csv
 }
 
@@ -31,6 +35,8 @@ function run {
 case "$1" in
 -l|--clean)
   cleanup;;
+-lr|--clean-result)
+  cleanup_result;;
 -c|--compile)
   compile;;
 -r|--run)
