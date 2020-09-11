@@ -56,9 +56,11 @@ int AnalyticalBackend::AnalyticalNetwork::sim_send(void *buffer, int count, int 
     // 3. compute latency in ns
     AstraSim::timespec_t delta;
     delta.time_res = AstraSim::NS;
+    delta.time_val = 10;
 
-    double link_latency_in_ns = (double)count / topology.get_bandwidth() * 1000000000;
-    delta.time_val = (int)(link_latency_in_ns * hopsCount);
+//    double link_latency_in_ns = (double)count / topology.get_bandwidth() * 1000000000;
+//    delta.time_val = (int)(link_latency_in_ns * hopsCount);
+
 
     // 4. schedule an event
     sim_schedule(delta, msg_handler, fun_arg);
@@ -78,9 +80,10 @@ int AnalyticalBackend::AnalyticalNetwork::sim_recv(void *buffer, int count, int 
     // 3. compute latency in ns
     AstraSim::timespec_t delta;
     delta.time_res = AstraSim::NS;
+    delta.time_val = 10;
 
-    double link_latency_in_ns = (double)count / topology.get_bandwidth() * 1000000000;
-    delta.time_val = (int)(link_latency_in_ns * hopsCount);
+//    double link_latency_in_ns = (double)count / topology.get_bandwidth() * 1000000000;
+//    delta.time_val = (int)(link_latency_in_ns * hopsCount);
 
     // 4. schedule an event
     sim_schedule(delta, msg_handler, fun_arg);

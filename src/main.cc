@@ -19,7 +19,6 @@ int main(int argc, char *argv[]) {
     AstraSim::SimpleMemory* memories[hosts_count];
 
     for (int i = 0; i < hosts_count; i++) {
-
         analytical_networks[i] = new AnalyticalBackend::AnalyticalNetwork(i);
         memories[i] = new AstraSim::SimpleMemory((AstraSim::AstraNetworkAPI*)analytical_networks[i],500,270,12.5);
         systems[i] = new AstraSim::Sys(analytical_networks[i],  // AstraNetworkAPI
@@ -34,7 +33,7 @@ int main(int argc, char *argv[]) {
                                        1, 0,  // total_stat_rows and stat_row
                                        "results/",  // stat file path
                                        "sample_run",  // run name
-                                       false    // separate_log
+                                       true    // separate_log
         );
     }
 
@@ -48,7 +47,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Run events
-    auto event_queue = AnalyticalBackend::AnalyticalNetwork::get_event_queue();
+    auto& event_queue = AnalyticalBackend::AnalyticalNetwork::get_event_queue();
     while (!event_queue.empty()) {
         event_queue.proceed();
     }
