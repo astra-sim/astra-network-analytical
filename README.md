@@ -2,7 +2,7 @@
 
 ## Dependencies
 ```bash
-brew install coreutils
+brew install cmake coreutils
 ```
 
 ## How to run
