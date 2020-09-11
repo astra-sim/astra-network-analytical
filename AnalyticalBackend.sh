@@ -11,6 +11,7 @@ function cleanup {
   rm -rf "${SCRIPT_DIR:?}"/build
   rm -rf "${SCRIPT_DIR:?}"/lib
   rm -f "${SCRIPT_DIR:?}"/bin/AnalyticalBackend
+  rm -f "${SCRIPT_DIR:?}"/results/*.csv
 }
 
 function compile {
