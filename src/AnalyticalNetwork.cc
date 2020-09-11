@@ -4,6 +4,14 @@ AnalyticalBackend::EventQueue AnalyticalBackend::AnalyticalNetwork::event_queue;
 
 AnalyticalBackend::Topology AnalyticalBackend::AnalyticalNetwork::topology;
 
+AnalyticalBackend::EventQueue& AnalyticalBackend::AnalyticalNetwork::get_event_queue() noexcept {
+    return AnalyticalNetwork::event_queue;
+}
+
+AnalyticalBackend::Topology& AnalyticalBackend::AnalyticalNetwork::get_topology() noexcept {
+    return AnalyticalNetwork::topology;
+}
+
 int AnalyticalBackend::AnalyticalNetwork::sim_comm_size(AstraSim::sim_comm comm, int *size) {
     return 0;
 }

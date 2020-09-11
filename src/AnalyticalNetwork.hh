@@ -8,6 +8,9 @@
 namespace AnalyticalBackend {
     class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
     public:
+        static EventQueue& get_event_queue() noexcept;
+
+        static Topology& get_topology() noexcept;
         /**
          * ========================= AstraNetworkAPIs =================================================
          */
@@ -33,9 +36,6 @@ namespace AnalyticalBackend {
         AnalyticalNetwork(int rank) : AstraSim::AstraNetworkAPI(rank) { }
 
     private:
-        /**
-         *
-         */
         static EventQueue event_queue;
         static Topology topology;
     };
