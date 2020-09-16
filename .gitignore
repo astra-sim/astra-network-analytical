@@ -3,6 +3,9 @@ bin/AnalyticalBackend
 build/
 lib/
 
+# results
+results/*.csv
+
 # macOS
 .DS_Store
 
