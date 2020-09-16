@@ -1,15 +1,15 @@
 #include "AnalyticalNetwork.hh"
 
-AnalyticalBackend::EventQueue AnalyticalBackend::AnalyticalNetwork::event_queue;
+std::shared_ptr<AnalyticalBackend::EventQueue> AnalyticalBackend::AnalyticalNetwork::event_queue;
 
-AnalyticalBackend::Topology AnalyticalBackend::AnalyticalNetwork::topology;
+std::unique_ptr<AnalyticalBackend::Topology> AnalyticalBackend::AnalyticalNetwork::topology;
 
-AnalyticalBackend::EventQueue& AnalyticalBackend::AnalyticalNetwork::get_event_queue() noexcept {
-    return AnalyticalNetwork::event_queue;
+void AnalyticalBackend::AnalyticalNetwork::set_event_queue(const std::shared_ptr<EventQueue> &event_queue_ptr) noexcept {
+    AnalyticalNetwork::event_queue = event_queue_ptr;
 }
 
-AnalyticalBackend::Topology& AnalyticalBackend::AnalyticalNetwork::get_topology() noexcept {
-    return AnalyticalNetwork::topology;
+void AnalyticalBackend::AnalyticalNetwork::set_topology(Topology *new_topology) noexcept {
+    AnalyticalNetwork::topology.reset(new_topology);
 }
 
 int AnalyticalBackend::AnalyticalNetwork::sim_comm_size(AstraSim::sim_comm comm, int *size) {
@@ -29,7 +29,7 @@ int AnalyticalBackend::AnalyticalNetwork::sim_init(AstraSim::AstraMemoryAPI *MEM
 }
 
 AstraSim::timespec_t AnalyticalBackend::AnalyticalNetwork::sim_get_time() {
-    return event_queue.get_current_time();
+    return event_queue->get_current_time();
 }
 
 void AnalyticalBackend::AnalyticalNetwork::sim_schedule(AstraSim::timespec_t delta, void (*fun_ptr)(void *),
@@ -41,7 +41,7 @@ void AnalyticalBackend::AnalyticalNetwork::sim_schedule(AstraSim::timespec_t del
     event_time.time_val += delta.time_val;
 
     // 2. schedule an event at the event_time
-    event_queue.add_event(event_time, fun_ptr, fun_arg);
+    event_queue->add_event(event_time, fun_ptr, fun_arg);
 }
 
 int AnalyticalBackend::AnalyticalNetwork::sim_send(void *buffer, int count, int type, int dst, int tag,
@@ -50,19 +50,12 @@ int AnalyticalBackend::AnalyticalNetwork::sim_send(void *buffer, int count, int 
     // 1. get source id
     auto src = sim_comm_get_rank();
 
-    // 2. compute number of required hops
-    auto hopsCount = topology.get_hops_count(src, dst);
-
-    // 3. compute latency in ns
+    // 2. compute latency in ns
     AstraSim::timespec_t delta;
     delta.time_res = AstraSim::NS;
-    delta.time_val = 10;
+    delta.time_val = topology->send(src, dst, count);  // simulate src->dst and get latency
 
-//    double link_latency_in_ns = (double)count / topology.get_bandwidth() * 1000000000;
-//    delta.time_val = (int)(link_latency_in_ns * hopsCount);
-
-
-    // 4. schedule an event
+    // 3. schedule an event
     sim_schedule(delta, msg_handler, fun_arg);
 
     return 0;
@@ -74,18 +67,12 @@ int AnalyticalBackend::AnalyticalNetwork::sim_recv(void *buffer, int count, int 
     // 1. get source id
     auto dst = sim_comm_get_rank();
 
-    // 2. compute number of required hops
-    auto hopsCount = topology.get_hops_count(src, dst);
-
-    // 3. compute latency in ns
+    // 2. compute latency in ns
     AstraSim::timespec_t delta;
     delta.time_res = AstraSim::NS;
-    delta.time_val = 10;
+    delta.time_val = topology->send(src, dst, count);  // simulate src->dst and get latency
 
-//    double link_latency_in_ns = (double)count / topology.get_bandwidth() * 1000000000;
-//    delta.time_val = (int)(link_latency_in_ns * hopsCount);
-
-    // 4. schedule an event
+    // 3. schedule an event
     sim_schedule(delta, msg_handler, fun_arg);
 
     return 0;

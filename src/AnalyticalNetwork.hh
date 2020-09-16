@@ -1,6 +1,7 @@
 #ifndef __ANALYTICALNETWORK_HH__
 #define __ANALYTICALNETWORK_HH__
 
+#include <memory>
 #include "../astra-sim/system/AstraNetworkAPI.hh"
 #include "EventQueue.hh"
 #include "Topology.hh"
@@ -8,12 +9,23 @@
 namespace AnalyticalBackend {
     class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
     public:
-        static EventQueue& get_event_queue() noexcept;
+        /**
+         * set event_queue to the given pointer.
+         * @param new_event_queue pointer to the new event_queue
+         */
+        static void set_event_queue(const std::shared_ptr<EventQueue> &event_queue_ptr) noexcept;
 
-        static Topology& get_topology() noexcept;
+        /**
+         * set topology to the given pointer
+         * @param new_topology pointer to the new topology
+         */
+        static void set_topology(Topology *new_topology) noexcept;
+
         /**
          * ========================= AstraNetworkAPIs =================================================
          */
+        AnalyticalNetwork(int rank) : AstraSim::AstraNetworkAPI(rank) { }
+
         int sim_comm_size(AstraSim::sim_comm comm, int* size) override;
         
         int sim_finish() override;
@@ -33,11 +45,9 @@ namespace AnalyticalBackend {
          * ===========================================================================================
          */
 
-        AnalyticalNetwork(int rank) : AstraSim::AstraNetworkAPI(rank) { }
-
     private:
-        static EventQueue event_queue;
-        static Topology topology;
+        static std::shared_ptr<EventQueue> event_queue;
+        static std::unique_ptr<Topology> topology;
     };
 }
 

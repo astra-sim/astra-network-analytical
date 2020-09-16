@@ -1,10 +1,11 @@
 #include <iostream>
+#include <memory>
 #include "Event.hh"
 #include "EventQueueEntry.hh"
 #include "EventQueue.hh"
+#include "Topology.hh"
+#include "Torus.hh"
 #include "../astra-sim/system/AstraNetworkAPI.hh"
-
-
 #include "../astra-sim/system/Sys.hh"
 #include "../astra-sim/system/SimpleMemory.hh"
 #include "AnalyticalNetwork.hh"
@@ -14,33 +15,41 @@ int main(int argc, char *argv[]) {
     int hosts_count = 16;
 
     // Network and System layer initialization
-    AnalyticalBackend::AnalyticalNetwork *analytical_networks[hosts_count];
-    AstraSim::Sys* systems[hosts_count];
-    AstraSim::SimpleMemory* memories[hosts_count];
+    std::unique_ptr<AnalyticalBackend::AnalyticalNetwork> analytical_networks[hosts_count];
+    std::unique_ptr<AstraSim::Sys> systems[hosts_count];
+    std::unique_ptr<AstraSim::SimpleMemory> memories[hosts_count];
 
     for (int i = 0; i < hosts_count; i++) {
-        analytical_networks[i] = new AnalyticalBackend::AnalyticalNetwork(i);
-        memories[i] = new AstraSim::SimpleMemory((AstraSim::AstraNetworkAPI*)analytical_networks[i],500,270,12.5);
-        systems[i] = new AstraSim::Sys(analytical_networks[i],  // AstraNetworkAPI
-                                       memories[i],  // AstraMemoryAPI
-                                       i,  // id
-                                       2,  // num_passes
-                                       1, 4, 4, 1, 1,  // dimensions
-                                       2, 2, 2, 2, 2,  // queues per correspondingdimension
-                                       "sample_torus_sys",  // system configuration
-                                       "microAllReduce",  // workload configuration
-                                       1, 1, 1,  // communication, computation, injection scale
-                                       1, 0,  // total_stat_rows and stat_row
-                                       "../results/",  // stat file path
-                                       "sample_run",  // run name
-                                       true,    // separate_log
-                                       false  // randezvous protocol
+        analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
+
+        memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+                (AstraSim::AstraNetworkAPI*)(analytical_networks[i].get()),
+                500, 270, 12.5);
+
+        systems[i] = std::make_unique<AstraSim::Sys>(
+                analytical_networks[i].get(),  // AstraNetworkAPI
+                memories[i].get(),  // AstraMemoryAPI
+                i,  // id
+                2,  // num_passes
+                1, 4, 4, 1, 1,  // dimensions
+                2, 2, 2, 2, 2,  // queues per correspondingdimension
+                "sample_torus_sys",  // system configuration
+                "microAllReduce",  // workload configuration
+                1, 1, 1,  // communication, computation, injection scale
+                1, 0,  // total_stat_rows and stat_row
+                "../results/",  // stat file path
+                "sample_run",  // run name
+                true,    // separate_log
+                false  // randezvous protocol
         );
     }
 
+    // Setup event queue
+    auto event_queue = std::make_shared<AnalyticalBackend::EventQueue>();
+    AnalyticalBackend::AnalyticalNetwork::set_event_queue(event_queue);
+
     // Setup topology
-    auto topology = AnalyticalBackend::AnalyticalNetwork::get_topology();
-    topology.initialize(4, 10000000);
+    AnalyticalBackend::AnalyticalNetwork::set_topology(new AnalyticalBackend::Torus());
 
     // Initialize event queue
     for (int i = 0; i < hosts_count; i++) {
@@ -48,16 +57,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Run events
-    auto& event_queue = AnalyticalBackend::AnalyticalNetwork::get_event_queue();
-    while (!event_queue.empty()) {
-        event_queue.proceed();
-    }
-
-    // Cleanup before termination
-    for (int i = 0; i < hosts_count; i++) {
-        delete analytical_networks[i];
-        delete systems[i];
-        delete memories[i];
+    while (!event_queue->empty()) {
+        event_queue->proceed();
     }
 
     return 0;
