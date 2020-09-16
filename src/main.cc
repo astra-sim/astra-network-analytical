@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
                 1, 4, 4, 1, 1,  // dimensions
                 2, 2, 2, 2, 2,  // queues per correspondingdimension
                 "sample_torus_sys",  // system configuration
-                "microAllReduce",  // workload configuration
+                "Transformer_HybridParallel_Fwd_In_Bckwd",  // workload configuration
                 1, 1, 1,  // communication, computation, injection scale
                 1, 0,  // total_stat_rows and stat_row
                 "../results/",  // stat file path
@@ -49,7 +49,10 @@ int main(int argc, char *argv[]) {
     AnalyticalBackend::AnalyticalNetwork::set_event_queue(event_queue);
 
     // Setup topology
-    AnalyticalBackend::AnalyticalNetwork::set_topology(new AnalyticalBackend::Torus());
+    AnalyticalBackend::AnalyticalNetwork::set_topology(new AnalyticalBackend::Torus(
+            4,  // 2d torus width
+            10'000  // bandwidth (bytes/sec)  // FIXME: what is the correct unit?
+    ));
 
     // Initialize event queue
     for (int i = 0; i < hosts_count; i++) {
