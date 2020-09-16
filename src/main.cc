@@ -33,7 +33,8 @@ int main(int argc, char *argv[]) {
                                        1, 0,  // total_stat_rows and stat_row
                                        "../results/",  // stat file path
                                        "sample_run",  // run name
-                                       true    // separate_log
+                                       true,    // separate_log
+                                       false  // randezvous protocol
         );
     }
 
