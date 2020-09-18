@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
                 i,  // id
                 2,  // num_passes
                 1, 4, 4, 1, 1,  // dimensions
-                2, 2, 2, 2, 2,  // queues per correspondingdimension
+                2, 2, 2, 2, 2,  // queues per corresponding dimension
                 "sample_torus_sys",  // system configuration
                 "microAllReduce",  // workload configuration
                 1, 1, 1,  // communication, computation, injection scale

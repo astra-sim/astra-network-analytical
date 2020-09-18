@@ -5,6 +5,7 @@
 #include "../astra-sim/system/AstraNetworkAPI.hh"
 #include "EventQueue.hh"
 #include "Topology.hh"
+#include "SendRecvTrackingMap.hh"
 
 namespace AnalyticalBackend {
     class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
@@ -24,7 +25,7 @@ namespace AnalyticalBackend {
         /**
          * ========================= AstraNetworkAPIs =================================================
          */
-        AnalyticalNetwork(int rank) : AstraSim::AstraNetworkAPI(rank) { }
+        explicit AnalyticalNetwork(int rank) : AstraSim::AstraNetworkAPI(rank) { }
 
         int sim_comm_size(AstraSim::sim_comm comm, int* size) override;
         
@@ -48,6 +49,7 @@ namespace AnalyticalBackend {
     private:
         static std::shared_ptr<EventQueue> event_queue;
         static std::unique_ptr<Topology> topology;
+        static SendRecvTrackingMap send_recv_tracking_map;
     };
 }
 

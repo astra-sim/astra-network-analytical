@@ -4,6 +4,8 @@
 namespace AnalyticalBackend {
     struct Event {
     public:
+        typedef void (*FunPtr)(void *);
+
         /**
          * Construct new event.
          * @param fun_ptr pointer to event handler
@@ -16,11 +18,23 @@ namespace AnalyticalBackend {
          */
         void run() const noexcept;
 
+        /**
+         * fun_ptr getter
+         * @return fun_ptr
+         */
+        FunPtr get_fun_ptr() const noexcept;
+
+        /**
+         * fun_arg getter
+         * @return fun_arg
+         */
+        void* get_fun_arg() const noexcept;
+
     private:
         /**
          * function pointer directing the event handler
          */
-        void (*fun_ptr)(void *);
+        FunPtr fun_ptr;
 
         /**
          * pointer to the event handler argument.
