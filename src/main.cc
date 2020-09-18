@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <cmath>
 #include "Event.hh"
 #include "EventQueueEntry.hh"
 #include "EventQueue.hh"
@@ -12,7 +13,10 @@
 
 int main(int argc, char *argv[]) {
     // configuration variables
-    int hosts_count = 16;
+    auto hosts_count = 16;
+
+    // derived configurations
+    int torus_width = std::sqrt(hosts_count);
 
     // Network and System layer initialization
     std::unique_ptr<AnalyticalBackend::AnalyticalNetwork> analytical_networks[hosts_count];
@@ -31,7 +35,7 @@ int main(int argc, char *argv[]) {
                 memories[i].get(),  // AstraMemoryAPI
                 i,  // id
                 2,  // num_passes
-                1, 4, 4, 1, 1,  // dimensions
+                1, torus_width, torus_width, 1, 1,  // dimensions
                 2, 2, 2, 2, 2,  // queues per corresponding dimension
                 "sample_torus_sys",  // system configuration
                 "Transformer_HybridParallel_Fwd_In_Bckwd",  // workload configuration
@@ -50,7 +54,7 @@ int main(int argc, char *argv[]) {
 
     // Setup topology
     AnalyticalBackend::AnalyticalNetwork::set_topology(new AnalyticalBackend::Torus(
-            4,  // 2d torus width
+            torus_width,  // 2d torus width
             25,  // bandwidth (bytes/nsec) (=GB/s)
             500  // link latency (ns)
     ));
