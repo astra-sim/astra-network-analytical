@@ -24,8 +24,8 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
     auto hops_count = xHops + yHops;
 
     // get latency per link
-    auto latency_per_link = (double)packet_size / bandwidth;
+    auto latency_per_link = link_latency + (packet_size / bandwidth);
 
     // return total latency
-    return (int)(std::ceil(latency_per_link * hops_count));
+    return hops_count * latency_per_link;
 }

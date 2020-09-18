@@ -6,7 +6,8 @@
 namespace AnalyticalBackend {
     class Torus : public AnalyticalBackend::Topology {
     public:
-        explicit Torus(int width, int bandwidth) noexcept : width(width), bandwidth(bandwidth) {
+        Torus(int width, int bandwidth, int link_latency) noexcept :
+                width(width), bandwidth(bandwidth), link_latency(link_latency) {
             half_width = width / 2;
         }
 
@@ -29,6 +30,11 @@ namespace AnalyticalBackend {
          * link bandwidth (bytes / sec)
          */
         int bandwidth;
+
+        /**
+         * link latency (ns)
+         */
+        int link_latency;
     };
 }
 

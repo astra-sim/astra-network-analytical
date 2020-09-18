@@ -51,7 +51,8 @@ int main(int argc, char *argv[]) {
     // Setup topology
     AnalyticalBackend::AnalyticalNetwork::set_topology(new AnalyticalBackend::Torus(
             4,  // 2d torus width
-            10'000  // bandwidth (bytes/sec)  // FIXME: what is the correct unit?
+            25,  // bandwidth (bytes/nsec) (=GB/s)
+            500  // link latency (ns)
     ));
 
     // Initialize event queue
