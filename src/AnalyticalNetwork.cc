@@ -2,16 +2,16 @@
 
 std::shared_ptr<AnalyticalBackend::EventQueue> AnalyticalBackend::AnalyticalNetwork::event_queue;
 
-std::unique_ptr<AnalyticalBackend::Topology> AnalyticalBackend::AnalyticalNetwork::topology;
+std::shared_ptr<AnalyticalBackend::Topology> AnalyticalBackend::AnalyticalNetwork::topology;
 
 AnalyticalBackend::SendRecvTrackingMap AnalyticalBackend::AnalyticalNetwork::send_recv_tracking_map;
 
-void AnalyticalBackend::AnalyticalNetwork::set_event_queue(const std::shared_ptr<EventQueue> &event_queue_ptr) noexcept {
+void AnalyticalBackend::AnalyticalNetwork::set_event_queue(const std::shared_ptr<EventQueue>& event_queue_ptr) noexcept {
     AnalyticalNetwork::event_queue = event_queue_ptr;
 }
 
-void AnalyticalBackend::AnalyticalNetwork::set_topology(Topology *new_topology) noexcept {
-    AnalyticalNetwork::topology.reset(new_topology);
+void AnalyticalBackend::AnalyticalNetwork::set_topology(const std::shared_ptr<Topology>& topology_ptr) noexcept {
+    AnalyticalNetwork::topology = topology_ptr;
 }
 
 int AnalyticalBackend::AnalyticalNetwork::sim_comm_size(AstraSim::sim_comm comm, int *size) {

@@ -20,7 +20,7 @@ namespace AnalyticalBackend {
          * set topology to the given pointer
          * @param new_topology pointer to the new topology
          */
-        static void set_topology(Topology *new_topology) noexcept;
+        static void set_topology(const std::shared_ptr<Topology>& topology_ptr) noexcept;
 
         /**
          * ========================= AstraNetworkAPIs =================================================
@@ -48,7 +48,7 @@ namespace AnalyticalBackend {
 
     private:
         static std::shared_ptr<EventQueue> event_queue;
-        static std::unique_ptr<Topology> topology;
+        static std::shared_ptr<Topology> topology;
         static SendRecvTrackingMap send_recv_tracking_map;
     };
 }
