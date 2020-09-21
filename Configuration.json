@@ -2,7 +2,7 @@
   "system_configuration": "sys_inputs/sample_a2a_sys",
   "workload_configuration": "workload_inputs/DLRM_HybridParallel",
   "topology_configuration": {
-    "name": "torus",
+    "name": "switch",
     "hosts_count": 16,
     "bandwidth": 25,
     "link_latency": 500,
