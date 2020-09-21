@@ -7,7 +7,7 @@ brew install cmake coreutils
 ```
 ### Linux (Ubuntu)
 ```bash
-sudo apt install cmake coreutils
+sudo apt install cmake
 ```
 
 ## How to run
