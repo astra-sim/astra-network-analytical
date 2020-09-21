@@ -6,6 +6,7 @@
 #include "EventQueue.hh"
 #include "Topology.hh"
 #include "Torus.hh"
+#include "Switch.hh"
 #include "../astra-sim/system/AstraNetworkAPI.hh"
 #include "../astra-sim/system/Sys.hh"
 #include "../astra-sim/system/SimpleMemory.hh"
@@ -35,10 +36,10 @@ int main(int argc, char *argv[]) {
                 memories[i].get(),  // AstraMemoryAPI
                 i,  // id
                 2,  // num_passes
-                1, torus_width, torus_width, 1, 1,  // dimensions
+                hosts_count, 1, 1, 1, 1,  // dimensions
                 2, 2, 2, 2, 2,  // queues per corresponding dimension
-                "sys_inputs/sample_torus_sys",  // system configuration
-                "workload_inputs/Transformer_HybridParallel_Fwd_In_Bckwd",  // workload configuration
+                "sys_inputs/sample_a2a_sys",  // system configuration
+                "workload_inputs/DLRM_HybridParallel",  // workload configuration
                 1, 1, 1,  // communication, computation, injection scale
                 1, 0,  // total_stat_rows and stat_row
                 "../results/",  // stat file path
@@ -53,12 +54,14 @@ int main(int argc, char *argv[]) {
     AnalyticalBackend::AnalyticalNetwork::set_event_queue(event_queue);
 
     // Setup topology
-    AnalyticalBackend::AnalyticalNetwork::set_topology(new AnalyticalBackend::Torus(
-            torus_width,  // 2d torus width
-            25,  // bandwidth (bytes/nsec) (=GB/s)
-            500,  // link latency (ns),
-            10  // nic_latency (ns)
-    ));
+    std::shared_ptr<AnalyticalBackend::Topology> topology = std::make_shared<AnalyticalBackend::Switch>(
+            hosts_count,  // number of connected nodes
+            25,  // bandwidth (GB/s = B/ns)
+            10,  // link latency (ns)
+            10,  // nic latency (ns)
+            10  // switch latency (ns)
+    );
+    AnalyticalBackend::AnalyticalNetwork::set_topology(topology);
 
     // Initialize event queue
     for (int i = 0; i < hosts_count; i++) {
@@ -69,6 +72,8 @@ int main(int argc, char *argv[]) {
     while (!event_queue->empty()) {
         event_queue->proceed();
     }
+
+    topology->print();
 
     return 0;
 }
