@@ -20,6 +20,12 @@ namespace AnalyticalBackend {
          * @return total time for transmission (transmission latency) in nanoseconds resolution (NS)
          */
         virtual double send(int src, int dest, int packet_size) noexcept = 0;
+
+        /**
+         * For debug purpose
+         * print debugging messages
+         */
+        virtual void print() const noexcept = 0;
     };
 }
 
