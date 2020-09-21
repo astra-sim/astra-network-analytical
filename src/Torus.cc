@@ -30,3 +30,8 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
 
     return delay;
 }
+
+void AnalyticalBackend::Torus::print() const noexcept {
+    // TODO: implement torus route tracking and printing
+    std::cout << "Torus print not yet implemented!" << std::endl;
+}

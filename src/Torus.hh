@@ -15,6 +15,8 @@ namespace AnalyticalBackend {
 
         double send(int src, int dest, int packet_size) noexcept override;
 
+        void print() const noexcept override;
+
     private:
         /**
          * width of a 2d torus
