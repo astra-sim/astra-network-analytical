@@ -23,9 +23,10 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
     // total hops = xHops + yHops
     auto hops_count = xHops + yHops;
 
-    // get latency per link
-    auto latency_per_link = link_latency + (packet_size / bandwidth);
+    // get delay
+    auto delay = hops_count * link_latency;  // communication delay
+    delay += (hops_count + 1) * nic_latency;  // nic delay
+    delay += (packet_size / bandwidth);  // serialization delay
 
-    // return total latency
-    return hops_count * latency_per_link;
+    return delay;
 }

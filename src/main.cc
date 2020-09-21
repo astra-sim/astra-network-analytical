@@ -37,8 +37,8 @@ int main(int argc, char *argv[]) {
                 2,  // num_passes
                 1, torus_width, torus_width, 1, 1,  // dimensions
                 2, 2, 2, 2, 2,  // queues per corresponding dimension
-                "sample_torus_sys",  // system configuration
-                "Transformer_HybridParallel_Fwd_In_Bckwd",  // workload configuration
+                "sys_inputs/sample_torus_sys",  // system configuration
+                "workload_inputs/Transformer_HybridParallel_Fwd_In_Bckwd",  // workload configuration
                 1, 1, 1,  // communication, computation, injection scale
                 1, 0,  // total_stat_rows and stat_row
                 "../results/",  // stat file path
@@ -56,7 +56,8 @@ int main(int argc, char *argv[]) {
     AnalyticalBackend::AnalyticalNetwork::set_topology(new AnalyticalBackend::Torus(
             torus_width,  // 2d torus width
             25,  // bandwidth (bytes/nsec) (=GB/s)
-            500  // link latency (ns)
+            500,  // link latency (ns),
+            10  // nic_latency (ns)
     ));
 
     // Initialize event queue
