@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(AnalyticalBackend)
 
+find_package(Boost 1.40 REQUIRED COMPONENTS program_options)
+
 file(GLOB_RECURSE srcs
         "${PROJECT_SOURCE_DIR}/src/*.hh"
         "${PROJECT_SOURCE_DIR}/src/*.cc"
@@ -16,6 +18,7 @@ file(GLOB_RECURSE srcs
 
 add_executable(AnalyticalBackend ${srcs})
 
+target_link_libraries(AnalyticalBackend Boost::program_options)
 set_target_properties(AnalyticalBackend
         PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "../lib"

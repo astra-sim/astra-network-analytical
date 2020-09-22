@@ -30,6 +30,10 @@ function run {
   ./AnalyticalBackend
 }
 
+function run_with_args {
+  cd "${SCRIPT_DIR:?}"/bin || exit
+  ./AnalyticalBackend "$@"
+}
 
 # main script
 case "$1" in
@@ -40,7 +44,12 @@ case "$1" in
 -c|--compile)
   compile;;
 -r|--run)
-  run;;
+  if [ $# -ge 2 ]
+  then
+    run_with_args "${@:2}"
+  else
+    run
+  fi;;
 -h|--help|*)
   printf "help not implemented\n";;
 esac

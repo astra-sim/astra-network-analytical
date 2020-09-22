@@ -2,6 +2,7 @@
 #include <fstream>
 #include <memory>
 #include <cmath>
+#include <boost/program_options.hpp>
 #include "Event.hh"
 #include "EventQueueEntry.hh"
 #include "EventQueue.hh"
@@ -14,7 +15,37 @@
 #include "../astra-sim/system/SimpleMemory.hh"
 #include "AnalyticalNetwork.hh"
 
-int main(int argc, char *argv[]) {
+namespace po = boost::program_options;
+
+int main(int argc, char* argv[]) {
+    // parse command line arguments
+    auto cmd_description = po::options_description("Command Line Options");
+    cmd_description.add_options()
+            ("help", "Prints help message")
+            ("comm-scale", po::value<int>()->default_value(1), "Communication scale")
+            ("compute-scale", po::value<int>()->default_value(1), "Compute scale")
+            ("injection-scale", po::value<int>()->default_value(1), "Injection scale");
+
+    po::variables_map vm;
+    try {
+        po::store(po::parse_command_line(argc, argv, cmd_description), vm);
+        po::notify(vm);
+    } catch (po::error e) {
+        std::cout << e.what() << std::endl;
+        std::cout << cmd_description << std::endl;
+        exit(-1);
+    }
+
+    if (vm.count("help")) {
+        // prints help message
+        std::cout << cmd_description << std::endl;
+    }
+
+    // command line configuration variables
+    int comm_scale = vm["comm-scale"].as<int>();
+    int compute_scale = vm["compute-scale"].as<int>();
+    int injection_scale = vm["injection-scale"].as<int>();
+
     // parse configuration file
     auto json_file = std::ifstream("Configuration.json", std::ifstream::in);
     nlohmann::json configuration;
@@ -30,11 +61,9 @@ int main(int argc, char *argv[]) {
     int link_latency = configuration["topology_configuration"]["link_latency"];
     int nic_latency = configuration["topology_configuration"]["nic_latency"];
     int switch_latency = configuration["topology_configuration"]["switch_latency"];
+    bool print_log = configuration["topology_configuration"]["print_log"];
     int num_passes = configuration["run_configuration"]["num_passes"];
     int num_queues_per_dim = configuration["run_configuration"]["num_queues_per_dim"];
-    int comm_scale = configuration["run_configuration"]["comm_scale"];
-    int compute_scale = configuration["run_configuration"]["compute_scale"];
-    int injection_scale = configuration["run_configuration"]["injection_scale"];
     std::string path = configuration["stat_configuration"]["path"];
     std::string run_name = configuration["stat_configuration"]["run_name"];
     int total_stat_rows = configuration["stat_configuration"]["total_stat_rows"];
@@ -140,7 +169,9 @@ int main(int argc, char *argv[]) {
     }
 
     // After run, print topology stats
-    topology->print();
+    if (print_log) {
+        topology->print();
+    }
 
     // terminate program
     return 0;
