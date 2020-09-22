@@ -8,9 +8,17 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
 
     // 1. move x-dir
 
-    // get src and dest points' x coordinate
+    // get coordinates
     auto src_x = src % width;
     auto dest_x = dest % width;
+    auto src_y = src / width;
+    auto dest_y = dest / width;
+
+    // get current/next coordinates
+    auto current_x = src_x;
+    auto next_x = src_x;
+    auto current_y = src_y;
+    auto next_y = src_y;
 
     // compute which direction to move
     auto x_dir = 0;
@@ -28,8 +36,6 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
     }  // else: x_diff == 0 -> no need to move through x-direction
 
     // move x direction until reaches the destination
-    auto current_x = src_x;
-    auto next_x = src_x;
     while (current_x != dest_x) {
         // compute next_x
         next_x += x_dir;
@@ -43,6 +49,10 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
 
         // update stats
         hops_count++;
+        auto current_node_id = (width * current_y) + current_x;
+        auto next_node_id = (width * next_y) + next_x;
+        increment_processed_packets(current_node_id, next_node_id);
+        increment_channel_load(current_node_id, next_node_id, packet_size);
 
         // move current_x for next iteration
         current_x = next_x;
@@ -50,10 +60,6 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
 
 
     // 2. likely, move through y-axis until destination
-
-    // get src and dest points' x coordinate
-    auto src_y = src / width;
-    auto dest_y = dest / width;
 
     // compute which direction to move
     auto y_dir = 0;
@@ -71,8 +77,6 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
     }  // else: y_diff == 0 -> no need to move through y-direction
 
     // move y direction until reaches the destination
-    auto current_y = src_y;
-    auto next_y = src_y;
     while (current_y != dest_y) {
         // compute next_y
         next_y += y_dir;
@@ -86,10 +90,18 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
 
         // update stats
         hops_count++;
+        auto current_node_id = (width * current_y) + current_x;
+        auto next_node_id = (width * next_y) + next_x;
+        increment_processed_packets(current_node_id, next_node_id);
+        increment_channel_load(current_node_id, next_node_id, packet_size);
 
         // move current_y for next iteration
         current_y = next_y;
     }
+
+    // update stats
+    total_hops += hops_count;
+    total_processed_packets++;
 
 
     // get delay
@@ -101,6 +113,88 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
 }
 
 void AnalyticalBackend::Torus::print() const noexcept {
-    // TODO: implement torus route tracking and printing
-    std::cout << "Torus print not yet implemented!" << std::endl;
+    // Processed Packets by link
+    print_processed_packets_count();
+
+    // Processed Channel Loads
+    print_channel_loads();
+
+    // Maximum channel load
+    auto max_channel_load = -1;
+    auto max_channel_load_src = -1;
+    auto max_channel_load_dest = -1;
+    std::tie(max_channel_load, max_channel_load_src, max_channel_load_dest) = get_max_channel_load();
+    std::cout << "Maximum Channel load: " << max_channel_load << " Bytes, link ("
+              << max_channel_load_src << " -> " << max_channel_load_dest << ")" << std::endl;
+
+    // Average hops
+    auto average_hops = get_average_hops();
+    std::cout << "Average Hops:" << average_hops << std::endl;
+}
+
+void AnalyticalBackend::Torus::increment_processed_packets(int src, int dest) noexcept {
+    processed_packets[src][dest]++;
+}
+
+void AnalyticalBackend::Torus::increment_channel_load(int src, int dest, int packet_size) noexcept {
+    channel_loads[src][dest] += packet_size;
+}
+
+std::tuple<int, int, int> AnalyticalBackend::Torus::get_max_channel_load() const noexcept {
+    auto max_channel_load = -1;
+    auto src = -1;
+    auto dest = -1;
+    for (int i = 0; i < nodes_count; i++) {
+        for (int j = 0; j < nodes_count; j++) {
+            if (channel_loads[i][j] > max_channel_load) {
+                max_channel_load = channel_loads[i][j];
+                src = i;
+                dest = j;
+            }
+        }
+    }
+
+    return std::make_tuple(max_channel_load, src, dest);
+}
+
+double AnalyticalBackend::Torus::get_average_hops() const noexcept {
+    return (double)total_hops / total_processed_packets;
+}
+
+void AnalyticalBackend::Torus::print_processed_packets_count() const noexcept {
+    std::cout << "Processed Number of Packets by link" << std::endl;
+    std::cout << "(row: link src, column: link dest)" << std::endl;
+    std::cout << "\t";
+    for (int dest = 0; dest < nodes_count; dest++) {
+        std::cout << "(" << dest << ")\t";
+    }
+    std::cout << std::endl;
+
+    for (int src = 0; src < nodes_count; src++) {
+        std::cout << "(" << src << ")\t";
+        for (int dest = 0; dest < nodes_count; dest++) {
+            std::cout << processed_packets[src][dest] << "\t";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void AnalyticalBackend::Torus::print_channel_loads() const noexcept {
+    std::cout << "Processed Channel Loads by link" << std::endl;
+    std::cout << "(row: link src, column: link dest)" << std::endl;
+    std::cout << "\t";
+    for (int dest = 0; dest < nodes_count; dest++) {
+        std::cout << "(" << dest << ")\t";
+    }
+    std::cout << std::endl;
+
+    for (int src = 0; src < nodes_count; src++) {
+        std::cout << "(" << src << ")\t";
+        for (int dest = 0; dest < nodes_count; dest++) {
+            std::cout << channel_loads[src][dest] << "\t";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }

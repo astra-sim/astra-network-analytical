@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
                 switch_latency  // switch latency (ns)
         );
     } else if (topology_name.compare("torus") == 0) {
-        auto torus_width = std::sqrt(hosts_count);
+        auto torus_width = (int)std::sqrt(hosts_count);
 
         for (int i = 0; i < hosts_count; i++) {
             analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
         }
 
         topology = std::make_shared<AnalyticalBackend::Torus>(
-                torus_width,  // torus width
+                hosts_count,  // number of hosts connected
                 bandwidth,  // bandwidth (GB/s = B/ns)
                 link_latency,  // link latency (ns)
                 nic_latency  // nic latency (ns)
