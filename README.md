@@ -30,14 +30,12 @@ Please change the configuration file named `Configuration.json`. You don't have 
     "bandwidth": 25,  // [int, (GB/s)=(B/ns)] link bandwidth
     "link_latency": 500,  // [int, ns] link latency
     "nic_latency": 10,  // [int, ns] nic latency
-    "switch_latency": 10  // [int, ns] switch latency (only applies to "switch" topology)
+    "switch_latency": 10,  // [int, ns] switch latency (only applies to "switch" topology)
+    "print_log": true  // enable topology stats printing
   },
   "run_configuration": {
     "num_passes": 2,
-    "num_queues_per_dim": 2,
-    "comm_scale": 1,
-    "compute_scale": 1,
-    "injection_scale": 1
+    "num_queues_per_dim": 2
   },
   "stat_configuration": {
     "path": "../results/",
@@ -53,6 +51,11 @@ Please change the configuration file named `Configuration.json`. You don't have 
 After compilation and configuration, run the source by the given `./AnalyticalBackend.sh` script.
 ```bash
 ./AnalyticalBackend -r
+```
+
+You can also run the binary with command-line arguments.
+```bash
+./AnalyticalBackend -r --comm-scale=3 --compute-scale=5 --injection-scale=7  # default value for each option is 1
 ```
 
 ## Cleanup
