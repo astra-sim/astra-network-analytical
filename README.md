@@ -2,12 +2,13 @@
 
 ## Dependencies
 ### macOS
+Please install these dependencies.
 ```bash
-brew install cmake coreutils
+brew install cmake coreutils boost
 ```
 ### Linux (Ubuntu)
 ```bash
-sudo apt install cmake
+sudo apt install cmake libboost-all-dev
 ```
 
 ## How to run
