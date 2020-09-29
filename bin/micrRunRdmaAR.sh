@@ -22,16 +22,16 @@ rm -rf $mypath
 mkdir $mypath
 for i in "${!cpus[@]}"; do
   for inj in "${commScale[@]}"; do
-        current_row=`expr $current_row + 1`
-        filename="nodes-${cpus[$i]}-commScale-$inj"
-        echo "--comm-scale=$inj , --host-count=${cpus[$i]} , --total-stat-rows=$tot_stat_row , --stat-row=$current_row , --path=$mypath/ , --run-name=$filename"
-		"${RUN_SCRIPT}" -r \
-        --comm-scale=$inj \
-        --host-count=${cpus[$i]} \
-        --total-stat-rows=$tot_stat_row \
-        --stat-row=$current_row \
-        --path=$mypath/ \
-        --run-name=$filename >> "$mypath/$filename.txt"
-        sleep 1
+    current_row=`expr $current_row + 1`
+    filename="nodes-${cpus[$i]}-commScale-$inj"
+    echo "--comm-scale=$inj , --host-count=${cpus[$i]} , --total-stat-rows=$tot_stat_row , --stat-row=$current_row , --path=$mypath/ , --run-name=$filename"
+    nohup "${RUN_SCRIPT}" -r \
+      --comm-scale=$inj \
+      --host-count=${cpus[$i]} \
+      --total-stat-rows=$tot_stat_row \
+      --stat-row=$current_row \
+      --path=$mypath/ \
+      --run-name=$filename >> "$mypath/$filename.txt" &
+    sleep 1
   done
 done
