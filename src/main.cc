@@ -3,6 +3,7 @@
 #include <memory>
 #include <cmath>
 #include <boost/program_options.hpp>
+#include "CommandLineParser.hh"
 #include "Event.hh"
 #include "EventQueueEntry.hh"
 #include "EventQueue.hh"
@@ -18,57 +19,103 @@
 namespace po = boost::program_options;
 
 int main(int argc, char* argv[]) {
-    // parse command line arguments
-    auto cmd_description = po::options_description("Command Line Options");
-    cmd_description.add_options()
-            ("help", "Prints help message")
-            ("comm-scale", po::value<int>()->default_value(1), "Communication scale")
-            ("compute-scale", po::value<int>()->default_value(1), "Compute scale")
-            ("injection-scale", po::value<int>()->default_value(1), "Injection scale");
-
-    po::variables_map vm;
-    try {
-        po::store(po::parse_command_line(argc, argv, cmd_description), vm);
-        po::notify(vm);
-    } catch (po::error e) {
-        std::cout << e.what() << std::endl;
-        std::cout << cmd_description << std::endl;
-        exit(-1);
-    }
-
-    if (vm.count("help")) {
-        // prints help message
-        std::cout << cmd_description << std::endl;
-    }
-
-    // command line configuration variables
-    int comm_scale = vm["comm-scale"].as<int>();
-    int compute_scale = vm["compute-scale"].as<int>();
-    int injection_scale = vm["injection-scale"].as<int>();
-
-    // parse configuration file
+    // parse configuration.json file
     auto json_file = std::ifstream("Configuration.json", std::ifstream::in);
     nlohmann::json configuration;
     json_file >> configuration;
     json_file.close();
 
+    // parse command line arguments -- to update configurations if given through command line
+    auto cmd_parser = AnalyticalBackend::CommandLineParser();
+
+    cmd_parser.add_command_line_option<std::string>("system-configuration", "System configuration file");
+    cmd_parser.add_command_line_option<std::string>("workload-configuration", "Workload configuration file");
+    cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
+    cmd_parser.add_command_line_option<int>("host-count", "Number of hosts");
+    cmd_parser.add_command_line_option<int>("bandwidth", "Link bandwidth in GB/s (B/ns)");
+    cmd_parser.add_command_line_option<int>("link-latency", "Link latency in ns");
+    cmd_parser.add_command_line_option<int>("nic-latency", "NIC latency in ns");
+    cmd_parser.add_command_line_option<int>("switch-latency", "Switch latency in ns");
+    cmd_parser.add_command_line_option<bool>("print-topology-log", "Print topology log to std::out");
+    cmd_parser.add_command_line_option<int>("num-passes", "Number of passes to run");
+    cmd_parser.add_command_line_option<int>("num-queues-per-dim", "Number of queues per each dimension");
+    cmd_parser.add_command_line_option<float>("comm-scale", "Communication scale");
+    cmd_parser.add_command_line_option<float>("compute-scale", "Compute scale");
+    cmd_parser.add_command_line_option<float>("injection-scale", "Injection scale");
+    cmd_parser.add_command_line_option<std::string>("path", "Path to save result files");
+    cmd_parser.add_command_line_option<std::string>("run-name", "Run name");
+    cmd_parser.add_command_line_option<int>("total-stat-rows", "Total number of concurrent runs");
+    cmd_parser.add_command_line_option<int>("stat-row", "Index of current run (index starts with 0)");
+    cmd_parser.add_command_line_option<bool>("rendezvous-protocol", "Whether to enable rendezvous protocol");
+
+    try {
+        cmd_parser.parse(argc, argv);
+    } catch (AnalyticalBackend::CommandLineParser::ParsingError e) {
+        std::cout << e.what() << std::endl;
+        exit(-1);
+    }
+
+    cmd_parser.print_help_message_if_required();
+
+
     // configuration variables
-    std::string system_configuration = configuration["system_configuration"];
-    std::string workload_configuration = configuration["workload_configuration"];
-    std::string topology_name = configuration["topology_configuration"]["name"];
-    int hosts_count = configuration["topology_configuration"]["hosts_count"];
-    int bandwidth = configuration["topology_configuration"]["bandwidth"];
-    int link_latency = configuration["topology_configuration"]["link_latency"];
-    int nic_latency = configuration["topology_configuration"]["nic_latency"];
-    int switch_latency = configuration["topology_configuration"]["switch_latency"];
-    bool print_log = configuration["topology_configuration"]["print_log"];
-    int num_passes = configuration["run_configuration"]["num_passes"];
-    int num_queues_per_dim = configuration["run_configuration"]["num_queues_per_dim"];
-    std::string path = configuration["stat_configuration"]["path"];
-    std::string run_name = configuration["stat_configuration"]["run_name"];
-    int total_stat_rows = configuration["stat_configuration"]["total_stat_rows"];
-    int stat_row = configuration["stat_configuration"]["stat_row"];
-    bool rendezvous_protocol = configuration["rendezvous_protocol"];
+    std::string system_configuration = configuration["system-configuration"];
+    cmd_parser.set_if_defined("system-configuration", &system_configuration);
+
+    std::string workload_configuration = configuration["workload-configuration"];
+    cmd_parser.set_if_defined("workload-configuration", &workload_configuration);
+
+    std::string topology_name = configuration["topology-configuration"]["topology-name"];
+    cmd_parser.set_if_defined("topology-name", &topology_name);
+
+    int hosts_count = configuration["topology-configuration"]["host-count"];
+    cmd_parser.set_if_defined("host-count", &hosts_count);
+
+    int bandwidth = configuration["topology-configuration"]["bandwidth"];
+    cmd_parser.set_if_defined("bandwidth", &bandwidth);
+
+    int link_latency = configuration["topology-configuration"]["link-latency"];
+    cmd_parser.set_if_defined("link-latency", &link_latency);
+
+    int nic_latency = configuration["topology-configuration"]["nic-latency"];
+    cmd_parser.set_if_defined("nic-latency", &nic_latency);
+
+    int switch_latency = configuration["topology-configuration"]["switch-latency"];
+    cmd_parser.set_if_defined("switch-latency", &switch_latency);
+
+    int comm_scale = configuration["run-configuration"]["comm-scale"];
+    cmd_parser.set_if_defined<int>("comm-scale", &comm_scale);
+
+    int compute_scale = configuration["run-configuration"]["compute-scale"];
+    cmd_parser.set_if_defined<int>("compute-scale", &compute_scale);
+
+    int injection_scale = configuration["run-configuration"]["injection-scale"];
+    cmd_parser.set_if_defined<int>("injection-scale", &injection_scale);
+
+    bool print_topology_log = configuration["topology-configuration"]["print-topology-log"];
+    cmd_parser.set_if_defined("print-topology-log", &print_topology_log);
+
+    int num_passes = configuration["run-configuration"]["num-passes"];
+    cmd_parser.set_if_defined("num-passes", &num_passes);
+
+    int num_queues_per_dim = configuration["run-configuration"]["num-queues-per-dim"];
+    cmd_parser.set_if_defined("num-queues-per-dim", &num_queues_per_dim);
+
+    std::string path = configuration["stat-configuration"]["path"];
+    cmd_parser.set_if_defined("path", &path);
+
+    std::string run_name = configuration["stat-configuration"]["run-name"];
+    cmd_parser.set_if_defined("run-name", &run_name);
+
+    int total_stat_rows = configuration["stat-configuration"]["total-stat-rows"];
+    cmd_parser.set_if_defined("total-stat-rows", &total_stat_rows);
+
+    int stat_row = configuration["stat-configuration"]["stat-row"];
+    cmd_parser.set_if_defined("stat-row", &stat_row);
+
+    bool rendezvous_protocol = configuration["rendezvous-protocol"];
+    cmd_parser.set_if_defined("rendezvous-protocol", &rendezvous_protocol);
+
 
     // event queue instantiation
     auto event_queue = std::make_shared<AnalyticalBackend::EventQueue>();
@@ -169,7 +216,7 @@ int main(int argc, char* argv[]) {
     }
 
     // After run, print topology stats
-    if (print_log) {
+    if (print_topology_log) {
         topology->print();
     }
 
