@@ -7,7 +7,7 @@
 namespace AnalyticalBackend {
     class Switch : public Topology {
     public:
-        Switch(int nodes_count, int bandwidth, int link_latency, int nic_latency, int switch_latency) noexcept :
+        Switch(int nodes_count, double bandwidth, double link_latency, double nic_latency, double switch_latency) noexcept :
                 nodes_count(nodes_count),
                 bandwidth(bandwidth),
                 link_latency(link_latency),
@@ -43,23 +43,23 @@ namespace AnalyticalBackend {
         /**
          * link bandwidth (bytes / sec)
          */
-        int bandwidth;
+        double bandwidth;
 
         /**
          * link latency (ns)
          */
-        int link_latency;
+        double link_latency;
 
         /**
          * nic delay (ns)
          */
-        int nic_latency;
+        double nic_latency;
 
         /**
          * latency of switch itself (like router delay)
          * (ns)
          */
-        int switch_latency;
+        double switch_latency;
 
         /**
          * total number of hops

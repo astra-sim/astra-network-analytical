@@ -22,7 +22,7 @@ double AnalyticalBackend::Switch::send(int src, int dest, int packet_size) noexc
     delay += switch_latency;  // switch delay
     delay += (packet_size / bandwidth);  // serialization delay
 
-    return delay;
+    return (int)delay;
 }
 
 void AnalyticalBackend::Switch::print() const noexcept {
