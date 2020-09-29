@@ -15,7 +15,7 @@ find_package(Boost 1.40 REQUIRED COMPONENTS program_options)
 # Minimum compiler version requirements
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3)
-        message(FATAL_ERROR "Insufficient gcc version")
+        message(FATAL_ERROR "g++ (GNU) version should be greater than 5.3, but found ${CMAKE_CXX_COMPILER_VERSION}")
     endif()
 endif()
 

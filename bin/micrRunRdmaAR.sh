@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 SCRIPT_DIR=$(dirname "$(realpath $0)")
 RUN_SCRIPT=${SCRIPT_DIR:?}/../AnalyticalBackend.sh
