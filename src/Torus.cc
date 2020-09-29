@@ -109,7 +109,7 @@ double AnalyticalBackend::Torus::send(int src, int dest, int packet_size) noexce
     delay += (hops_count + 1) * nic_latency;  // nic delay
     delay += (packet_size / bandwidth);  // serialization delay
 
-    return delay;
+    return (int)delay;
 }
 
 void AnalyticalBackend::Torus::print() const noexcept {

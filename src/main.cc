@@ -32,10 +32,10 @@ int main(int argc, char* argv[]) {
     cmd_parser.add_command_line_option<std::string>("workload-configuration", "Workload configuration file");
     cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
     cmd_parser.add_command_line_option<int>("host-count", "Number of hosts");
-    cmd_parser.add_command_line_option<int>("bandwidth", "Link bandwidth in GB/s (B/ns)");
-    cmd_parser.add_command_line_option<int>("link-latency", "Link latency in ns");
-    cmd_parser.add_command_line_option<int>("nic-latency", "NIC latency in ns");
-    cmd_parser.add_command_line_option<int>("switch-latency", "Switch latency in ns");
+    cmd_parser.add_command_line_option<double>("bandwidth", "Link bandwidth in GB/s (B/ns)");
+    cmd_parser.add_command_line_option<double>("link-latency", "Link latency in ns");
+    cmd_parser.add_command_line_option<double>("nic-latency", "NIC latency in ns");
+    cmd_parser.add_command_line_option<double>("switch-latency", "Switch latency in ns");
     cmd_parser.add_command_line_option<bool>("print-topology-log", "Print topology log to std::out");
     cmd_parser.add_command_line_option<int>("num-passes", "Number of passes to run");
     cmd_parser.add_command_line_option<int>("num-queues-per-dim", "Number of queues per each dimension");
@@ -71,26 +71,17 @@ int main(int argc, char* argv[]) {
     int hosts_count = configuration["topology-configuration"]["host-count"];
     cmd_parser.set_if_defined("host-count", &hosts_count);
 
-    int bandwidth = configuration["topology-configuration"]["bandwidth"];
+    double bandwidth = configuration["topology-configuration"]["bandwidth"];
     cmd_parser.set_if_defined("bandwidth", &bandwidth);
 
-    int link_latency = configuration["topology-configuration"]["link-latency"];
+    double link_latency = configuration["topology-configuration"]["link-latency"];
     cmd_parser.set_if_defined("link-latency", &link_latency);
 
-    int nic_latency = configuration["topology-configuration"]["nic-latency"];
+    double nic_latency = configuration["topology-configuration"]["nic-latency"];
     cmd_parser.set_if_defined("nic-latency", &nic_latency);
 
-    int switch_latency = configuration["topology-configuration"]["switch-latency"];
+    double switch_latency = configuration["topology-configuration"]["switch-latency"];
     cmd_parser.set_if_defined("switch-latency", &switch_latency);
-
-    int comm_scale = configuration["run-configuration"]["comm-scale"];
-    cmd_parser.set_if_defined<int>("comm-scale", &comm_scale);
-
-    int compute_scale = configuration["run-configuration"]["compute-scale"];
-    cmd_parser.set_if_defined<int>("compute-scale", &compute_scale);
-
-    int injection_scale = configuration["run-configuration"]["injection-scale"];
-    cmd_parser.set_if_defined<int>("injection-scale", &injection_scale);
 
     bool print_topology_log = configuration["topology-configuration"]["print-topology-log"];
     cmd_parser.set_if_defined("print-topology-log", &print_topology_log);
@@ -100,6 +91,15 @@ int main(int argc, char* argv[]) {
 
     int num_queues_per_dim = configuration["run-configuration"]["num-queues-per-dim"];
     cmd_parser.set_if_defined("num-queues-per-dim", &num_queues_per_dim);
+
+    float comm_scale = configuration["run-configuration"]["comm-scale"];
+    cmd_parser.set_if_defined("comm-scale", &comm_scale);
+
+    float compute_scale = configuration["run-configuration"]["compute-scale"];
+    cmd_parser.set_if_defined("compute-scale", &compute_scale);
+
+    float injection_scale = configuration["run-configuration"]["injection-scale"];
+    cmd_parser.set_if_defined("injection-scale", &injection_scale);
 
     std::string path = configuration["stat-configuration"]["path"];
     cmd_parser.set_if_defined("path", &path);

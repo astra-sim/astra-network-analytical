@@ -8,7 +8,7 @@
 namespace AnalyticalBackend {
     class Torus : public AnalyticalBackend::Topology {
     public:
-        Torus(int nodes_count, int bandwidth, int link_latency, int nic_latency) noexcept :
+        Torus(int nodes_count, double bandwidth, double link_latency, double nic_latency) noexcept :
                 nodes_count(nodes_count),
                 bandwidth(bandwidth),link_latency(link_latency), nic_latency(nic_latency),
                 total_hops(0), total_processed_packets(0) {
@@ -46,17 +46,17 @@ namespace AnalyticalBackend {
         /**
          * link bandwidth (bytes / sec)
          */
-        int bandwidth;
+        double bandwidth;
 
         /**
          * link latency (ns)
          */
-        int link_latency;
+        double link_latency;
 
         /**
          * nic latency (ns)
          */
-        int nic_latency;
+        double nic_latency;
 
         /**
          * total number of hops of the network packet
