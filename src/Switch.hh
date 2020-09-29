@@ -2,6 +2,7 @@
 #define __SWITCH_HH__
 
 #include <vector>
+#include <tuple>
 #include "Topology.hh"
 
 namespace AnalyticalBackend {

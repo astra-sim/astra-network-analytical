@@ -4,6 +4,7 @@
 #include "Topology.hh"
 #include <cmath>
 #include <vector>
+#include <tuple>
 
 namespace AnalyticalBackend {
     class Torus : public AnalyticalBackend::Topology {
