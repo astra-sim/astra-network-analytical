@@ -9,7 +9,7 @@ cpus=(2 4 8 16)
 localDim=(1 1 1 1)
 commScale=(0.0625 0.125 0.25 0.5 1 2 4 8 16 32 64 128 256)
 current_row=-1
-tot_stat_row=`expr ${#cpus[@]} \* ${#commScale[@]}`
+tot_stat_row=$((${#cpus[@]} * ${#commScale[@]}))
 mypath="${SCRIPT_DIR:?}/../results/$1-Switch"
 
 # compile
@@ -23,7 +23,7 @@ rm -rf $mypath
 mkdir $mypath
 for i in "${!cpus[@]}"; do
   for inj in "${commScale[@]}"; do
-    current_row=`expr $current_row + 1`
+    current_row=$((current_row + 1))
     filename="nodes-${cpus[$i]}-commScale-$inj"
     echo "--comm-scale=$inj , --host-count=${cpus[$i]} , --total-stat-rows=$tot_stat_row , --stat-row=$current_row , --path=$mypath/ , --run-name=$filename"
     nohup "${RUN_SCRIPT}" -r \
