@@ -4,7 +4,8 @@ build/
 lib/
 
 # results
-results/*.csv
+results/*
+!results/README.md
 
 # macOS
 .DS_Store
