@@ -15,7 +15,16 @@ function cleanup {
 
 function cleanup_result {
   cleanup
-  rm -f "${SCRIPT_DIR:?}"/results/*.csv
+
+  if [ -f "${SCRIPT_DIR:?}"/results/README.md ]; then
+    mv "${SCRIPT_DIR:?}"/results/README.md "${SCRIPT_DIR:?}"/README.md.results
+  fi
+
+  rm -rf "${SCRIPT_DIR:?}"/results/*
+
+  if [ -f "${SCRIPT_DIR:?}"/README.md.results ]; then
+    mv "${SCRIPT_DIR:?}"/README.md.results "${SCRIPT_DIR:?}"/results/README.md
+  fi
 }
 
 function compile {
