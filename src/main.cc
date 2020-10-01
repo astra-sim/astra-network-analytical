@@ -7,8 +7,8 @@
 #include "event-queue/EventQueueEntry.hh"
 #include "event-queue/EventQueue.hh"
 #include "topology/Topology.hh"
-#include "topology/Torus.hh"
-#include "topology/Switch.hh"
+#include "topology/TopologyConfiguration.hh"
+#include "topology/Ring.hh"
 #include "api/AnalyticalNetwork.hh"
 #include "../astra-sim/system/Sys.hh"
 #include "../astra-sim/system/SimpleMemory.hh"
@@ -19,8 +19,8 @@ namespace po = boost::program_options;
 int main(int argc, char* argv[]) {
     // parse configuration.json file
     auto json_file = std::ifstream("Configuration.json", std::ifstream::in);
-    nlohmann::json configuration;
-    json_file >> configuration;
+    nlohmann::json json_configuration;
+    json_file >> json_configuration;
     json_file.close();
 
     // parse command line arguments -- to update configurations if given through command line
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 
     try {
         cmd_parser.parse(argc, argv);
-    } catch (AnalyticalBackend::CommandLineParser::ParsingError e) {
+    } catch (const AnalyticalBackend::CommandLineParser::ParsingError& e) {
         std::cout << e.what() << std::endl;
         exit(-1);
     }
@@ -57,61 +57,61 @@ int main(int argc, char* argv[]) {
 
 
     // configuration variables
-    std::string system_configuration = configuration["system-configuration"];
+    std::string system_configuration = json_configuration["system-configuration"];
     cmd_parser.set_if_defined("system-configuration", &system_configuration);
 
-    std::string workload_configuration = configuration["workload-configuration"];
+    std::string workload_configuration = json_configuration["workload-configuration"];
     cmd_parser.set_if_defined("workload-configuration", &workload_configuration);
 
-    std::string topology_name = configuration["topology-configuration"]["topology-name"];
+    std::string topology_name = json_configuration["topology-configuration"]["topology-name"];
     cmd_parser.set_if_defined("topology-name", &topology_name);
 
-    int hosts_count = configuration["topology-configuration"]["host-count"];
+    int hosts_count = json_configuration["topology-configuration"]["host-count"];
     cmd_parser.set_if_defined("host-count", &hosts_count);
 
-    double bandwidth = configuration["topology-configuration"]["bandwidth"];
+    double bandwidth = json_configuration["topology-configuration"]["bandwidth"];
     cmd_parser.set_if_defined("bandwidth", &bandwidth);
 
-    double link_latency = configuration["topology-configuration"]["link-latency"];
+    double link_latency = json_configuration["topology-configuration"]["link-latency"];
     cmd_parser.set_if_defined("link-latency", &link_latency);
 
-    double nic_latency = configuration["topology-configuration"]["nic-latency"];
+    double nic_latency = json_configuration["topology-configuration"]["nic-latency"];
     cmd_parser.set_if_defined("nic-latency", &nic_latency);
 
-    double switch_latency = configuration["topology-configuration"]["switch-latency"];
+    double switch_latency = json_configuration["topology-configuration"]["switch-latency"];
     cmd_parser.set_if_defined("switch-latency", &switch_latency);
 
-    bool print_topology_log = configuration["topology-configuration"]["print-topology-log"];
+    bool print_topology_log = json_configuration["topology-configuration"]["print-topology-log"];
     cmd_parser.set_if_defined("print-topology-log", &print_topology_log);
 
-    int num_passes = configuration["run-configuration"]["num-passes"];
+    int num_passes = json_configuration["run-configuration"]["num-passes"];
     cmd_parser.set_if_defined("num-passes", &num_passes);
 
-    int num_queues_per_dim = configuration["run-configuration"]["num-queues-per-dim"];
+    int num_queues_per_dim = json_configuration["run-configuration"]["num-queues-per-dim"];
     cmd_parser.set_if_defined("num-queues-per-dim", &num_queues_per_dim);
 
-    float comm_scale = configuration["run-configuration"]["comm-scale"];
+    float comm_scale = json_configuration["run-configuration"]["comm-scale"];
     cmd_parser.set_if_defined("comm-scale", &comm_scale);
 
-    float compute_scale = configuration["run-configuration"]["compute-scale"];
+    float compute_scale = json_configuration["run-configuration"]["compute-scale"];
     cmd_parser.set_if_defined("compute-scale", &compute_scale);
 
-    float injection_scale = configuration["run-configuration"]["injection-scale"];
+    float injection_scale = json_configuration["run-configuration"]["injection-scale"];
     cmd_parser.set_if_defined("injection-scale", &injection_scale);
 
-    std::string path = configuration["stat-configuration"]["path"];
+    std::string path = json_configuration["stat-configuration"]["path"];
     cmd_parser.set_if_defined("path", &path);
 
-    std::string run_name = configuration["stat-configuration"]["run-name"];
+    std::string run_name = json_configuration["stat-configuration"]["run-name"];
     cmd_parser.set_if_defined("run-name", &run_name);
 
-    int total_stat_rows = configuration["stat-configuration"]["total-stat-rows"];
+    int total_stat_rows = json_configuration["stat-configuration"]["total-stat-rows"];
     cmd_parser.set_if_defined("total-stat-rows", &total_stat_rows);
 
-    int stat_row = configuration["stat-configuration"]["stat-row"];
+    int stat_row = json_configuration["stat-configuration"]["stat-row"];
     cmd_parser.set_if_defined("stat-row", &stat_row);
 
-    bool rendezvous_protocol = configuration["rendezvous-protocol"];
+    bool rendezvous_protocol = json_configuration["rendezvous-protocol"];
     cmd_parser.set_if_defined("rendezvous-protocol", &rendezvous_protocol);
 
 
@@ -127,77 +127,119 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<AstraSim::SimpleMemory> memories[hosts_count];
 
     // Setup Network and System by topology
-    if (topology_name.compare("switch") == 0) {
-        for (int i = 0; i < hosts_count; i++) {
-            analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
+    for (int i = 0; i < hosts_count; i++) {
+        analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
 
-            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
-                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
-                    500, 270, 12.5);
+        memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+                (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+                500, 270, 12.5);
 
-            systems[i] = std::make_unique<AstraSim::Sys>(
-                    analytical_networks[i].get(),  // AstraNetworkAPI
-                    memories[i].get(),  // AstraMemoryAPI
-                    i,  // id
-                    num_passes,  // num_passes
-                    1, 1, hosts_count, 1, 1,  // dimensions
-                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    system_configuration,  // system configuration
-                    workload_configuration,  // workload configuration
-                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
-                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    path,  // stat file path
-                    run_name,  // run name
-                    true,    // separate_log
-                    rendezvous_protocol  // randezvous protocol
-            );
-        }
-
-        topology = std::make_shared<AnalyticalBackend::Switch>(
-                hosts_count,  // number of connected nodes
-                bandwidth,  // bandwidth (GB/s = B/ns)
-                link_latency,  // link latency (ns)
-                nic_latency,  // nic latency (ns)
-                switch_latency  // switch latency (ns)
+        systems[i] = std::make_unique<AstraSim::Sys>(
+                analytical_networks[i].get(),  // AstraNetworkAPI
+                memories[i].get(),  // AstraMemoryAPI
+                i,  // id
+                num_passes,  // num_passes
+                1, 1, hosts_count, 1, 1,  // dimensions
+                num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+                system_configuration,  // system configuration
+                workload_configuration,  // workload configuration
+                comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+                total_stat_rows, stat_row,  // total_stat_rows and stat_row
+                path,  // stat file path
+                run_name,  // run name
+                true,    // separate_log
+                rendezvous_protocol  // randezvous protocol
         );
-    } else if (topology_name.compare("torus") == 0) {
-        auto torus_width = (int)std::sqrt(hosts_count);
-
-        for (int i = 0; i < hosts_count; i++) {
-            analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
-
-            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
-                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
-                    500, 270, 12.5);
-
-            systems[i] = std::make_unique<AstraSim::Sys>(
-                    analytical_networks[i].get(),  // AstraNetworkAPI
-                    memories[i].get(),  // AstraMemoryAPI
-                    i,  // id
-                    num_passes,  // num_passes
-                    1, torus_width, torus_width, 1, 1,  // dimensions
-                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    system_configuration,  // system configuration
-                    workload_configuration,  // workload configuration
-                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
-                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    path,  // stat file path
-                    run_name,  // run name
-                    true,    // separate_log
-                    rendezvous_protocol  // randezvous protocol
-            );
-        }
-
-        topology = std::make_shared<AnalyticalBackend::Torus>(
-                hosts_count,  // number of hosts connected
-                bandwidth,  // bandwidth (GB/s = B/ns)
-                link_latency,  // link latency (ns)
-                nic_latency  // nic latency (ns)
-        );
-    } else {
-        std::cout << "Topology not implemented!" << std::endl;
-        exit(-1);
     }
+
+    // create topology configuration
+    auto topology_configuration = AnalyticalBackend::TopologyConfiguration(
+            bandwidth,  // link bandwidth (GB/s) = (B/ns)
+            link_latency,  // link latency (ns)
+            nic_latency,  // nic latency (ns)
+            switch_latency,  // router latency (ns): ring doesn't use this
+            500,  // memory bandwidth (GB/s) = (B/ns)
+            10,  // memory latency (ns),
+            1.5  // memory scaling factor
+    );
+
+    // Create topology
+    topology = std::make_shared<AnalyticalBackend::Ring>(
+            hosts_count,  // number of connected nodes
+            topology_configuration  // topology configuration
+    );
+
+//    if (topology_name.compare("switch") == 0) {
+//        for (int i = 0; i < hosts_count; i++) {
+//            analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
+//
+//            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+//                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+//                    500, 270, 12.5);
+//
+//            systems[i] = std::make_unique<AstraSim::Sys>(
+//                    analytical_networks[i].get(),  // AstraNetworkAPI
+//                    memories[i].get(),  // AstraMemoryAPI
+//                    i,  // id
+//                    num_passes,  // num_passes
+//                    1, 1, hosts_count, 1, 1,  // dimensions
+//                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+//                    system_configuration,  // system configuration
+//                    workload_configuration,  // workload configuration
+//                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+//                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
+//                    path,  // stat file path
+//                    run_name,  // run name
+//                    true,    // separate_log
+//                    rendezvous_protocol  // randezvous protocol
+//            );
+//        }
+//
+//        topology = std::make_shared<AnalyticalBackend::Switch>(
+//                hosts_count,  // number of connected nodes
+//                bandwidth,  // bandwidth (GB/s = B/ns)
+//                link_latency,  // link latency (ns)
+//                nic_latency,  // nic latency (ns)
+//                switch_latency  // switch latency (ns)
+//        );
+//    } else if (topology_name.compare("torus") == 0) {
+//        auto torus_width = (int)std::sqrt(hosts_count);
+//
+//        for (int i = 0; i < hosts_count; i++) {
+//            analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
+//
+//            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+//                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+//                    500, 270, 12.5);
+//
+//            systems[i] = std::make_unique<AstraSim::Sys>(
+//                    analytical_networks[i].get(),  // AstraNetworkAPI
+//                    memories[i].get(),  // AstraMemoryAPI
+//                    i,  // id
+//                    num_passes,  // num_passes
+//                    1, torus_width, torus_width, 1, 1,  // dimensions
+//                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+//                    system_configuration,  // system configuration
+//                    workload_configuration,  // workload configuration
+//                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+//                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
+//                    path,  // stat file path
+//                    run_name,  // run name
+//                    true,    // separate_log
+//                    rendezvous_protocol  // randezvous protocol
+//            );
+//        }
+//
+//        topology = std::make_shared<AnalyticalBackend::Torus>(
+//                hosts_count,  // number of hosts connected
+//                bandwidth,  // bandwidth (GB/s = B/ns)
+//                link_latency,  // link latency (ns)
+//                nic_latency  // nic latency (ns)
+//        );
+//    } else {
+//        std::cout << "Topology not implemented!" << std::endl;
+//        exit(-1);
+//    }
 
     // link event queue and topology
     AnalyticalBackend::AnalyticalNetwork::set_event_queue(event_queue);
@@ -213,10 +255,10 @@ int main(int argc, char* argv[]) {
         event_queue->proceed();
     }
 
-    // After run, print topology stats
-    if (print_topology_log) {
-        topology->print();
-    }
+//    // After run, print topology stats
+//    if (print_topology_log) {
+//        topology->print();
+//    }
 
     // terminate program
     return 0;
