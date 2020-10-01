@@ -2,10 +2,11 @@
 #define __ANALYTICALNETWORK_HH__
 
 #include <memory>
-#include "../astra-sim/system/AstraNetworkAPI.hh"
-#include "event-queue/EventQueue.hh"
-#include "topology/Topology.hh"
-#include "event-queue/SendRecvTrackingMap.hh"
+#include "../../astra-sim/system/AstraNetworkAPI.hh"
+#include "../event-queue/EventQueue.hh"
+#include "../event-queue/SendRecvTrackingMap.hh"
+#include "../topology/Topology.hh"
+
 
 namespace AnalyticalBackend {
     class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {

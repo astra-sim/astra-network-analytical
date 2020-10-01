@@ -9,9 +9,10 @@
 #include "topology/Topology.hh"
 #include "topology/Torus.hh"
 #include "topology/Switch.hh"
+#include "api/AnalyticalNetwork.hh"
 #include "../astra-sim/system/Sys.hh"
 #include "../astra-sim/system/SimpleMemory.hh"
-#include "AnalyticalNetwork.hh"
+
 
 namespace po = boost::program_options;
 
