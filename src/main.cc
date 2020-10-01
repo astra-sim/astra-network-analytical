@@ -10,6 +10,7 @@
 #include "topology/TopologyConfiguration.hh"
 #include "topology/Ring.hh"
 #include "topology/AllToAll.hh"
+#include "topology/Switch.hh"
 #include "api/AnalyticalNetwork.hh"
 #include "../astra-sim/system/Sys.hh"
 #include "../astra-sim/system/SimpleMemory.hh"
@@ -165,7 +166,7 @@ int main(int argc, char* argv[]) {
     );
 
     // Create topology
-    topology = std::make_shared<AnalyticalBackend::AllToAll>(
+    topology = std::make_shared<AnalyticalBackend::Switch>(
             hosts_count,  // number of connected nodes
             topology_configuration  // topology configuration
     );
