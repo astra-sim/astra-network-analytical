@@ -4,9 +4,9 @@
 #include <cmath>
 #include <boost/program_options.hpp>
 #include "CommandLineParser.hh"
-#include "Event.hh"
-#include "EventQueueEntry.hh"
-#include "EventQueue.hh"
+#include "event-queue/Event.hh"
+#include "event-queue/EventQueueEntry.hh"
+#include "event-queue/EventQueue.hh"
 #include "Topology.hh"
 #include "Torus.hh"
 #include "Switch.hh"

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <list>
 #include "Event.hh"
-#include "../astra-sim/system/AstraNetworkAPI.hh"
+#include "../../astra-sim/system/AstraNetworkAPI.hh"
 
 namespace AnalyticalBackend {
     struct EventQueueEntry {
@@ -49,7 +49,7 @@ namespace AnalyticalBackend {
 
         /**
          * (For debugging purpose)
-         * Print the timestamp and number of events in the EventQueue.
+         * Print the timestamp and number of events in the event-queue.
          */
         void print() const noexcept;
 

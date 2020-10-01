@@ -6,13 +6,13 @@
 #include <cassert>
 #include "Event.hh"
 #include "EventQueueEntry.hh"
-#include "../astra-sim/system/AstraNetworkAPI.hh"
+#include "../../astra-sim/system/AstraNetworkAPI.hh"
 
 namespace AnalyticalBackend {
     class EventQueue {
     public:
         /**
-         * Create new EventQueue.
+         * Create new event-queue.
          */
         EventQueue() {
             current_time.time_res = AstraSim::NS;
@@ -20,7 +20,7 @@ namespace AnalyticalBackend {
         }
 
         /**
-         * Add new event to the EventQueue.
+         * Add new event to the event-queue.
          *
          * @param time_stamp time_stamp for the event
          * @param fun_ptr pointer to the event handler

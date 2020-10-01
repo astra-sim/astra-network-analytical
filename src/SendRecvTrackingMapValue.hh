@@ -1,8 +1,8 @@
 #ifndef __SENDRECVTRACKINGMAPVALUE_HH__
 #define __SENDRECVTRACKINGMAPVALUE_HH__
 
-#include "Event.hh"
-#include "EventQueueEntry.hh"
+#include "event-queue/Event.hh"
+#include "event-queue/EventQueueEntry.hh"
 #include "../astra-sim/system/AstraNetworkAPI.hh"
 
 namespace AnalyticalBackend {

@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "../astra-sim/system/AstraNetworkAPI.hh"
-#include "EventQueue.hh"
+#include "event-queue/EventQueue.hh"
 #include "Topology.hh"
 #include "SendRecvTrackingMap.hh"
 

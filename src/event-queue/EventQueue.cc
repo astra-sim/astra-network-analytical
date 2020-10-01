@@ -57,7 +57,7 @@ bool AnalyticalBackend::EventQueue::empty() const noexcept {
 }
 
 void AnalyticalBackend::EventQueue::print() const noexcept {
-    std::cout << "===== EventQueue =====" << std::endl;
+    std::cout << "===== event-queue =====" << std::endl;
     std::cout << "CurrentTime: " << current_time.time_val << std::endl << std::endl;
     for (const auto& event_queue_entry : event_queue) {
         event_queue_entry.print();
