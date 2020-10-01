@@ -5,12 +5,14 @@ SCRIPT_DIR=$(dirname "$(realpath $0)")
 # functions
 function setup {
   mkdir -p "${SCRIPT_DIR:?}"/build
+  mkdir -p "${SCRIPT_DIR:?}"/lib
 }
 
 function cleanup {
   rm -rf "${SCRIPT_DIR:?}"/build
   rm -rf "${SCRIPT_DIR:?}"/lib
   rm -f "${SCRIPT_DIR:?}"/bin/AnalyticalBackend
+  rm -rf "${SCRIPT_DIR:?}"/../../../build_analytical_astra
 }
 
 function cleanup_result {
@@ -27,8 +29,16 @@ function cleanup_result {
   fi
 }
 
+function compile_astra_sim {
+  cd "${SCRIPT_DIR:?}"/../../../ || exit
+  mkdir -p ./build_analytical_astra
+  cd ./build_analytical_astra || exit
+  cmake ..
+  make
+  cp ./*.a ../astra-sim/network/analytical_astra/lib/
+}
+
 function compile {
-  setup
   cd "${SCRIPT_DIR:?}"/build || exit
   cmake ..
   make
@@ -51,6 +61,8 @@ case "$1" in
 -lr|--clean-result)
   cleanup_result;;
 -c|--compile)
+  setup
+  compile_astra_sim
   compile;;
 -r|--run)
   if [ $# -ge 2 ]

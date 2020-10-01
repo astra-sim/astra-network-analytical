@@ -9,7 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Project setup
 project(AnalyticalBackend)
 
-# Boost package is required
+# Directories for packages
+link_directories(${PROJECT_SOURCE_DIR}/lib)  # libAstraSim
 find_package(Boost 1.40 REQUIRED COMPONENTS program_options)
 
 # Minimum compiler version requirements
@@ -23,17 +24,14 @@ endif()
 file(GLOB_RECURSE srcs
         "${PROJECT_SOURCE_DIR}/src/*.hh"
         "${PROJECT_SOURCE_DIR}/src/*.cc"
-        "${PROJECT_SOURCE_DIR}/astra-sim/system/*.hh"
-        "${PROJECT_SOURCE_DIR}/astra-sim/system/*.cc"
-        "${PROJECT_SOURCE_DIR}/astra-sim/workload/*.hh"
-        "${PROJECT_SOURCE_DIR}/astra-sim/workload/*.cc"
         )
 
 # Compile sources
 add_executable(AnalyticalBackend ${srcs})
 
-# Link Boost library after compilation
-target_link_libraries(AnalyticalBackend Boost::program_options)
+# Link libraries
+target_link_libraries(AnalyticalBackend LINK_PUBLIC AstraSim)
+target_link_libraries(AnalyticalBackend LINK_PRIVATE Boost::program_options)
 
 # Save resulting binary in the bin/ directory.
 set_target_properties(AnalyticalBackend
