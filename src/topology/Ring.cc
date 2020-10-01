@@ -30,7 +30,7 @@ double Ring::sendAndGetLatency(NodeAddress src, NodeAddress dest, int payload_si
     return (int)std::max(memory_latency, network_latency);
 }
 
-Ring::StepDirection Ring::computeStepDirection(NodeID srcID, NodeID destID) {
+Ring::StepDirection Ring::computeStepDirection(NodeID srcID, NodeID destID) const noexcept {
     if (direction == Direction::Clockwise) {
         return 1;
     }
@@ -40,17 +40,17 @@ Ring::StepDirection Ring::computeStepDirection(NodeID srcID, NodeID destID) {
     }
 
     // Bidirectional
-    int half_node_index = nodes_count / 2;
-    if (srcID <= half_node_index) {
+    int half_nodes_count = nodes_count / 2;
+    if (srcID <= half_nodes_count) {
         // check can be reached clockwise
-        return (srcID + 1) <= destID && destID <= (srcID + half_node_index) ? 1 : -1;
+        return (srcID + 1) <= destID && destID <= (srcID + half_nodes_count) ? 1 : -1;
     }
 
     // check can be reached counterclockwise
-    return (srcID - half_node_index) <= destID && destID <= (srcID - 1) ? -1 : 1;
+    return (srcID - half_nodes_count) <= destID && destID <= (srcID - 1) ? -1 : 1;
 }
 
-Ring::NodeID Ring::takeStep(NodeID currentID, StepDirection step) {
+Ring::NodeID Ring::takeStep(NodeID currentID, StepDirection step) const noexcept {
     auto nextID = currentID + step;
 
     // Ring circulates

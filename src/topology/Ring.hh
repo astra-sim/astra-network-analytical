@@ -15,7 +15,6 @@ namespace AnalyticalBackend {
          * Bidirectional: always choose the shortest path between clockwise and counterclockwise paths.
          */
         enum class Direction { Clockwise, Counterclockwise, Bidirectional };
-        using StepDirection = int;
 
         Ring(int nodes_count, TopologyConfiguration configuration, Direction direction = Direction::Bidirectional) :
             nodes_count(nodes_count),
@@ -29,13 +28,15 @@ namespace AnalyticalBackend {
         TopologyConfiguration configuration;
         Direction direction;
 
+        using StepDirection = int;
+
         /**
          * Computes which direction to proceed.
          * @param srcID
          * @param destID
          * @return direction to proceed
          */
-        StepDirection computeStepDirection(NodeID srcID, NodeID destID);
+        StepDirection computeStepDirection(NodeID srcID, NodeID destID) const noexcept;
 
         /**
          * Take a step to the given direction.
@@ -43,7 +44,7 @@ namespace AnalyticalBackend {
          * @param step direction to take a step
          * @return arrived nodeID after taking a step
          */
-        NodeID takeStep(NodeID currentID, StepDirection step);
+        NodeID takeStep(NodeID currentID, StepDirection step) const noexcept;
     };
 }
 
