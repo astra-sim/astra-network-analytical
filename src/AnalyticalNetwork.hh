@@ -4,7 +4,7 @@
 #include <memory>
 #include "../astra-sim/system/AstraNetworkAPI.hh"
 #include "event-queue/EventQueue.hh"
-#include "Topology.hh"
+#include "topology/Topology.hh"
 #include "SendRecvTrackingMap.hh"
 
 namespace AnalyticalBackend {
