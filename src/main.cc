@@ -19,7 +19,7 @@ namespace po = boost::program_options;
 
 int main(int argc, char* argv[]) {
     // parse configuration.json file
-    auto json_file = std::ifstream("Configuration.json", std::ifstream::in);
+    auto json_file = std::ifstream("../../../Configuration.json", std::ifstream::in);
     nlohmann::json json_configuration;
     json_file >> json_configuration;
     json_file.close();
@@ -153,11 +153,11 @@ int main(int argc, char* argv[]) {
                     num_passes,  // num_passes
                     1, 1, hosts_count, 1, 1,  // dimensions
                     num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    system_configuration,  // system configuration
-                    workload_configuration,  // workload configuration
+                    "../../../../../inputs/system/" + system_configuration,  // system configuration
+                    "../../../../../inputs/workload/" + workload_configuration,  // workload configuration
                     comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
                     total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    path,  // stat file path
+                    "../../../result/" + path,  // stat file path
                     run_name,  // run name
                     true,    // separate_log
                     rendezvous_protocol  // randezvous protocol
@@ -185,11 +185,11 @@ int main(int argc, char* argv[]) {
                     num_passes,  // num_passes
                     1, torus_width, torus_width, 1, 1,  // dimensions
                     num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    system_configuration,  // system configuration
-                    workload_configuration,  // workload configuration
+                    "../../../../../inputs/system/" + system_configuration,  // system configuration
+                    "../../../../../inputs/workload/" + workload_configuration,  // workload configuration
                     comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
                     total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    path,  // stat file path
+                    "../../../result/" + path,  // stat file path
                     run_name,  // run name
                     true,    // separate_log
                     rendezvous_protocol  // randezvous protocol
