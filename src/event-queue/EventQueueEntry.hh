@@ -4,7 +4,7 @@
 #include <iostream>
 #include <list>
 #include "Event.hh"
-#include "../../astra-sim/system/AstraNetworkAPI.hh"
+#include "src/astra-sim/system/AstraNetworkAPI.hh"
 
 namespace AnalyticalBackend {
     struct EventQueueEntry {

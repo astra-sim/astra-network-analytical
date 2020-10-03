@@ -2,7 +2,7 @@
 #define __ANALYTICALNETWORK_HH__
 
 #include <memory>
-#include "../../astra-sim/system/AstraNetworkAPI.hh"
+#include "src/astra-sim/system/AstraNetworkAPI.hh"
 #include "../event-queue/EventQueue.hh"
 #include "../event-queue/SendRecvTrackingMap.hh"
 #include "../topology/Topology.hh"

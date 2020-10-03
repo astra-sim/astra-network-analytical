@@ -11,8 +11,8 @@
 #include "topology/Switch.hh"
 #include "topology/Torus2D.hh"
 #include "api/AnalyticalNetwork.hh"
-#include "../astra-sim/system/Sys.hh"
-#include "../astra-sim/system/SimpleMemory.hh"
+#include "src/astra-sim/system/Sys.hh"
+#include "src/astra-sim/system/SimpleMemory.hh"
 
 
 namespace po = boost::program_options;

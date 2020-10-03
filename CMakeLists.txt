@@ -1,24 +1,8 @@
-# CMake Requirement
-cmake_minimum_required(VERSION 3.15)
+# Setup project
+project (AnalyticalAstra)
 
-# C++ requirement: C++14 is required
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-
-# Project setup
-project(AnalyticalBackend)
-
-# Directories for packages
-link_directories(${PROJECT_SOURCE_DIR}/lib)  # libAstraSim
+# Package requirement
 find_package(Boost 1.40 REQUIRED COMPONENTS program_options)
-
-# Minimum compiler version requirements
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3)
-        message(FATAL_ERROR "g++ (GNU) version should be greater than 5.3, but found ${CMAKE_CXX_COMPILER_VERSION}")
-    endif()
-endif()
 
 # Include src files to compile
 file(GLOB_RECURSE srcs
@@ -27,14 +11,16 @@ file(GLOB_RECURSE srcs
         )
 
 # Compile sources
-add_executable(AnalyticalBackend ${srcs})
+add_executable(AnalyticalAstra ${srcs})
 
 # Link libraries
-target_link_libraries(AnalyticalBackend LINK_PUBLIC AstraSim)
-target_link_libraries(AnalyticalBackend LINK_PRIVATE Boost::program_options)
+target_link_libraries(AnalyticalAstra LINK_PUBLIC AstraSim)
+target_link_libraries(AnalyticalAstra LINK_PRIVATE Boost::program_options)
 
-# Save resulting binary in the bin/ directory.
-set_target_properties(AnalyticalBackend
+# Resulting binary location settings
+set_target_properties(AnalyticalAstra
         PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "../bin"
+        RUNTIME_OUTPUT_DIRECTORY "bin/"
+        LIBRARY_OUTPUT_DIRECTORY "lib/"
+        ARCHIVE_OUTPUT_DIRECTORY "lib/"
         )
