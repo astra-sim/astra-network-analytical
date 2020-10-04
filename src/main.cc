@@ -32,11 +32,12 @@ int main(int argc, char* argv[]) {
     cmd_parser.add_command_line_option<std::string>("system-configuration", "System configuration file");
     cmd_parser.add_command_line_option<std::string>("workload-configuration", "Workload configuration file");
     cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
-    cmd_parser.add_command_line_option<int>("host-count", "Number of hosts");
-//    cmd_parser.add_command_line_option<std::vector<double>>("bandwidth", "Link bandwidth in GB/s (B/ns)");
-//    cmd_parser.add_command_line_option<std::vector<double>>("link-latency", "Link latency in ns");
-//    cmd_parser.add_command_line_option<std::vector<double>>("nic-latency", "NIC latency in ns");
-//    cmd_parser.add_command_line_option<std::vector<double>>("router-latency", "Switch latency in ns");
+    cmd_parser.add_command_line_option<int>("dims-count", "Number of dimension");
+    cmd_parser.add_command_line_multitoken_option<std::vector<int>>("nodes-per-dim", "Number of nodes per each dimension");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("bandwidth", "Link bandwidth in GB/s (B/ns)");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("link-latency", "Link latency in ns");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("nic-latency", "NIC latency in ns");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("router-latency", "Switch latency in ns");
     cmd_parser.add_command_line_option<int>("num-passes", "Number of passes to run");
     cmd_parser.add_command_line_option<int>("num-queues-per-dim", "Number of queues per each dimension");
     cmd_parser.add_command_line_option<float>("comm-scale", "Communication scale");
@@ -71,30 +72,35 @@ int main(int argc, char* argv[]) {
     int dims_count = json_configuration["topology-configuration"]["dims-count"];
     cmd_parser.set_if_defined("dims-count", &dims_count);
 
-    std::vector<int> nodes_per_dims;
-    for (int nodes_per_dim : json_configuration["topology-configuration"]["nodes-per-dims"]) {
-        nodes_per_dims.emplace_back(nodes_per_dim);
+    std::vector<int> nodes_per_dim;
+    for (int node_per_dim : json_configuration["topology-configuration"]["nodes-per-dim"]) {
+        nodes_per_dim.emplace_back(node_per_dim);
     }
+    cmd_parser.set_if_defined("nodes-per-dim", &nodes_per_dim);
 
     std::vector<double> bandwidths;
     for (double bandwidth : json_configuration["topology-configuration"]["bandwidth"]) {
         bandwidths.emplace_back(bandwidth);
     }
+    cmd_parser.set_if_defined("bandwidth", &bandwidths);
 
     std::vector<double> link_latencies;
     for (double link_latency: json_configuration["topology-configuration"]["link-latency"]) {
         link_latencies.emplace_back(link_latency);
     }
+    cmd_parser.set_if_defined("link-latency", &link_latencies);
 
     std::vector<double> nic_latencies;
     for (double nic_latency: json_configuration["topology-configuration"]["nic-latency"]) {
         nic_latencies.emplace_back(nic_latency);
     }
+    cmd_parser.set_if_defined("nic-latency", &nic_latencies);
 
     std::vector<double> router_latencies;
     for (double router_latency: json_configuration["topology-configuration"]["router-latency"]) {
         router_latencies.emplace_back(router_latency);
     }
+    cmd_parser.set_if_defined("router-latency", &router_latencies);
 
     int num_passes = json_configuration["run-configuration"]["num-passes"];
     cmd_parser.set_if_defined("num-passes", &num_passes);
@@ -135,8 +141,8 @@ int main(int argc, char* argv[]) {
 
     // Network and System layer initialization
     auto hosts_count = 1;
-    for (auto d = 0; d < dims_count; d++) {
-        hosts_count *= nodes_per_dims[d];
+    for (auto node_per_dim : nodes_per_dim) {
+        hosts_count *= node_per_dim;
     }
 
     std::unique_ptr<AnalyticalBackend::AnalyticalNetwork> analytical_networks[hosts_count];
@@ -187,7 +193,7 @@ int main(int argc, char* argv[]) {
 
         topology = std::make_shared<AnalyticalBackend::Ring_AllToAll_Switch>(
                 topology_configurations,  // topology configuration
-                nodes_per_dims  // number of connected nodes
+                nodes_per_dim  // number of connected nodes
         );
     } else if (topology_name == "switch") {
         assert(dims_count == 1 && "[Main] Switch Dimension doesn't match");
@@ -229,7 +235,7 @@ int main(int argc, char* argv[]) {
 
         topology = std::make_shared<AnalyticalBackend::Switch>(
                 topology_configuration,  // topology configuration
-                hosts_count  // number of connected nodes
+                nodes_per_dim[0]  // number of connected nodes
         );
     } else if (topology_name == "torus") {
         assert(dims_count == 1 && "[Main] Torus Dimension doesn't match");
@@ -273,7 +279,7 @@ int main(int argc, char* argv[]) {
 
         topology = std::make_shared<AnalyticalBackend::Torus2D>(
                 topology_configuration,  // topology configurarion
-                hosts_count  // number of hosts connected
+                nodes_per_dim[0]  // number of hosts connected
         );
     } else {
         std::cout << "Topology not implemented!" << std::endl;

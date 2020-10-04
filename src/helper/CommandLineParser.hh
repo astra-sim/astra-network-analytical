@@ -53,7 +53,7 @@ namespace AnalyticalBackend {
          * @param explanation
          */
         template<typename T>
-        void add_command_line_muiltitoken_option(const char* name, const char* explanation) noexcept {
+        void add_command_line_multitoken_option(const char* name, const char* explanation) noexcept {
             options_description.add_options()(name, po::value<T>()->multitoken(), explanation);
         }
 
