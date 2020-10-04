@@ -33,10 +33,10 @@ int main(int argc, char* argv[]) {
     cmd_parser.add_command_line_option<std::string>("workload-configuration", "Workload configuration file");
     cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
     cmd_parser.add_command_line_option<int>("host-count", "Number of hosts");
-//    cmd_parser.add_command_line_option<double>("bandwidth", "Link bandwidth in GB/s (B/ns)");
-//    cmd_parser.add_command_line_option<double>("link-latency", "Link latency in ns");
-//    cmd_parser.add_command_line_option<double>("nic-latency", "NIC latency in ns");
-//    cmd_parser.add_command_line_option<double>("switch-latency", "Switch latency in ns");
+//    cmd_parser.add_command_line_option<std::vector<double>>("bandwidth", "Link bandwidth in GB/s (B/ns)");
+//    cmd_parser.add_command_line_option<std::vector<double>>("link-latency", "Link latency in ns");
+//    cmd_parser.add_command_line_option<std::vector<double>>("nic-latency", "NIC latency in ns");
+//    cmd_parser.add_command_line_option<std::vector<double>>("router-latency", "Switch latency in ns");
     cmd_parser.add_command_line_option<int>("num-passes", "Number of passes to run");
     cmd_parser.add_command_line_option<int>("num-queues-per-dim", "Number of queues per each dimension");
     cmd_parser.add_command_line_option<float>("comm-scale", "Communication scale");
@@ -89,11 +89,6 @@ int main(int argc, char* argv[]) {
     std::vector<double> nic_latencies;
     for (double nic_latency: json_configuration["topology-configuration"]["nic-latency"]) {
         nic_latencies.emplace_back(nic_latency);
-    }
-
-    std::vector<bool> nics_enabled;
-    for (bool nic_enabled: json_configuration["topology-configuration"]["nic-enabled"]) {
-        nics_enabled.emplace_back(nic_enabled);
     }
 
     std::vector<double> router_latencies;
@@ -158,7 +153,6 @@ int main(int argc, char* argv[]) {
                     bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
                     link_latencies[d],  // link latency (ns)
                     nic_latencies[d],  // nic latency (ns)
-                    nics_enabled[d],  // is nic latency enabled
                     router_latencies[d],  // router latency (ns): ring doesn't use this
                     500,  // memory bandwidth (GB/s) = (B/ns)
                     10,  // memory latency (ns),
@@ -202,7 +196,6 @@ int main(int argc, char* argv[]) {
                 bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
                 link_latencies[0],  // link latency (ns)
                 nic_latencies[0],  // nic latency (ns)
-                nics_enabled[0],  // is nic latency enabled
                 router_latencies[0],  // router latency (ns): ring doesn't use this
                 500,  // memory bandwidth (GB/s) = (B/ns)
                 10,  // memory latency (ns),
@@ -245,7 +238,6 @@ int main(int argc, char* argv[]) {
                 bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
                 link_latencies[0],  // link latency (ns)
                 nic_latencies[0],  // nic latency (ns)
-                nics_enabled[0],  // is nic latency enabled
                 router_latencies[0],  // router latency (ns): ring doesn't use this
                 500,  // memory bandwidth (GB/s) = (B/ns)
                 10,  // memory latency (ns),

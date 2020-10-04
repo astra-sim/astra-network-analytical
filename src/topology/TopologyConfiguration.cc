@@ -5,7 +5,6 @@ using namespace AnalyticalBackend;
 TopologyConfiguration::TopologyConfiguration(Bandwidth link_bandwidth,
                                              Latency link_latency,
                                              Latency nic_latency,
-                                             bool nic_enabled,
                                              Latency router_latency,
                                              Bandwidth hbm_bandwidth,
                                              Latency hbm_latency,
@@ -13,7 +12,6 @@ TopologyConfiguration::TopologyConfiguration(Bandwidth link_bandwidth,
         link_bandwidth(link_bandwidth),
         link_latency(link_latency),
         nic_latency(nic_latency),
-        nic_enabled(nic_enabled),
         router_latency(router_latency),
         hbm_bandwidth(hbm_bandwidth),
         hbm_latency(hbm_latency),
@@ -29,10 +27,6 @@ TopologyConfiguration::Latency TopologyConfiguration::getLinkLatency() const noe
 
 TopologyConfiguration::Latency TopologyConfiguration::getNIC_Latency() const noexcept {
     return nic_latency;
-}
-
-bool TopologyConfiguration::getNIC_Enabled() const noexcept {
-    return nic_enabled;
 }
 
 TopologyConfiguration::Latency TopologyConfiguration::getRouterLatency() const noexcept {

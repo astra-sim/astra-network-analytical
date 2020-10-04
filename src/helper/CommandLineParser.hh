@@ -46,6 +46,18 @@ namespace AnalyticalBackend {
         }
 
         /**
+         * Add a new command line multitoken argument option.
+         * (Should be called before `parse` method is called)
+         * @tparam T type of argument (e.g., --test=3 -> T is int)
+         * @param name name of the command line argument (e.g., --test=3 -> name is "test")
+         * @param explanation
+         */
+        template<typename T>
+        void add_command_line_muiltitoken_option(const char* name, const char* explanation) noexcept {
+            options_description.add_options()(name, po::value<T>()->multitoken(), explanation);
+        }
+
+        /**
          * Search whether the user set arg_name through the command line.
          * If the user set it, set target_var as the given value.
          * e.g., if arg_name="test" and user put --test=3, then *target_var=3 is invoked.

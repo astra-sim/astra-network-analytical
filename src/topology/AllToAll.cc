@@ -14,14 +14,12 @@ Topology::Latency AllToAll::simulateSend(NodeID src, NodeID dest, PayloadSize pa
     // compute communication latency
     auto comm_latency = hops_count * configuration.getLinkLatency();  // Link delay
     comm_latency += payload_size / configuration.getBandwidth();  // Serialization delay
-    if (configuration.getNIC_Enabled()) {
-        comm_latency += 2 * configuration.getNIC_Latency();  // NIC delay when nic is enabled
-    }
+    comm_latency += configuration.getRouterLatency();  // Switch delay
+    comm_latency += 2 * configuration.getNIC_Latency();  // NIC delay
 
     // compute hbm delay
     auto hbm_latency = configuration.getHBM_Latency();  // HBM delay
     hbm_latency += payload_size / configuration.getHBM_Bandwidth();  // HBM serialization delay
-    comm_latency += configuration.getRouterLatency();  // Switch delay
     hbm_latency *= configuration.getHBM_Scale();  // Scale HBM by scaling factor
 
     auto latency = std::max((int)comm_latency, (int)hbm_latency);
