@@ -34,10 +34,13 @@ int main(int argc, char* argv[]) {
     cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
     cmd_parser.add_command_line_option<int>("dims-count", "Number of dimension");
     cmd_parser.add_command_line_multitoken_option<std::vector<int>>("nodes-per-dim", "Number of nodes per each dimension");
-    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("bandwidth", "Link bandwidth in GB/s (B/ns)");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("link-bandwidth", "Link bandwidth in GB/s (B/ns)");
     cmd_parser.add_command_line_multitoken_option<std::vector<double>>("link-latency", "Link latency in ns");
     cmd_parser.add_command_line_multitoken_option<std::vector<double>>("nic-latency", "NIC latency in ns");
     cmd_parser.add_command_line_multitoken_option<std::vector<double>>("router-latency", "Switch latency in ns");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-bandwidth", "HBM bandwidth in GB/s (B/ns)");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-latency", "HBM latency in ns");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-scale", "HBM scale");
     cmd_parser.add_command_line_option<int>("num-passes", "Number of passes to run");
     cmd_parser.add_command_line_option<int>("num-queues-per-dim", "Number of queues per each dimension");
     cmd_parser.add_command_line_option<float>("comm-scale", "Communication scale");
@@ -78,11 +81,11 @@ int main(int argc, char* argv[]) {
     }
     cmd_parser.set_if_defined("nodes-per-dim", &nodes_per_dim);
 
-    std::vector<double> bandwidths;
-    for (double bandwidth : json_configuration["topology-configuration"]["bandwidth"]) {
-        bandwidths.emplace_back(bandwidth);
+    std::vector<double> link_bandwidths;
+    for (double link_bandwidth : json_configuration["topology-configuration"]["link-bandwidth"]) {
+        link_bandwidths.emplace_back(link_bandwidth);
     }
-    cmd_parser.set_if_defined("bandwidth", &bandwidths);
+    cmd_parser.set_if_defined("link-bandwidth", &link_bandwidths);
 
     std::vector<double> link_latencies;
     for (double link_latency: json_configuration["topology-configuration"]["link-latency"]) {
@@ -101,6 +104,24 @@ int main(int argc, char* argv[]) {
         router_latencies.emplace_back(router_latency);
     }
     cmd_parser.set_if_defined("router-latency", &router_latencies);
+
+    std::vector<double> hbm_bandwidths;
+    for (double hbm_bandwidth: json_configuration["topology-configuration"]["hbm-bandwidth"]) {
+        hbm_bandwidths.emplace_back(hbm_bandwidth);
+    }
+    cmd_parser.set_if_defined("hbm-bandwidth", &hbm_bandwidths);
+
+    std::vector<double> hbm_latencies;
+    for (double hbm_latency: json_configuration["topology-configuration"]["hbm-latency"]) {
+        hbm_latencies.emplace_back(hbm_latency);
+    }
+    cmd_parser.set_if_defined("hbm-latency", &hbm_latencies);
+
+    std::vector<double> hbm_scales;
+    for (double hbm_scale: json_configuration["topology-configuration"]["hbm-scale"]) {
+        hbm_scales.emplace_back(hbm_scale);
+    }
+    cmd_parser.set_if_defined("hbm-scale", &hbm_scales);
 
     int num_passes = json_configuration["run-configuration"]["num-passes"];
     cmd_parser.set_if_defined("num-passes", &num_passes);
@@ -153,19 +174,22 @@ int main(int argc, char* argv[]) {
     if (topology_name == "Ring_AllToAll_Switch") {
         assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
 
+        std::cout << "here" << std::endl;
         std::vector<AnalyticalBackend::TopologyConfiguration> topology_configurations;
         for (int d = 0; d < dims_count; d++) {
+            std::cout << d << std::endl;
             topology_configurations.emplace_back(
-                    bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
+                    link_bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
                     link_latencies[d],  // link latency (ns)
                     nic_latencies[d],  // nic latency (ns)
                     router_latencies[d],  // router latency (ns): ring doesn't use this
-                    500,  // memory bandwidth (GB/s) = (B/ns)
-                    10,  // memory latency (ns),
-                    1.5  // memory scaling factor
+                    hbm_bandwidths[d],  // memory bandwidth (GB/s) = (B/ns)
+                    hbm_latencies[d],  // memory latency (ns),
+                    hbm_scales[d]  // memory scaling factor
             );
         }
 
+        std::cout << "here2" << std::endl;
         for (int i = 0; i < hosts_count; i++) {
             analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
 
@@ -199,13 +223,13 @@ int main(int argc, char* argv[]) {
         assert(dims_count == 1 && "[Main] Switch Dimension doesn't match");
 
         auto topology_configuration = AnalyticalBackend::TopologyConfiguration(
-                bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
+                link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
                 link_latencies[0],  // link latency (ns)
                 nic_latencies[0],  // nic latency (ns)
                 router_latencies[0],  // router latency (ns): ring doesn't use this
-                500,  // memory bandwidth (GB/s) = (B/ns)
-                10,  // memory latency (ns),
-                1.5  // memory scaling factor
+                hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
+                hbm_latencies[0],  // memory latency (ns),
+                hbm_scales[0]  // memory scaling factor
         );
 
         for (int i = 0; i < hosts_count; i++) {
@@ -241,13 +265,13 @@ int main(int argc, char* argv[]) {
         assert(dims_count == 1 && "[Main] Torus Dimension doesn't match");
 
         auto topology_configuration = AnalyticalBackend::TopologyConfiguration(
-                bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
+                link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
                 link_latencies[0],  // link latency (ns)
                 nic_latencies[0],  // nic latency (ns)
                 router_latencies[0],  // router latency (ns): ring doesn't use this
-                500,  // memory bandwidth (GB/s) = (B/ns)
-                10,  // memory latency (ns),
-                1.5  // memory scaling factor
+                hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
+                hbm_latencies[0],  // memory latency (ns),
+                hbm_scales[0]  // memory scaling factor
         );
 
         auto torus_width = (int)std::sqrt(hosts_count);
