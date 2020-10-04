@@ -1,12 +1,3 @@
-# build result
-bin/AnalyticalBackend
-build/
-lib/
-
-# results
-results/*
-!results/README.md
-
 # macOS
 .DS_Store
 
