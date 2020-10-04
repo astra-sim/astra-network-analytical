@@ -5,26 +5,48 @@
 namespace AnalyticalBackend {
     struct TopologyConfiguration {
     public:
+        /**
+         * Bandwidth in GB/s = B/ns
+         */
         using Bandwidth = double;
-        using LinkLatency = double;
-        using NIC_Latency = double;
-        using RouterLatency = double;
 
-        TopologyConfiguration(Bandwidth bandwidth,
-                              LinkLatency link_latency,
-                              NIC_Latency nic_latency,
-                              RouterLatency router_latency) noexcept;
+        /**
+         * Latency in ns
+         */
+        using Latency = double;
+
+        /**
+         * Scaling factor
+         */
+        using Scale = double;
+
+        TopologyConfiguration(Bandwidth link_bandwidth,
+                              Latency link_latency,
+                              Latency nic_latency,
+                              bool nic_enabled,
+                              Latency router_latency,
+                              Bandwidth hbm_bandwidth,
+                              Latency hbm_latency,
+                              Scale hbm_scale) noexcept;
 
         Bandwidth getBandwidth() const noexcept;
-        LinkLatency getLinkLatency() const noexcept;
-        NIC_Latency getNIC_Latency() const noexcept;
-        RouterLatency getRouterLatency() const noexcept;
+        Latency getLinkLatency() const noexcept;
+        Latency getNIC_Latency() const noexcept;
+        bool getNIC_Enabled() const noexcept;
+        Latency getRouterLatency() const noexcept;
+        Bandwidth getHBM_Bandwidth() const noexcept;
+        Latency getHBM_Latency() const noexcept;
+        Scale getHBM_Scale() const noexcept;
 
     private:
-        Bandwidth bandwidth;
-        LinkLatency link_latency;
-        NIC_Latency nic_latency;
-        RouterLatency router_latency;
+        Bandwidth link_bandwidth;
+        Latency link_latency;
+        Latency nic_latency;
+        bool nic_enabled;
+        Latency router_latency;
+        Bandwidth hbm_bandwidth;
+        Latency hbm_latency;
+        Scale hbm_scale;
     };
 }
 
