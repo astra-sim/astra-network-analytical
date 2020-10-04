@@ -174,10 +174,8 @@ int main(int argc, char* argv[]) {
     if (topology_name == "Ring_AllToAll_Switch") {
         assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
 
-        std::cout << "here" << std::endl;
         std::vector<AnalyticalBackend::TopologyConfiguration> topology_configurations;
         for (int d = 0; d < dims_count; d++) {
-            std::cout << d << std::endl;
             topology_configurations.emplace_back(
                     link_bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
                     link_latencies[d],  // link latency (ns)
@@ -189,7 +187,6 @@ int main(int argc, char* argv[]) {
             );
         }
 
-        std::cout << "here2" << std::endl;
         for (int i = 0; i < hosts_count; i++) {
             analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
 
@@ -202,7 +199,7 @@ int main(int argc, char* argv[]) {
                     memories[i].get(),  // AstraMemoryAPI
                     i,  // id
                     num_passes,  // num_passes
-                    1, 1, hosts_count, 1, 1,  // dimensions
+                    nodes_per_dim[0], nodes_per_dim[2], nodes_per_dim[1], 1, 1,  // dimensions
                     num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
                     "../../../../../inputs/system/" + system_configuration,  // system configuration
                     "../../../../../inputs/workload/" + workload_configuration,  // workload configuration

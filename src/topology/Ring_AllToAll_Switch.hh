@@ -15,6 +15,10 @@ namespace AnalyticalBackend {
     private:
         std::vector<TopologyConfiguration> configurations;
         std::vector<int> nodes_per_dims;
+
+        int tiles_per_gpu;
+        int half_tiles_per_gpu;
+        int tiles_per_node;
     };
 }
 
