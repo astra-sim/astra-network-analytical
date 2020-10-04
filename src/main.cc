@@ -132,6 +132,7 @@ int main(int argc, char* argv[]) {
             bandwidth,  // link bandwidth (GB/s) = (B/ns)
             link_latency,  // link latency (ns)
             nic_latency,  // nic latency (ns)
+            true,  // is nic latency enabled
             switch_latency,  // router latency (ns): ring doesn't use this
             500,  // memory bandwidth (GB/s) = (B/ns)
             10,  // memory latency (ns),
@@ -165,8 +166,8 @@ int main(int argc, char* argv[]) {
         }
 
         topology = std::make_shared<AnalyticalBackend::Switch>(
-                hosts_count,  // number of connected nodes
-                topology_configuration  // topology configuration
+                topology_configuration,  // topology configuration
+                hosts_count  // number of connected nodes
         );
     } else if (topology_name == "torus") {
         auto torus_width = (int)std::sqrt(hosts_count);
@@ -197,8 +198,8 @@ int main(int argc, char* argv[]) {
         }
 
         topology = std::make_shared<AnalyticalBackend::Torus2D>(
-                hosts_count,  // number of hosts connected
-                topology_configuration  // topology configurarion
+                topology_configuration,  // topology configurarion
+                hosts_count  // number of hosts connected
         );
     } else {
         std::cout << "Topology not implemented!" << std::endl;
