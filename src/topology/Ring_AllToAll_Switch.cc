@@ -1,3 +1,5 @@
+#include <cassert>
+#include <cmath>
 #include "Ring_AllToAll_Switch.hh"
 
 using namespace AnalyticalBackend;
