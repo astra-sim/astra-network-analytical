@@ -21,6 +21,7 @@ Topology::Latency AllToAll::simulateSend(NodeID src, NodeID dest, PayloadSize pa
     // compute hbm delay
     auto hbm_latency = configuration.getHBM_Latency();  // HBM delay
     hbm_latency += payload_size / configuration.getHBM_Bandwidth();  // HBM serialization delay
+    comm_latency += configuration.getRouterLatency();  // Switch delay
     hbm_latency *= configuration.getHBM_Scale();  // Scale HBM by scaling factor
 
     auto latency = std::max((int)comm_latency, (int)hbm_latency);
