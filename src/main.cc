@@ -2,6 +2,7 @@
 #include <fstream>
 #include <memory>
 #include <cmath>
+#include <cassert>
 #include "helper/CommandLineParser.hh"
 #include "helper/json.hpp"
 #include "event-queue/EventQueueEntry.hh"
@@ -10,6 +11,7 @@
 #include "topology/TopologyConfiguration.hh"
 #include "topology/Switch.hh"
 #include "topology/Torus2D.hh"
+#include "topology/Ring_AllToAll_Switch.hh"
 #include "api/AnalyticalNetwork.hh"
 #include "src/astra-sim/system/Sys.hh"
 #include "src/astra-sim/system/SimpleMemory.hh"
@@ -31,11 +33,10 @@ int main(int argc, char* argv[]) {
     cmd_parser.add_command_line_option<std::string>("workload-configuration", "Workload configuration file");
     cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
     cmd_parser.add_command_line_option<int>("host-count", "Number of hosts");
-    cmd_parser.add_command_line_option<double>("bandwidth", "Link bandwidth in GB/s (B/ns)");
-    cmd_parser.add_command_line_option<double>("link-latency", "Link latency in ns");
-    cmd_parser.add_command_line_option<double>("nic-latency", "NIC latency in ns");
-    cmd_parser.add_command_line_option<double>("switch-latency", "Switch latency in ns");
-    cmd_parser.add_command_line_option<bool>("print-topology-log", "Print topology log to std::out");
+//    cmd_parser.add_command_line_option<double>("bandwidth", "Link bandwidth in GB/s (B/ns)");
+//    cmd_parser.add_command_line_option<double>("link-latency", "Link latency in ns");
+//    cmd_parser.add_command_line_option<double>("nic-latency", "NIC latency in ns");
+//    cmd_parser.add_command_line_option<double>("switch-latency", "Switch latency in ns");
     cmd_parser.add_command_line_option<int>("num-passes", "Number of passes to run");
     cmd_parser.add_command_line_option<int>("num-queues-per-dim", "Number of queues per each dimension");
     cmd_parser.add_command_line_option<float>("comm-scale", "Communication scale");
@@ -67,23 +68,38 @@ int main(int argc, char* argv[]) {
     std::string topology_name = json_configuration["topology-configuration"]["topology-name"];
     cmd_parser.set_if_defined("topology-name", &topology_name);
 
-    int hosts_count = json_configuration["topology-configuration"]["host-count"];
-    cmd_parser.set_if_defined("host-count", &hosts_count);
+    int dims_count = json_configuration["topology-configuration"]["dims-count"];
+    cmd_parser.set_if_defined("dims-count", &dims_count);
 
-    double bandwidth = json_configuration["topology-configuration"]["bandwidth"];
-    cmd_parser.set_if_defined("bandwidth", &bandwidth);
+    std::vector<int> nodes_per_dims;
+    for (int nodes_per_dim : json_configuration["topology-configuration"]["nodes-per-dims"]) {
+        nodes_per_dims.emplace_back(nodes_per_dim);
+    }
 
-    double link_latency = json_configuration["topology-configuration"]["link-latency"];
-    cmd_parser.set_if_defined("link-latency", &link_latency);
+    std::vector<double> bandwidths;
+    for (double bandwidth : json_configuration["topology-configuration"]["bandwidth"]) {
+        bandwidths.emplace_back(bandwidth);
+    }
 
-    double nic_latency = json_configuration["topology-configuration"]["nic-latency"];
-    cmd_parser.set_if_defined("nic-latency", &nic_latency);
+    std::vector<double> link_latencies;
+    for (double link_latency: json_configuration["topology-configuration"]["link-latency"]) {
+        link_latencies.emplace_back(link_latency);
+    }
 
-    double switch_latency = json_configuration["topology-configuration"]["switch-latency"];
-    cmd_parser.set_if_defined("switch-latency", &switch_latency);
+    std::vector<double> nic_latencies;
+    for (double nic_latency: json_configuration["topology-configuration"]["nic-latency"]) {
+        nic_latencies.emplace_back(nic_latency);
+    }
 
-    bool print_topology_log = json_configuration["topology-configuration"]["print-topology-log"];
-    cmd_parser.set_if_defined("print-topology-log", &print_topology_log);
+    std::vector<bool> nics_enabled;
+    for (bool nic_enabled: json_configuration["topology-configuration"]["nic-enabled"]) {
+        nics_enabled.emplace_back(nic_enabled);
+    }
+
+    std::vector<double> router_latencies;
+    for (double router_latency: json_configuration["topology-configuration"]["router-latency"]) {
+        router_latencies.emplace_back(router_latency);
+    }
 
     int num_passes = json_configuration["run-configuration"]["num-passes"];
     cmd_parser.set_if_defined("num-passes", &num_passes);
@@ -123,23 +139,76 @@ int main(int argc, char* argv[]) {
     std::shared_ptr<AnalyticalBackend::Topology> topology;
 
     // Network and System layer initialization
+    auto hosts_count = 1;
+    for (auto d = 0; d < dims_count; d++) {
+        hosts_count *= nodes_per_dims[d];
+    }
+
     std::unique_ptr<AnalyticalBackend::AnalyticalNetwork> analytical_networks[hosts_count];
     std::unique_ptr<AstraSim::Sys> systems[hosts_count];
     std::unique_ptr<AstraSim::SimpleMemory> memories[hosts_count];
 
     // create topology configuration
-    auto topology_configuration = AnalyticalBackend::TopologyConfiguration(
-            bandwidth,  // link bandwidth (GB/s) = (B/ns)
-            link_latency,  // link latency (ns)
-            nic_latency,  // nic latency (ns)
-            true,  // is nic latency enabled
-            switch_latency,  // router latency (ns): ring doesn't use this
-            500,  // memory bandwidth (GB/s) = (B/ns)
-            10,  // memory latency (ns),
-            1.5  // memory scaling factor
-    );
+    if (topology_name == "Ring_AllToAll_Switch") {
+        assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
 
-    if (topology_name == "switch") {
+        std::vector<AnalyticalBackend::TopologyConfiguration> topology_configurations;
+        for (int d = 0; d < dims_count; d++) {
+            topology_configurations.emplace_back(
+                    bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
+                    link_latencies[d],  // link latency (ns)
+                    nic_latencies[d],  // nic latency (ns)
+                    nics_enabled[d],  // is nic latency enabled
+                    router_latencies[d],  // router latency (ns): ring doesn't use this
+                    500,  // memory bandwidth (GB/s) = (B/ns)
+                    10,  // memory latency (ns),
+                    1.5  // memory scaling factor
+            );
+        }
+
+        for (int i = 0; i < hosts_count; i++) {
+            analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
+
+            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+                    500, 270, 12.5);
+
+            systems[i] = std::make_unique<AstraSim::Sys>(
+                    analytical_networks[i].get(),  // AstraNetworkAPI
+                    memories[i].get(),  // AstraMemoryAPI
+                    i,  // id
+                    num_passes,  // num_passes
+                    1, 1, hosts_count, 1, 1,  // dimensions
+                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+                    "../../../../../inputs/system/" + system_configuration,  // system configuration
+                    "../../../../../inputs/workload/" + workload_configuration,  // workload configuration
+                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
+                    "../../../result/" + path,  // stat file path
+                    run_name,  // run name
+                    true,    // separate_log
+                    rendezvous_protocol  // randezvous protocol
+            );
+        }
+
+        topology = std::make_shared<AnalyticalBackend::Ring_AllToAll_Switch>(
+                topology_configurations,  // topology configuration
+                nodes_per_dims  // number of connected nodes
+        );
+    } else if (topology_name == "switch") {
+        assert(dims_count == 1 && "[Main] Switch Dimension doesn't match");
+
+        auto topology_configuration = AnalyticalBackend::TopologyConfiguration(
+                bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
+                link_latencies[0],  // link latency (ns)
+                nic_latencies[0],  // nic latency (ns)
+                nics_enabled[0],  // is nic latency enabled
+                router_latencies[0],  // router latency (ns): ring doesn't use this
+                500,  // memory bandwidth (GB/s) = (B/ns)
+                10,  // memory latency (ns),
+                1.5  // memory scaling factor
+        );
+
         for (int i = 0; i < hosts_count; i++) {
             analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
 
@@ -170,6 +239,19 @@ int main(int argc, char* argv[]) {
                 hosts_count  // number of connected nodes
         );
     } else if (topology_name == "torus") {
+        assert(dims_count == 1 && "[Main] Torus Dimension doesn't match");
+
+        auto topology_configuration = AnalyticalBackend::TopologyConfiguration(
+                bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
+                link_latencies[0],  // link latency (ns)
+                nic_latencies[0],  // nic latency (ns)
+                nics_enabled[0],  // is nic latency enabled
+                router_latencies[0],  // router latency (ns): ring doesn't use this
+                500,  // memory bandwidth (GB/s) = (B/ns)
+                10,  // memory latency (ns),
+                1.5  // memory scaling factor
+        );
+
         auto torus_width = (int)std::sqrt(hosts_count);
 
         for (int i = 0; i < hosts_count; i++) {
@@ -228,3 +310,40 @@ int main(int argc, char* argv[]) {
     // terminate program
     return 0;
 }
+
+//#include "topology/TopologyConfiguration.hh"
+//#include "topology/Ring_AllToAll_Switch.hh"
+//#include <vector>
+//#include <iostream>
+//
+//using namespace AnalyticalBackend;
+//int main() {
+//    auto cs = std::vector<TopologyConfiguration>();
+//    cs.emplace_back(1, 1, 0, false, 0, 1, 0, 0);
+//    cs.emplace_back(1, 10, 0, false, 0, 1, 0, 0);
+//    cs.emplace_back(1, 100, 10, true, 0, 1, 0, 0);
+//    auto ds = std::vector<int>();
+//    ds.emplace_back(2);
+//    ds.emplace_back(8);
+//    ds.emplace_back(2);
+//    auto t = Ring_AllToAll_Switch(cs, ds);
+//
+//    for (int i = 1; i < 32; i += 2) {
+//        auto j = i - 1;
+//        auto l = t.simulateSend(i, j, 0);
+//        std::cout << i << "->" << j << ": " << l << std::endl;
+//    }
+//
+//    for (int i = 5; i < 32; i+= 2) {
+//        auto j = i - 4;
+//        auto l = t.simulateSend(i, j, 0);
+//        std::cout << i << "->" << j << ": " << l << std::endl;
+//    }
+//
+//    for (int i = 16; i < 32; i++) {
+//        auto j = i - 16;
+//        auto l = t.simulateSend(i, j, 0);
+//        std::cout << i << "->" << j << ": " << l << std::endl;
+//    }
+//    return 0;
+//}
