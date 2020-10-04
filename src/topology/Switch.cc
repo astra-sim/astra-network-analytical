@@ -14,6 +14,7 @@ Topology::Latency Switch::simulateSend(NodeID src, NodeID dest, PayloadSize payl
     // compute communication latency
     auto comm_latency = hops_count * configuration.getLinkLatency();  // Link delay
     comm_latency += payload_size / configuration.getBandwidth();  // Serialization delay
+    comm_latency += configuration.getRouterLatency();  // Switch delay
     if (configuration.getNIC_Enabled()) {
         comm_latency += 2 * configuration.getNIC_Latency();  // NIC delay when nic is enabled
     }
