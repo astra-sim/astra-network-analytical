@@ -36,7 +36,7 @@ Topology::Latency Ring::simulateSend(NodeID src, NodeID dest, PayloadSize payloa
         hops_count = clockwise_distance;
     }
 
-    assert(hops_count >= 0 && "[RING] Routing error: hops count cannot be negative");
+    assert(hops_count >= 0 && "[Ring] Routing error: hops count cannot be negative");
 
 
     // compute communication latency
@@ -52,7 +52,7 @@ Topology::Latency Ring::simulateSend(NodeID src, NodeID dest, PayloadSize payloa
     hbm_latency *= configuration.getHBM_Scale();  // Scale HBM by scaling factor
 
     auto latency = std::max((int)comm_latency, (int)hbm_latency);
-    assert(latency >= 0 && "[RING] Latency error: latency cannot be negative");
+    assert(latency >= 0 && "[Ring] Latency error: latency cannot be negative");
 
     return latency;
 }

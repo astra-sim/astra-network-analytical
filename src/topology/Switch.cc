@@ -24,7 +24,7 @@ Topology::Latency Switch::simulateSend(NodeID src, NodeID dest, PayloadSize payl
     hbm_latency *= configuration.getHBM_Scale();  // Scale HBM by scaling factor
 
     auto latency = std::max((int)comm_latency, (int)hbm_latency);
-    assert(latency >= 0 && "[RING] Latency error: latency cannot be negative");
+    assert(latency >= 0 && "[Switch] Latency error: latency cannot be negative");
 
     return latency;
 }
