@@ -14,7 +14,7 @@
 #include "topology/Ring_AllToAll_Switch.hh"
 #include "api/AnalyticalNetwork.hh"
 #include "astra-sim/system/Sys.hh"
-#include "astra-sim/system/SimpleMemory.hh"
+#include "astra-sim/system/memory/SimpleMemory.hh"
 
 
 namespace po = boost::program_options;
