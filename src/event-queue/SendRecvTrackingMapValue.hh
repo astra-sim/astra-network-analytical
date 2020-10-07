@@ -3,7 +3,7 @@
 
 #include "Event.hh"
 #include "EventQueueEntry.hh"
-#include "src/astra-sim/system/AstraNetworkAPI.hh"
+#include "astra-sim/system/AstraNetworkAPI.hh"
 
 namespace AnalyticalBackend {
     class SendRecvTrackingMapValue {
