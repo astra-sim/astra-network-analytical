@@ -167,7 +167,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::unique_ptr<AnalyticalBackend::AnalyticalNetwork> analytical_networks[hosts_count];
-    AstraSim::Sys systems[hosts_count];
+    AstraSim::Sys *systems[hosts_count];
     std::unique_ptr<AstraSim::SimpleMemory> memories[hosts_count];
 
     // create topology configuration
