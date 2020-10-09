@@ -20,17 +20,15 @@
 namespace po = boost::program_options;
 
 int main(int argc, char* argv[]) {
-    // parse configuration.json file
-    auto json_file = std::ifstream("../../../Configuration.json", std::ifstream::in);
-    nlohmann::json json_configuration;
-    json_file >> json_configuration;
-    json_file.close();
+
+
 
     // parse command line arguments -- to update configurations if given through command line
     auto cmd_parser = AnalyticalBackend::CommandLineParser();
 
     cmd_parser.add_command_line_option<std::string>("system-configuration", "System configuration file");
     cmd_parser.add_command_line_option<std::string>("workload-configuration", "Workload configuration file");
+    cmd_parser.add_command_line_option<std::string>("network-configuration", "Network configuration file");
     cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
     cmd_parser.add_command_line_option<int>("dims-count", "Number of dimension");
     cmd_parser.add_command_line_multitoken_option<std::vector<int>>("nodes-per-dim", "Number of nodes per each dimension");
@@ -61,12 +59,21 @@ int main(int argc, char* argv[]) {
 
     cmd_parser.print_help_message_if_required();
 
+    std::string network_configuration="../../../Configuration.json";
+    cmd_parser.set_if_defined("network-configuration", &network_configuration);
+
+    // parse configuration.json file
+    auto json_file = std::ifstream(network_configuration, std::ifstream::in);
+    nlohmann::json json_configuration;
+    json_file >> json_configuration;
+    json_file.close();
+
 
     // configuration variables
-    std::string system_configuration = json_configuration["system-configuration"];
+    std::string system_configuration = "";
     cmd_parser.set_if_defined("system-configuration", &system_configuration);
 
-    std::string workload_configuration = json_configuration["workload-configuration"];
+    std::string workload_configuration = "";
     cmd_parser.set_if_defined("workload-configuration", &workload_configuration);
 
     std::string topology_name = json_configuration["topology-configuration"]["topology-name"];
@@ -138,16 +145,16 @@ int main(int argc, char* argv[]) {
     float injection_scale = json_configuration["run-configuration"]["injection-scale"];
     cmd_parser.set_if_defined("injection-scale", &injection_scale);
 
-    std::string path = json_configuration["stat-configuration"]["path"];
+    std::string path = "./";
     cmd_parser.set_if_defined("path", &path);
 
-    std::string run_name = json_configuration["stat-configuration"]["run-name"];
+    std::string run_name = "unnamed run";
     cmd_parser.set_if_defined("run-name", &run_name);
 
-    int total_stat_rows = json_configuration["stat-configuration"]["total-stat-rows"];
+    int total_stat_rows = 1;
     cmd_parser.set_if_defined("total-stat-rows", &total_stat_rows);
 
-    int stat_row = json_configuration["stat-configuration"]["stat-row"];
+    int stat_row = 0;
     cmd_parser.set_if_defined("stat-row", &stat_row);
 
     bool rendezvous_protocol = json_configuration["rendezvous-protocol"];
@@ -201,11 +208,11 @@ int main(int argc, char* argv[]) {
                     num_passes,  // num_passes
                     nodes_per_dim[0], nodes_per_dim[2], nodes_per_dim[1], 1, 1,  // dimensions
                     num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    "../../../../../inputs/system/" + system_configuration,  // system configuration
-                    "../../../../../inputs/workload/" + workload_configuration,  // workload configuration
+                    system_configuration,  // system configuration
+                    workload_configuration,  // workload configuration
                     comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
                     total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    "../../../result/" + path,  // stat file path
+                    path,  // stat file path
                     run_name,  // run name
                     true,    // separate_log
                     rendezvous_protocol  // randezvous protocol
@@ -243,11 +250,11 @@ int main(int argc, char* argv[]) {
                     num_passes,  // num_passes
                     1, 1, hosts_count, 1, 1,  // dimensions
                     num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    "../../../../../inputs/system/" + system_configuration,  // system configuration
-                    "../../../../../inputs/workload/" + workload_configuration,  // workload configuration
+                    system_configuration,  // system configuration
+                    workload_configuration,  // workload configuration
                     comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
                     total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    "../../../result/" + path,  // stat file path
+                    path,  // stat file path
                     run_name,  // run name
                     true,    // separate_log
                     rendezvous_protocol  // randezvous protocol
@@ -287,11 +294,11 @@ int main(int argc, char* argv[]) {
                     num_passes,  // num_passes
                     1, torus_width, torus_width, 1, 1,  // dimensions
                     num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    "../../../../../inputs/system/" + system_configuration,  // system configuration
-                    "../../../../../inputs/workload/" + workload_configuration,  // workload configuration
+                    system_configuration,  // system configuration
+                    workload_configuration,  // workload configuration
                     comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
                     total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    "../../../result/" + path,  // stat file path
+                    path,  // stat file path
                     run_name,  // run name
                     true,    // separate_log
                     rendezvous_protocol  // randezvous protocol
