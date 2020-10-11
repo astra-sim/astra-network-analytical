@@ -19,26 +19,17 @@
 
 namespace po = boost::program_options;
 
+
 int main(int argc, char* argv[]) {
-
-
-
-    // parse command line arguments -- to update configurations if given through command line
+    /**
+     * Configuration parsing
+     */
     auto cmd_parser = AnalyticalBackend::CommandLineParser();
 
+    // Define command line arguments here
+    // 1. Network-agnostic configs
     cmd_parser.add_command_line_option<std::string>("system-configuration", "System configuration file");
     cmd_parser.add_command_line_option<std::string>("workload-configuration", "Workload configuration file");
-    cmd_parser.add_command_line_option<std::string>("network-configuration", "Network configuration file");
-    cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
-    cmd_parser.add_command_line_option<int>("dims-count", "Number of dimension");
-    cmd_parser.add_command_line_multitoken_option<std::vector<int>>("nodes-per-dim", "Number of nodes per each dimension");
-    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("link-bandwidth", "Link bandwidth in GB/s (B/ns)");
-    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("link-latency", "Link latency in ns");
-    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("nic-latency", "NIC latency in ns");
-    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("router-latency", "Switch latency in ns");
-    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-bandwidth", "HBM bandwidth in GB/s (B/ns)");
-    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-latency", "HBM latency in ns");
-    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-scale", "HBM scale");
     cmd_parser.add_command_line_option<int>("num-passes", "Number of passes to run");
     cmd_parser.add_command_line_option<int>("num-queues-per-dim", "Number of queues per each dimension");
     cmd_parser.add_command_line_option<float>("comm-scale", "Communication scale");
@@ -50,6 +41,21 @@ int main(int argc, char* argv[]) {
     cmd_parser.add_command_line_option<int>("stat-row", "Index of current run (index starts with 0)");
     cmd_parser.add_command_line_option<bool>("rendezvous-protocol", "Whether to enable rendezvous protocol");
 
+    // 2. Network configs
+    cmd_parser.add_command_line_option<std::string>("network-configuration", "Network configuration file");
+    cmd_parser.add_command_line_option<std::string>("topology-name", "Topology name");
+    cmd_parser.add_command_line_option<int>("dims-count", "Number of dimension");
+    cmd_parser.add_command_line_multitoken_option<std::vector<int>>("nodes-per-dim", "Number of nodes per each dimension");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("link-bandwidth", "Link bandwidth in GB/s (B/ns)");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("link-latency", "Link latency in ns");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("nic-latency", "NIC latency in ns");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("router-latency", "Switch latency in ns");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-bandwidth", "HBM bandwidth in GB/s (B/ns)");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-latency", "HBM latency in ns");
+    cmd_parser.add_command_line_multitoken_option<std::vector<double>>("hbm-scale", "HBM scale");
+
+
+    // Parse command line arguments
     try {
         cmd_parser.parse(argc, argv);
     } catch (const AnalyticalBackend::CommandLineParser::ParsingError& e) {
@@ -59,125 +65,136 @@ int main(int argc, char* argv[]) {
 
     cmd_parser.print_help_message_if_required();
 
-    std::string network_configuration="../../../Configuration.json";
-    cmd_parser.set_if_defined("network-configuration", &network_configuration);
 
-    // parse configuration.json file
-    auto json_file = std::ifstream(network_configuration, std::ifstream::in);
-    nlohmann::json json_configuration;
-    json_file >> json_configuration;
-    json_file.close();
-
-
-    // configuration variables
-    std::string system_configuration = "";
+    // 1. Retrieve network-agnostic configs
+    std::string system_configuration = "system path not defined";
     cmd_parser.set_if_defined("system-configuration", &system_configuration);
 
-    std::string workload_configuration = "";
+    std::string workload_configuration = "workload path not defined";
     cmd_parser.set_if_defined("workload-configuration", &workload_configuration);
 
-    std::string topology_name = json_configuration["topology-configuration"]["topology-name"];
-    cmd_parser.set_if_defined("topology-name", &topology_name);
-
-    int dims_count = json_configuration["topology-configuration"]["dims-count"];
-    cmd_parser.set_if_defined("dims-count", &dims_count);
-
-    std::vector<int> nodes_per_dim;
-    for (int node_per_dim : json_configuration["topology-configuration"]["nodes-per-dim"]) {
-        nodes_per_dim.emplace_back(node_per_dim);
-    }
-    cmd_parser.set_if_defined("nodes-per-dim", &nodes_per_dim);
-
-    std::vector<double> link_bandwidths;
-    for (double link_bandwidth : json_configuration["topology-configuration"]["link-bandwidth"]) {
-        link_bandwidths.emplace_back(link_bandwidth);
-    }
-    cmd_parser.set_if_defined("link-bandwidth", &link_bandwidths);
-
-    std::vector<double> link_latencies;
-    for (double link_latency: json_configuration["topology-configuration"]["link-latency"]) {
-        link_latencies.emplace_back(link_latency);
-    }
-    cmd_parser.set_if_defined("link-latency", &link_latencies);
-
-    std::vector<double> nic_latencies;
-    for (double nic_latency: json_configuration["topology-configuration"]["nic-latency"]) {
-        nic_latencies.emplace_back(nic_latency);
-    }
-    cmd_parser.set_if_defined("nic-latency", &nic_latencies);
-
-    std::vector<double> router_latencies;
-    for (double router_latency: json_configuration["topology-configuration"]["router-latency"]) {
-        router_latencies.emplace_back(router_latency);
-    }
-    cmd_parser.set_if_defined("router-latency", &router_latencies);
-
-    std::vector<double> hbm_bandwidths;
-    for (double hbm_bandwidth: json_configuration["topology-configuration"]["hbm-bandwidth"]) {
-        hbm_bandwidths.emplace_back(hbm_bandwidth);
-    }
-    cmd_parser.set_if_defined("hbm-bandwidth", &hbm_bandwidths);
-
-    std::vector<double> hbm_latencies;
-    for (double hbm_latency: json_configuration["topology-configuration"]["hbm-latency"]) {
-        hbm_latencies.emplace_back(hbm_latency);
-    }
-    cmd_parser.set_if_defined("hbm-latency", &hbm_latencies);
-
-    std::vector<double> hbm_scales;
-    for (double hbm_scale: json_configuration["topology-configuration"]["hbm-scale"]) {
-        hbm_scales.emplace_back(hbm_scale);
-    }
-    cmd_parser.set_if_defined("hbm-scale", &hbm_scales);
-
-    int num_passes = json_configuration["run-configuration"]["num-passes"];
+    int num_passes = -1;
     cmd_parser.set_if_defined("num-passes", &num_passes);
 
-    int num_queues_per_dim = json_configuration["run-configuration"]["num-queues-per-dim"];
+    int num_queues_per_dim = -1;
     cmd_parser.set_if_defined("num-queues-per-dim", &num_queues_per_dim);
 
-    float comm_scale = json_configuration["run-configuration"]["comm-scale"];
+    float comm_scale = -1;
     cmd_parser.set_if_defined("comm-scale", &comm_scale);
 
-    float compute_scale = json_configuration["run-configuration"]["compute-scale"];
+    float compute_scale = -1;
     cmd_parser.set_if_defined("compute-scale", &compute_scale);
 
-    float injection_scale = json_configuration["run-configuration"]["injection-scale"];
+    float injection_scale = -1;
     cmd_parser.set_if_defined("injection-scale", &injection_scale);
 
-    std::string path = "./";
+    std::string path = "path not defined";
     cmd_parser.set_if_defined("path", &path);
 
     std::string run_name = "unnamed run";
     cmd_parser.set_if_defined("run-name", &run_name);
 
-    int total_stat_rows = 1;
+    int total_stat_rows = -1;
     cmd_parser.set_if_defined("total-stat-rows", &total_stat_rows);
 
-    int stat_row = 0;
+    int stat_row = -1;
     cmd_parser.set_if_defined("stat-row", &stat_row);
 
-    bool rendezvous_protocol = json_configuration["rendezvous-protocol"];
+    bool rendezvous_protocol = false;
     cmd_parser.set_if_defined("rendezvous-protocol", &rendezvous_protocol);
 
 
+    // 2. Retrieve network configs
+    std::string network_configuration="../../../configuration.json";  // default configuration.json
+    cmd_parser.set_if_defined("network-configuration", &network_configuration);
+
+    // parse configuration.json file
+    auto json_file = std::ifstream(network_configuration, std::ifstream::in);
+    if (!json_file) {
+        std::cout << "[Analytical] Failed to open network configuration file at: " << network_configuration << std::endl;
+        exit(-1);
+    }
+    
+    nlohmann::json json_configuration;
+    json_file >> json_configuration;
+    json_file.close();
+    
+    std::string topology_name = json_configuration["topology-name"];
+    cmd_parser.set_if_defined("topology-name", &topology_name);
+
+    int dims_count = json_configuration["dims-count"];
+    cmd_parser.set_if_defined("dims-count", &dims_count);
+
+    std::vector<int> nodes_per_dim;
+    for (int node_per_dim : json_configuration["nodes-per-dim"]) {
+        nodes_per_dim.emplace_back(node_per_dim);
+    }
+    cmd_parser.set_if_defined("nodes-per-dim", &nodes_per_dim);
+
+    std::vector<double> link_bandwidths;
+    for (double link_bandwidth : json_configuration["link-bandwidth"]) {
+        link_bandwidths.emplace_back(link_bandwidth);
+    }
+    cmd_parser.set_if_defined("link-bandwidth", &link_bandwidths);
+
+    std::vector<double> link_latencies;
+    for (double link_latency: json_configuration["link-latency"]) {
+        link_latencies.emplace_back(link_latency);
+    }
+    cmd_parser.set_if_defined("link-latency", &link_latencies);
+
+    std::vector<double> nic_latencies;
+    for (double nic_latency: json_configuration["nic-latency"]) {
+        nic_latencies.emplace_back(nic_latency);
+    }
+    cmd_parser.set_if_defined("nic-latency", &nic_latencies);
+
+    std::vector<double> router_latencies;
+    for (double router_latency: json_configuration["router-latency"]) {
+        router_latencies.emplace_back(router_latency);
+    }
+    cmd_parser.set_if_defined("router-latency", &router_latencies);
+
+    std::vector<double> hbm_bandwidths;
+    for (double hbm_bandwidth: json_configuration["hbm-bandwidth"]) {
+        hbm_bandwidths.emplace_back(hbm_bandwidth);
+    }
+    cmd_parser.set_if_defined("hbm-bandwidth", &hbm_bandwidths);
+
+    std::vector<double> hbm_latencies;
+    for (double hbm_latency: json_configuration["hbm-latency"]) {
+        hbm_latencies.emplace_back(hbm_latency);
+    }
+    cmd_parser.set_if_defined("hbm-latency", &hbm_latencies);
+
+    std::vector<double> hbm_scales;
+    for (double hbm_scale: json_configuration["hbm-scale"]) {
+        hbm_scales.emplace_back(hbm_scale);
+    }
+    cmd_parser.set_if_defined("hbm-scale", &hbm_scales);
+
+
+    /**
+     * Instantitiation: Event Queue, System, Memory, Topology, etc.
+     */
     // event queue instantiation
     auto event_queue = std::make_shared<AnalyticalBackend::EventQueue>();
+
+    // compute total number of npus by multiplying counts of each dimension 
+    auto npus_count = 1;
+    for (auto node_per_dim : nodes_per_dim) {
+        npus_count *= node_per_dim;
+    }
+
+    // Network and System layer initialization
+    std::unique_ptr<AnalyticalBackend::AnalyticalNetwork> analytical_networks[npus_count];
+    AstraSim::Sys *systems[npus_count];
+    std::unique_ptr<AstraSim::SimpleMemory> memories[npus_count];
 
     // pointer to topology
     std::shared_ptr<AnalyticalBackend::Topology> topology;
 
-    // Network and System layer initialization
-    auto hosts_count = 1;
-    for (auto node_per_dim : nodes_per_dim) {
-        hosts_count *= node_per_dim;
-    }
-
-    std::unique_ptr<AnalyticalBackend::AnalyticalNetwork> analytical_networks[hosts_count];
-    AstraSim::Sys *systems[hosts_count];
-    std::unique_ptr<AstraSim::SimpleMemory> memories[hosts_count];
-
-    // create topology configuration
+    // create topology and instantiate systems and memories
     if (topology_name == "Ring_AllToAll_Switch") {
         assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
 
@@ -194,7 +211,7 @@ int main(int argc, char* argv[]) {
             );
         }
 
-        for (int i = 0; i < hosts_count; i++) {
+        for (int i = 0; i < npus_count; i++) {
             analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
 
             memories[i] = std::make_unique<AstraSim::SimpleMemory>(
@@ -236,7 +253,7 @@ int main(int argc, char* argv[]) {
                 hbm_scales[0]  // memory scaling factor
         );
 
-        for (int i = 0; i < hosts_count; i++) {
+        for (int i = 0; i < npus_count; i++) {
             analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
 
             memories[i] = std::make_unique<AstraSim::SimpleMemory>(
@@ -248,7 +265,7 @@ int main(int argc, char* argv[]) {
                     memories[i].get(),  // AstraMemoryAPI
                     i,  // id
                     num_passes,  // num_passes
-                    1, 1, hosts_count, 1, 1,  // dimensions
+                    1, 1, npus_count, 1, 1,  // dimensions
                     num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
                     system_configuration,  // system configuration
                     workload_configuration,  // workload configuration
@@ -278,9 +295,9 @@ int main(int argc, char* argv[]) {
                 hbm_scales[0]  // memory scaling factor
         );
 
-        auto torus_width = (int)std::sqrt(hosts_count);
+        auto torus_width = (int)std::sqrt(npus_count);
 
-        for (int i = 0; i < hosts_count; i++) {
+        for (int i = 0; i < npus_count; i++) {
             analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
 
             memories[i] = std::make_unique<AstraSim::SimpleMemory>(
@@ -318,8 +335,12 @@ int main(int argc, char* argv[]) {
     AnalyticalBackend::AnalyticalNetwork::set_event_queue(event_queue);
     AnalyticalBackend::AnalyticalNetwork::set_topology(topology);
 
+
+    /**
+     * Run Analytical Model
+     */
     // Initialize event queue
-    for (int i = 0; i < hosts_count; i++) {
+    for (int i = 0; i < npus_count; i++) {
         systems[i]->workload->fire();
     }
 
@@ -328,48 +349,14 @@ int main(int argc, char* argv[]) {
         event_queue->proceed();
     }
 
-//    // After run, print topology stats
-//    if (print_topology_log) {
-//        topology->print();
-//    }
+
+    /**
+     * Cleanup
+     */
+    // Free memory
+    // System class automatically deletes itself, so no need to free systems[i] here.
+    // Invoking `free systems[i]` here will trigger segfault (by trying to delete already deleted memory space)
 
     // terminate program
     return 0;
 }
-
-//#include "topology/TopologyConfiguration.hh"
-//#include "topology/Ring_AllToAll_Switch.hh"
-//#include <vector>
-//#include <iostream>
-//
-//using namespace AnalyticalBackend;
-//int main() {
-//    auto cs = std::vector<TopologyConfiguration>();
-//    cs.emplace_back(1, 1, 0, false, 0, 1, 0, 0);
-//    cs.emplace_back(1, 10, 0, false, 0, 1, 0, 0);
-//    cs.emplace_back(1, 100, 10, true, 0, 1, 0, 0);
-//    auto ds = std::vector<int>();
-//    ds.emplace_back(2);
-//    ds.emplace_back(8);
-//    ds.emplace_back(2);
-//    auto t = Ring_AllToAll_Switch(cs, ds);
-//
-//    for (int i = 1; i < 32; i += 2) {
-//        auto j = i - 1;
-//        auto l = t.simulateSend(i, j, 0);
-//        std::cout << i << "->" << j << ": " << l << std::endl;
-//    }
-//
-//    for (int i = 5; i < 32; i+= 2) {
-//        auto j = i - 4;
-//        auto l = t.simulateSend(i, j, 0);
-//        std::cout << i << "->" << j << ": " << l << std::endl;
-//    }
-//
-//    for (int i = 16; i < 32; i++) {
-//        auto j = i - 16;
-//        auto l = t.simulateSend(i, j, 0);
-//        std::cout << i << "->" << j << ": " << l << std::endl;
-//    }
-//    return 0;
-//}
