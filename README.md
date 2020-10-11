@@ -19,69 +19,60 @@ SOFTWARE.
 Author : William Won (william.won@gatech.edu)
 -->
 
-# analytical_astra
+# Analytical
 
-## Dependencies
-### macOS
-Please install these dependencies.
-```bash
-brew install cmake coreutils boost
-```
-### Linux (Ubuntu)
-```bash
-sudo apt install cmake libboost-all-dev
-```
+## What is this repository for?
+This repository serves the role of Analytical Backend for [Astra-sim](https://github.com/astra-sim/astra-sim).
 
-## How to run
-### 1. Compile Source
-Please use the given script `./AnalyticalBackend.sh` to compile sources.
-```bash
-./AnalyticalBackend.sh -c  # compiles the AnalyticalBackend
-```
+## How to use this repository?
+This repository should be cloned and used with the [Astra-sim](https://github.com/astra-sim/astra-sim).
+Please refer to [this page](https://github.com/astra-sim/astra-sim/tree/astra_dev_workloads/build/analytical) on how to compile and run this codebase.
 
-### 2. Configure Environment
-Please change the configuration file named `Configuration.json`. You don't have to re-compile the source after changing the configuration.
-```cpp
+## Network configuration
+Below are the configurations the Analytical Backend supports.
+- You may write a `.json` file that contains these configurations and pass it to the Astra-sim when you initiate a new run, by `--network-configuration="/path/to/json/file.json"`
+- Otherwise, you can pass all the configurations separately via the command-line.
+- If you pass both `.json` file and command-line arguments, configurations set in `.json` get overridden by command-line settings.
+
+## Available configurations
+- `topology-name`: Name of topology you want to instantiate.
+- `dims-count`: The number of dimensions of that topology.
+- `nodes-per-dim`: The number of packages per each dimension. Total NPUs will be multiplication of these numbers.
+- `link-bandwidth`: List of link's bandwidth (in GB/s) per each dimension.
+- `link-latency`: List of link's latency (in ns) per each dimension.
+- `nic-latency`: List of link's NIC latency (in ns) per each dimension. If the dimension is scale-up and there's no NIC, set it to 0.
+- `router-latency`: List of router/switch latency (in ns) per each dimension. If that dimension doesn't use router/switch, set it to 0.
+- `hbm-bandwidth`: List of High-Bandwidth Memory (HBM)'s bandwidth (in GB/s) per each dimension.
+- `hbm-latency`: List of HBM's latency (in ns) per each dimension.
+- `hbm-scale`: List of HBM latency scalar. This is required because one collective communication may instantiate multiple read/write operations.
+
+## Sample configuration `.json` file
+```json
 {
-  "system_configuration": "sys_inputs/sample_a2a_sys",
-  "workload_configuration": "workload_inputs/DLRM_HybridParallel",
-  "topology_configuration": {
-    "name": "switch",  // [lowercase] currently "switch" and "torus" are supported
-    "hosts_count": 16,  // [int] number of nodes connected
-    "bandwidth": 25,  // [int, (GB/s)=(B/ns)] link bandwidth
-    "link_latency": 500,  // [int, ns] link latency
-    "nic_latency": 10,  // [int, ns] nic latency
-    "switch_latency": 10,  // [int, ns] switch latency (only applies to "switch" topology)
-    "print_log": true  // enable topology stats printing
-  },
-  "run_configuration": {
-    "num_passes": 2,
-    "num_queues_per_dim": 2
-  },
-  "stat_configuration": {
-    "path": "../results/",
-    "run_name": "DLRM_HybridParallel_test",
-    "total_stat_rows": 1,
-    "stat_row": 0
-  },
-  "rendezvous_protocol": false  // rendezvous protocol setup
+  "topology-name": "Torus2D_AllToAll",
+  "dims-count": 2,
+  "nodes-per-dim": [9, 4],
+  "link-bandwidth": [25, 50],
+  "link-latency": [500, 1000],
+  "nic-latency": [0, 100],
+  "router-latency": [0, 0],
+  "hbm-bandwidth": [2000, 2000],
+  "hbm-latency": [10, 10],
+  "hbm-scale": [1.5, 1.5]
 }
 ```
 
-### 3. Run
-After compilation and configuration, run the source by the given `./AnalyticalBackend.sh` script.
+## Sample command-line argument
 ```bash
-./AnalyticalBackend -r
-```
-
-You can also run the binary with command-line arguments.
-```bash
-./AnalyticalBackend -r --comm-scale=3 --compute-scale=5 --injection-scale=7  # default value for each option is 1
-```
-
-## Cleanup
-The script `./AnalyticalBackend.sh` also supports cleanup feature to remove build files, compiled binary, and/or generated stat files.
-```bash
-./AnalyticalBackend.sh -l  # cleans temporary build files and the compiled binary
-./AnalyticalBackend.sh -lr  # cleans all the build files and generated results 
+--topology-name="Torus2D_AllToAll" \
+--dims-count=2 \
+--nodes-per-dim="9 4" \
+--link-bandwidth="25 50" \
+--link-latency="500 1000" \
+--nic-latency="0 100" \
+--router-latency="0 0" \
+--router-latency="0 0" \
+--hbm-bandwidth="2000 2000" \
+--hbm-latency="10 10" \
+--hbm-scale="1.5 1.5"
 ```
