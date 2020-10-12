@@ -26,7 +26,7 @@ Author : William Won (william.won@gatech.edu)
 #include <array>
 #include <cassert>
 #include "helper/CommandLineParser.hh"
-#include "helper/json.hpp"
+#include "helper/json.hh"
 #include "event-queue/EventQueueEntry.hh"
 #include "event-queue/EventQueue.hh"
 #include "topology/Topology.hh"
@@ -324,54 +324,3 @@ int main(int argc, char* argv[]) {
     // terminate program
     return 0;
 }
-
-
-
-// create topology and instantiate systems and memories
-//    if (topology_name == "Ring_AllToAll_Switch") {
-//        assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
-//
-//        std::vector<Analytical::TopologyConfiguration> topology_configurations;
-//        for (int d = 0; d < dims_count; d++) {
-//            topology_configurations.emplace_back(
-//                    link_bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
-//                    link_latencies[d],  // link latency (ns)
-//                    nic_latencies[d],  // nic latency (ns)
-//                    router_latencies[d],  // router latency (ns): ring doesn't use this
-//                    hbm_bandwidths[d],  // memory bandwidth (GB/s) = (B/ns)
-//                    hbm_latencies[d],  // memory latency (ns),
-//                    hbm_scales[d]  // memory scaling factor
-//            );
-//        }
-//
-//        for (int i = 0; i < npus_count; i++) {
-//            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
-//
-//            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
-//                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
-//                    500, 270, 12.5);
-//
-//            systems[i] = new AstraSim::Sys(
-//                    analytical_networks[i].get(),  // AstraNetworkAPI
-//                    memories[i].get(),  // AstraMemoryAPI
-//                    i,  // id
-//                    num_passes,  // num_passes
-//                    nodes_per_dim[0], nodes_per_dim[2], nodes_per_dim[1], 1, 1,  // dimensions
-//                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-//                    system_configuration,  // system configuration
-//                    workload_configuration,  // workload configuration
-//                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
-//                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
-//                    path,  // stat file path
-//                    run_name,  // run name
-//                    true,    // separate_log
-//                    rendezvous_protocol  // randezvous protocol
-//            );
-//        }
-//
-//        topology = std::make_shared<Analytical::Ring_AllToAll_Switch>(
-//                topology_configurations,  // topology configuration
-//                nodes_per_dim  // number of connected nodes
-//        );
-
-
