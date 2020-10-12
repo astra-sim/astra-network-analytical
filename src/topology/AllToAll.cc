@@ -39,11 +39,13 @@ Topology::Latency AllToAll::send(NpuId src_id, NpuId dest_id, PayloadSize payloa
     // 1. Source nic latency
     // 2. route packet from src to dest
     // 3. Dest nic latency
-    auto latency = nicLatency(0);
-    latency += route(src_id, dest_id, payload_size);
-    latency += nicLatency(0);
+    auto link_latency = nicLatency(0);
+    link_latency += route(src_id, dest_id, payload_size);
+    link_latency += nicLatency(0);
 
-    return latency;
+    auto hbm_latency = hbmLatency(payload_size, 0);
+
+    return criticalLatency(link_latency, hbm_latency);
 }
 
 Topology::NpuAddress AllToAll::npuIdToAddress(NpuId id) const noexcept {

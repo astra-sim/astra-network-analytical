@@ -50,3 +50,27 @@ Topology::Latency Topology::nicLatency(int dimension) const noexcept {
     assert((dimension < configurations.size()) && "[Topology, method nicLatency] dimension out of bound");
     return configurations[dimension].getNicLatency();
 }
+
+Topology::Latency Topology::hbmLatency(PayloadSize payload_size, int dimension) const noexcept {
+    assert((dimension < configurations.size()) && "[Topology, method hbmLatency] dimension out of bound");
+    auto configuration = configurations[dimension];
+
+    auto hbm_latency = configuration.getHbmLatency();
+    auto hbm_bandwidth = configuration.getHbmBandwidth();
+    auto hbm_scalar = configuration.getHbmScalar();
+
+    auto latency = hbm_latency + (payload_size / hbm_bandwidth);
+    return hbm_scalar * latency;
+}
+
+Topology::Latency Topology::criticalLatency(Latency link_latency, Latency hbm_latency) noexcept {
+    if (link_latency >= hbm_latency) {
+        // communication bound
+        communication_bounds_count++;
+        return link_latency;
+    }
+
+    // hbm bound
+    hbm_bounds_count++;
+    return hbm_latency;
+}

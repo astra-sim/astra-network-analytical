@@ -71,6 +71,8 @@ namespace Analytical {
         // members
         std::vector<TopologyConfiguration> configurations;  // topology configuration for each dimension
         std::map<NpuId, std::map<NpuId, Link>> links;  // links[src][dest] returns a link connecting two links
+        int communication_bounds_count = 0;  // the number of occasions link_latency was larger
+        int hbm_bounds_count = 0;  // the number of occasions hbm_latency was larger
 
 
         // helper functions that are already implemented
@@ -105,6 +107,22 @@ namespace Analytical {
          * @return nic latency
          */
         Latency nicLatency(int dimension) const noexcept;
+
+        /**
+         * Simulate HBM latency.
+         * @param payload_size
+         * @param dimension dimension of the hbm
+         * @return hbm latency
+         */
+        Latency hbmLatency(PayloadSize payload_size, int dimension) const noexcept;
+
+        /**
+         * Return the largest latency among overlapped operations.
+         * @param link_latency
+         * @param hbm_latency
+         * @return larger latency
+         */
+        Latency criticalLatency(Latency link_latency, Latency hbm_latency) noexcept;
     };
 }
 

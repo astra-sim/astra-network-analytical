@@ -228,7 +228,10 @@ int main(int argc, char* argv[]) {
                 link_latencies[i],  // link latency (ns)
                 link_bandwidths[i],  // link bandwidth (GB/s) = (B/ns)
                 nic_latencies[i],  // nic latency (ns)
-                router_latencies[i]  // router latency (ns)
+                router_latencies[i],  // router latency (ns)
+                hbm_latencies[i],  // memory latency (ns),
+                hbm_bandwidths[i],  // memory bandwidth (GB/s) = (B/ns)
+                hbm_scales[i]  // memory scaling factor
         );
     }
 
@@ -445,7 +448,3 @@ int main(int argc, char* argv[]) {
 //    }
 
 
-//            ,  // router latency (ns): ring doesn't use this
-//            hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
-//            hbm_latencies[0],  // memory latency (ns),
-//            hbm_scales[0]  // memory scaling factor

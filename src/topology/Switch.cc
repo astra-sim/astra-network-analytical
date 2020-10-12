@@ -45,14 +45,15 @@ Topology::Latency Switch::send(NpuId src_id, NpuId dest_id, PayloadSize payload_
     //      3. add switch delay
     //      4. move from switch to dest
     //      5. pass destination nic
+    auto link_latency = nicLatency(0);
+    link_latency += route(src_id, switch_id, payload_size);
+    link_latency += routerLatency(0);
+    link_latency += route(switch_id, dest_id, payload_size);
+    link_latency += nicLatency(0);
 
-    auto latency = nicLatency(0);
-    latency += route(src_id, switch_id, payload_size);
-    latency += routerLatency(0);
-    latency += route(switch_id, dest_id, payload_size);
-    latency += nicLatency(0);
+    auto hbm_latency = hbmLatency(payload_size, 0);
 
-    return latency;
+    return criticalLatency(link_latency, hbm_latency);
 }
 
 Topology::NpuAddress Switch::npuIdToAddress(NpuId id) const noexcept {
