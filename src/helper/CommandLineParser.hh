@@ -27,7 +27,7 @@ Author : William Won (william.won@gatech.edu)
 
 namespace po = boost::program_options;
 
-namespace AnalyticalBackend {
+namespace Analytical {
     class CommandLineParser {
     public:
         using ParsingError = po::error;

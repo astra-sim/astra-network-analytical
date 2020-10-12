@@ -25,7 +25,7 @@ Author : William Won (william.won@gatech.edu)
 #include "Topology.hh"
 #include "TopologyConfiguration.hh"
 
-namespace AnalyticalBackend {
+namespace Analytical {
     class AllToAll : public Topology {
     public:
         AllToAll(TopologyConfiguration configuration, int nodes_count) noexcept;

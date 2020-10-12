@@ -25,7 +25,7 @@ Author : William Won (william.won@gatech.edu)
 #include "Topology.hh"
 #include "TopologyConfiguration.hh"
 
-namespace AnalyticalBackend {
+namespace Analytical {
     class Ring : public Topology {
     public:
         Ring(TopologyConfiguration configuration, int nodes_count, bool is_bidirectional = true) noexcept;

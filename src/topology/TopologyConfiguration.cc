@@ -21,7 +21,7 @@ Author : William Won (william.won@gatech.edu)
 
 #include "TopologyConfiguration.hh"
 
-using namespace AnalyticalBackend;
+using namespace Analytical;
 
 TopologyConfiguration::TopologyConfiguration(Bandwidth link_bandwidth,
                                              Latency link_latency,

@@ -26,7 +26,7 @@ Author : William Won (william.won@gatech.edu)
 #include "Topology.hh"
 #include "TopologyConfiguration.hh"
 
-namespace AnalyticalBackend {
+namespace Analytical {
     class Ring_AllToAll_Switch : public Topology {
     public:
         Ring_AllToAll_Switch(std::vector<TopologyConfiguration> configurations, std::vector<int> nodes_per_dims) noexcept;

@@ -24,7 +24,7 @@ Author : William Won (william.won@gatech.edu)
 #include <cmath>
 #include "Torus2D.hh"
 
-using namespace AnalyticalBackend;
+using namespace Analytical;
 
 Torus2D::Torus2D(TopologyConfiguration configuration, int nodes_count) noexcept :
         configuration(configuration),

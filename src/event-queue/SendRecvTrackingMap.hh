@@ -27,7 +27,7 @@ Author : William Won (william.won@gatech.edu)
 #include "SendRecvTrackingMapValue.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 
-namespace AnalyticalBackend {
+namespace Analytical {
     class SendRecvTrackingMap {
     public:
         /**

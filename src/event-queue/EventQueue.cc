@@ -21,7 +21,7 @@ Author : William Won (william.won@gatech.edu)
 
 #include "EventQueue.hh"
 
-void AnalyticalBackend::EventQueue::add_event(AstraSim::timespec_t time_stamp, void (*fun_ptr)(void *), void *fun_arg) noexcept {
+void Analytical::EventQueue::add_event(AstraSim::timespec_t time_stamp, void (*fun_ptr)(void *), void *fun_arg) noexcept {
     // Event Queue is ordered by time_stamp in ascending order.
     // 1. Search Event queue:
     //      (1) if time_stamp is smaller, search next entry
@@ -56,11 +56,11 @@ void AnalyticalBackend::EventQueue::add_event(AstraSim::timespec_t time_stamp, v
     event_queue.back().add_event(fun_ptr, fun_arg);
 }
 
-AstraSim::timespec_t AnalyticalBackend::EventQueue::get_current_time() const noexcept {
+AstraSim::timespec_t Analytical::EventQueue::get_current_time() const noexcept {
     return current_time;
 }
 
-void AnalyticalBackend::EventQueue::proceed() noexcept {
+void Analytical::EventQueue::proceed() noexcept {
     auto& event_queue_entry = event_queue.front();
 
     // proceed current time
@@ -73,11 +73,11 @@ void AnalyticalBackend::EventQueue::proceed() noexcept {
     event_queue.pop_front();
 }
 
-bool AnalyticalBackend::EventQueue::empty() const noexcept {
+bool Analytical::EventQueue::empty() const noexcept {
     return event_queue.empty();
 }
 
-void AnalyticalBackend::EventQueue::print() const noexcept {
+void Analytical::EventQueue::print() const noexcept {
     std::cout << "===== event-queue =====" << std::endl;
     std::cout << "CurrentTime: " << current_time.time_val << std::endl << std::endl;
     for (const auto& event_queue_entry : event_queue) {

@@ -23,7 +23,7 @@ Author : William Won (william.won@gatech.edu)
 #include <algorithm>
 #include "Ring.hh"
 
-using namespace AnalyticalBackend;
+using namespace Analytical;
 
 Ring::Ring(TopologyConfiguration configuration, int nodes_count, bool is_bidirectional) noexcept :
         configuration(configuration),

@@ -26,7 +26,7 @@ Author : William Won (william.won@gatech.edu)
 #include "EventQueueEntry.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 
-namespace AnalyticalBackend {
+namespace Analytical {
     class SendRecvTrackingMapValue {
     public:
         /**

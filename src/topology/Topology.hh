@@ -23,7 +23,7 @@ Author : William Won (william.won@gatech.edu)
 #define _TOPOLOGY_HH__
 
 
-namespace AnalyticalBackend {
+namespace Analytical {
     class Topology {
     public:
         /**

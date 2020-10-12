@@ -23,7 +23,7 @@ Author : William Won (william.won@gatech.edu)
 #include <cmath>
 #include "Ring_AllToAll_Switch.hh"
 
-using namespace AnalyticalBackend;
+using namespace Analytical;
 
 Ring_AllToAll_Switch::Ring_AllToAll_Switch(std::vector<TopologyConfiguration> configurations,
                                            std::vector<int> nodes_per_dims) noexcept :

@@ -27,7 +27,7 @@ Author : William Won (william.won@gatech.edu)
 #include "Event.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 
-namespace AnalyticalBackend {
+namespace Analytical {
     struct EventQueueEntry {
     public:
         /**

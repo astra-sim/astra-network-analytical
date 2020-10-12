@@ -29,7 +29,7 @@ Author : William Won (william.won@gatech.edu)
 #include "../topology/Topology.hh"
 
 
-namespace AnalyticalBackend {
+namespace Analytical {
     class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
     public:
         /**

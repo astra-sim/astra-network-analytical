@@ -23,7 +23,7 @@ Author : William Won (william.won@gatech.edu)
 #define __TOPOLOGYCONFIGURATION_HH__
 
 
-namespace AnalyticalBackend {
+namespace Analytical {
     struct TopologyConfiguration {
     public:
         /**

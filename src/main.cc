@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     /**
      * Configuration parsing
      */
-    auto cmd_parser = AnalyticalBackend::CommandLineParser();
+    auto cmd_parser = Analytical::CommandLineParser();
 
     // Define command line arguments here
     // 1. Network-agnostic configs
@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
     // Parse command line arguments
     try {
         cmd_parser.parse(argc, argv);
-    } catch (const AnalyticalBackend::CommandLineParser::ParsingError& e) {
+    } catch (const Analytical::CommandLineParser::ParsingError& e) {
         std::cout << e.what() << std::endl;
         exit(-1);
     }
@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
      * Instantitiation: Event Queue, System, Memory, Topology, etc.
      */
     // event queue instantiation
-    auto event_queue = std::make_shared<AnalyticalBackend::EventQueue>();
+    auto event_queue = std::make_shared<Analytical::EventQueue>();
 
     // compute total number of npus by multiplying counts of each dimension 
     auto npus_count = 1;
@@ -208,18 +208,18 @@ int main(int argc, char* argv[]) {
     }
 
     // Network and System layer initialization
-    std::unique_ptr<AnalyticalBackend::AnalyticalNetwork> analytical_networks[npus_count];
+    std::unique_ptr<Analytical::AnalyticalNetwork> analytical_networks[npus_count];
     AstraSim::Sys *systems[npus_count];
     std::unique_ptr<AstraSim::SimpleMemory> memories[npus_count];
 
     // pointer to topology
-    std::shared_ptr<AnalyticalBackend::Topology> topology;
+    std::shared_ptr<Analytical::Topology> topology;
 
     // create topology and instantiate systems and memories
     if (topology_name == "Ring_AllToAll_Switch") {
         assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
 
-        std::vector<AnalyticalBackend::TopologyConfiguration> topology_configurations;
+        std::vector<Analytical::TopologyConfiguration> topology_configurations;
         for (int d = 0; d < dims_count; d++) {
             topology_configurations.emplace_back(
                     link_bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
@@ -233,7 +233,7 @@ int main(int argc, char* argv[]) {
         }
 
         for (int i = 0; i < npus_count; i++) {
-            analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
+            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
 
             memories[i] = std::make_unique<AstraSim::SimpleMemory>(
                     (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
@@ -257,14 +257,14 @@ int main(int argc, char* argv[]) {
             );
         }
 
-        topology = std::make_shared<AnalyticalBackend::Ring_AllToAll_Switch>(
+        topology = std::make_shared<Analytical::Ring_AllToAll_Switch>(
                 topology_configurations,  // topology configuration
                 nodes_per_dim  // number of connected nodes
         );
     } else if (topology_name == "switch") {
         assert(dims_count == 1 && "[Main] Switch Dimension doesn't match");
 
-        auto topology_configuration = AnalyticalBackend::TopologyConfiguration(
+        auto topology_configuration = Analytical::TopologyConfiguration(
                 link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
                 link_latencies[0],  // link latency (ns)
                 nic_latencies[0],  // nic latency (ns)
@@ -275,7 +275,7 @@ int main(int argc, char* argv[]) {
         );
 
         for (int i = 0; i < npus_count; i++) {
-            analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
+            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
 
             memories[i] = std::make_unique<AstraSim::SimpleMemory>(
                     (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
@@ -299,14 +299,14 @@ int main(int argc, char* argv[]) {
             );
         }
 
-        topology = std::make_shared<AnalyticalBackend::Switch>(
+        topology = std::make_shared<Analytical::Switch>(
                 topology_configuration,  // topology configuration
                 nodes_per_dim[0]  // number of connected nodes
         );
     } else if (topology_name == "torus") {
         assert(dims_count == 1 && "[Main] Torus Dimension doesn't match");
 
-        auto topology_configuration = AnalyticalBackend::TopologyConfiguration(
+        auto topology_configuration = Analytical::TopologyConfiguration(
                 link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
                 link_latencies[0],  // link latency (ns)
                 nic_latencies[0],  // nic latency (ns)
@@ -319,7 +319,7 @@ int main(int argc, char* argv[]) {
         auto torus_width = (int)std::sqrt(npus_count);
 
         for (int i = 0; i < npus_count; i++) {
-            analytical_networks[i] = std::make_unique<AnalyticalBackend::AnalyticalNetwork>(i);
+            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
 
             memories[i] = std::make_unique<AstraSim::SimpleMemory>(
                     (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
@@ -343,7 +343,7 @@ int main(int argc, char* argv[]) {
             );
         }
 
-        topology = std::make_shared<AnalyticalBackend::Torus2D>(
+        topology = std::make_shared<Analytical::Torus2D>(
                 topology_configuration,  // topology configurarion
                 nodes_per_dim[0]  // number of hosts connected
         );
@@ -353,8 +353,8 @@ int main(int argc, char* argv[]) {
     }
 
     // link event queue and topology
-    AnalyticalBackend::AnalyticalNetwork::set_event_queue(event_queue);
-    AnalyticalBackend::AnalyticalNetwork::set_topology(topology);
+    Analytical::AnalyticalNetwork::set_event_queue(event_queue);
+    Analytical::AnalyticalNetwork::set_topology(topology);
 
 
     /**

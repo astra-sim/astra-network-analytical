@@ -23,7 +23,7 @@ Author : William Won (william.won@gatech.edu)
 #include <algorithm>
 #include "AllToAll.hh"
 
-using namespace AnalyticalBackend;
+using namespace Analytical;
 
 AllToAll::AllToAll(TopologyConfiguration configuration, int nodes_count) noexcept :
         configuration(configuration),

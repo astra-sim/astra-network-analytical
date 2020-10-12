@@ -22,7 +22,7 @@ Author : William Won (william.won@gatech.edu)
 #ifndef __EVENT_HH__
 #define __EVENT_HH__
 
-namespace AnalyticalBackend {
+namespace Analytical {
     struct Event {
     public:
         typedef void (*FunPtr)(void *);

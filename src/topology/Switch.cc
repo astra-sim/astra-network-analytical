@@ -23,7 +23,7 @@ Author : William Won (william.won@gatech.edu)
 #include <algorithm>
 #include "Switch.hh"
 
-using namespace AnalyticalBackend;
+using namespace Analytical;
 
 Switch::Switch(TopologyConfiguration configuration, int nodes_count) noexcept :
         configuration(configuration),

@@ -21,6 +21,6 @@ Author : William Won (william.won@gatech.edu)
 
 #include "Topology.hh"
 
-using namespace AnalyticalBackend;
+using namespace Analytical;
 
 Topology::~Topology() noexcept = default;
