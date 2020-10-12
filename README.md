@@ -22,15 +22,16 @@ Author : William Won (william.won@gatech.edu)
 # Analytical
 
 ## What is this repository for?
-This repository serves the role of Analytical Backend for [Astra-sim](https://github.com/astra-sim/astra-sim).
+This repository serves the role of an analytical network backend for [ASTRA-sim]((https://github.com/astra-sim/astra-sim)).
+It models the latency and bandwidth for various network topologies.“
 
 ## How to use this repository?
-This repository should be cloned and used with the [Astra-sim](https://github.com/astra-sim/astra-sim).
+This repository should be cloned and used with the [ASTRA-sim](https://github.com/astra-sim/astra-sim).
 Please refer to [this page](https://github.com/astra-sim/astra-sim/tree/astra_dev_workloads/build/analytical) on how to compile and run this codebase.
 
 ## Network configuration
 Below are the configurations the Analytical Backend supports.
-- You may write a `.json` file that contains these configurations and pass it to the Astra-sim when you initiate a new run, by `--network-configuration="/path/to/json/file.json"`
+- You may write a `.json` file that contains these configurations and pass it to the ASTRA-sim when you initiate a new run, by `--network-configuration="/path/to/json/file.json"`
 - Otherwise, you can pass all the configurations separately via the command-line.
 - If you pass both `.json` file and command-line arguments, configurations set in `.json` get overridden by command-line settings.
 
