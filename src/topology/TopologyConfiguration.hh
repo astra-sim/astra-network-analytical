@@ -22,49 +22,28 @@ Author : William Won (william.won@gatech.edu)
 #ifndef __TOPOLOGYCONFIGURATION_HH__
 #define __TOPOLOGYCONFIGURATION_HH__
 
-
 namespace Analytical {
     struct TopologyConfiguration {
     public:
-        /**
-         * Bandwidth in GB/s = B/ns
-         */
-        using Bandwidth = double;
+        using Latency = double;  // latency in ns
+        using Bandwidth = double;  // bandwidth in GB/s (= B/ns)
+        using PayloadSize = int;  // payload size in bytes
 
-        /**
-         * Latency in ns
-         */
-        using Latency = double;
-
-        /**
-         * Scaling factor
-         */
-        using Scale = double;
-
-        TopologyConfiguration(Bandwidth link_bandwidth,
-                              Latency link_latency,
+        TopologyConfiguration(Latency link_latency,
+                              Bandwidth link_bandwidth,
                               Latency nic_latency,
-                              Latency router_latency,
-                              Bandwidth hbm_bandwidth,
-                              Latency hbm_latency,
-                              Scale hbm_scale) noexcept;
+                              Latency router_latency) noexcept;
 
-        Bandwidth getBandwidth() const noexcept;
         Latency getLinkLatency() const noexcept;
-        Latency getNIC_Latency() const noexcept;
+        Bandwidth getLinkBandwidth() const noexcept;
+        Latency getNicLatency() const noexcept;
         Latency getRouterLatency() const noexcept;
-        Bandwidth getHBM_Bandwidth() const noexcept;
-        Latency getHBM_Latency() const noexcept;
-        Scale getHBM_Scale() const noexcept;
 
     private:
-        Bandwidth link_bandwidth;
         Latency link_latency;
+        Bandwidth link_bandwidth;
         Latency nic_latency;
         Latency router_latency;
-        Bandwidth hbm_bandwidth;
-        Latency hbm_latency;
-        Scale hbm_scale;
     };
 }
 

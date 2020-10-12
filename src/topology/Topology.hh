@@ -19,41 +19,93 @@ SOFTWARE.
 Author : William Won (william.won@gatech.edu)
 *******************************************************************************/
 
-#ifndef _TOPOLOGY_HH__
-#define _TOPOLOGY_HH__
+#ifndef __TOPOLOGY_HH__
+#define __TOPOLOGY_HH__
 
+#include <vector>
+#include <map>
+#include "Link.hh"
+#include "TopologyConfiguration.hh"
 
 namespace Analytical {
     class Topology {
     public:
-        /**
-         * NodeID: each node's ID in integer (e.g., 16, 27, 31)
-         */
-        using NodeID = int;
+        using Latency = TopologyConfiguration::Latency;
+        using Bandwidth = TopologyConfiguration::Bandwidth;
+        using PayloadSize = TopologyConfiguration::PayloadSize;
+
+        using NpuId = int;  // Each NPU's ID is in 'int'
+        using NpuAddress = std::vector<int>;  // NPU's address, denoted by PackageID of each dimension
 
         /**
-         * Payload size is expressed in `Bytes` using `int`
-         */
-        using PayloadSize = int;
-
-        /**
-         * Latency uses the datatype `double`
-         */
-        using Latency = double;
-
-        virtual ~Topology() noexcept = 0;
-
-        /**
-         * Simulate network packet sending from src to dest nodes.
+         * Simulate packet transmission from src to dest.
          *
-         * @param src source NodeID of packet
-         * @param dest destination's NodeID
-         * @param payload_size payload size in Bytes
-         * @return latency of the communication from src to dest
+         * 1. This function implements routing algorithm of a topology
+         * 2. Latency is accumulated as required during the transmission.
+         * 3. Return the transmission latency after the transmission simuation is done.
+         *
+         * @param src_id
+         * @param dest_id
+         * @param payload_size
+         * @return latency of the transmission
          */
-        virtual Latency simulateSend(NodeID src, NodeID dest, PayloadSize payload_size) noexcept = 0;
+        virtual Latency send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept = 0;
+
+    protected:
+        // functions that should be implemented
+        /**
+         * Translate NPU's Id (int form) to NPU's Address (ID per each dimension form)
+         * @param id NPU's id
+         * @return NPU's address
+         */
+        virtual NpuAddress npuIdToAddress(NpuId id) const noexcept = 0;
+
+        /**
+         * Translate NPU's Address (ID per each dimension form) to NPU's Id (int form)
+         * @param address NPU's address
+         * @return NPU's id
+         */
+        virtual NpuId npuAddressToId(const NpuAddress& address) const noexcept = 0;
+
+
+        // members
+        std::vector<TopologyConfiguration> configurations;  // topology configuration for each dimension
+        std::map<NpuId, std::map<NpuId, Link>> links;  // links[src][dest] returns a link connecting two links
+
+
+        // helper functions that are already implemented
+        /**
+         * Add a link connecting from src to dest.
+         * @param src_id
+         * @param dest_id
+         * @param dimension dimension of the link
+         */
+        void connect(NpuId src_id, NpuId dest_id, int dimension) noexcept;
+
+        /**
+         * Send a packet from src to dest, and return the latency.
+         * src and dest must be connected.
+         * @param src_id
+         * @param dest_id
+         * @param payload_size
+         * @return latency of src->dest transmission
+         */
+        Latency route(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept;
+
+        /**
+         * Simulate router latency.
+         * @param dimension dimension of the router
+         * @return router latency
+         */
+        Latency routerLatency(int dimension) const noexcept;
+
+        /**
+         * Simulate nic latency.
+         * @param dimension dimension of the nic
+         * @return nic latency
+         */
+        Latency nicLatency(int dimension) const noexcept;
     };
 }
-
 
 #endif

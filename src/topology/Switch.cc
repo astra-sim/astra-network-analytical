@@ -19,32 +19,46 @@ SOFTWARE.
 Author : William Won (william.won@gatech.edu)
 *******************************************************************************/
 
-#include <cassert>
-#include <algorithm>
 #include "Switch.hh"
 
 using namespace Analytical;
 
-Switch::Switch(TopologyConfiguration configuration, int nodes_count) noexcept :
-        configuration(configuration),
-        nodes_count(nodes_count) { }
 
-Topology::Latency Switch::simulateSend(NodeID src, NodeID dest, PayloadSize payload_size) noexcept {
-    const auto hops_count = 2;  // Always 2
+Switch::Switch(const std::vector<TopologyConfiguration>& configurations, int npus_count) noexcept {
+    this->configurations = configurations;
 
-    // compute communication latency
-    auto comm_latency = hops_count * configuration.getLinkLatency();  // Link delay
-    comm_latency += payload_size / configuration.getBandwidth();  // Serialization delay
-    comm_latency += configuration.getRouterLatency();  // Switch delay
-    comm_latency += 2 * configuration.getNIC_Latency();  // NIC delay
+    // set a switch id
+    switch_id = npus_count;
 
-    // compute hbm delay
-    auto hbm_latency = configuration.getHBM_Latency();  // HBM delay
-    hbm_latency += payload_size / configuration.getHBM_Bandwidth();  // HBM serialization delay
-    hbm_latency *= configuration.getHBM_Scale();  // Scale HBM by scaling factor
+    // 1. Connect all NPUs to a switch: input port
+    // 2. Connect the switch to all NPUs: output port
+    for (auto npu_id = 0; npu_id < npus_count; npu_id++) {
+        connect(npu_id, switch_id, 0);  // input port
+        connect(switch_id, npu_id, 0);  // output port
+    }
+}
 
-    auto latency = std::max((int)comm_latency, (int)hbm_latency);
-    assert(latency >= 0 && "[Switch] Latency error: latency cannot be negative");
+Topology::Latency Switch::send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept {
+    // Switch routing scheme
+    //      1. pass source nic
+    //      2. move from src to switch
+    //      3. add switch delay
+    //      4. move from switch to dest
+    //      5. pass destination nic
+
+    auto latency = nicLatency(0);
+    latency += route(src_id, switch_id, payload_size);
+    latency += routerLatency(0);
+    latency += route(switch_id, dest_id, payload_size);
+    latency += nicLatency(0);
 
     return latency;
+}
+
+Topology::NpuAddress Switch::npuIdToAddress(NpuId id) const noexcept {
+    return NpuAddress(1, id);
+}
+
+Topology::NpuId Switch::npuAddressToId(const NpuAddress& address) const noexcept {
+    return address[0];
 }

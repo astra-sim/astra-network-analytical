@@ -19,15 +19,23 @@ SOFTWARE.
 Author : William Won (william.won@gatech.edu)
 *******************************************************************************/
 
+#include <cassert>
 #include "Link.hh"
 
 using namespace Analytical;
 
 Link::Link(Latency link_latency, Bandwidth link_bandwidth) noexcept :
-    link_latency(link_latency),
-    link_bandwidth(link_bandwidth) { }
+        link_latency(link_latency),
+        link_bandwidth(link_bandwidth) { }
+
+Link::Link() noexcept : Link(-1, -1) { }
 
 Link::Latency Link::send(PayloadSize payload_size) noexcept {
+    assert(link_latency > 0
+           && "[Link, method send] link latency is less than zero. Default constructor may be accidentally triggered somewhere.");
+    assert(link_bandwidth > 0
+           && "[Link, method send] link bandwidth is less than zero. Default constructor may be accidentally triggered somewhere.");
+
     // compute transmission latency
     auto latency = (payload_size / link_bandwidth) + link_latency;
 

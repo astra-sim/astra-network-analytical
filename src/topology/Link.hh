@@ -27,16 +27,18 @@ Author : William Won (william.won@gatech.edu)
 namespace Analytical {
     class Link {
     public:
-        using Latency = double;  // Latency in ns
-        using Bandwidth = double; // Bandwidth in GB/s (= B/ns)
-        using PayloadSize = int;  // Payload size in Bytes
+        using Latency = TopologyConfiguration::Latency;
+        using Bandwidth = TopologyConfiguration::Bandwidth;
+        using PayloadSize = TopologyConfiguration::PayloadSize;
 
         /**
          * Construct new link.
          *
          * @param configuration Link configuration
          */
-        explicit Link(Latency link_latency, Bandwidth link_bandwidth) noexcept;
+        Link(Latency link_latency, Bandwidth link_bandwidth) noexcept;
+
+        Link() noexcept;  // default constructor -- should not be called explicitly
 
         /**
          * Send a payload of given size and update link stats.
@@ -51,14 +53,9 @@ namespace Analytical {
         Latency link_latency;
         Bandwidth link_bandwidth;
 
-        // the number of served payloads
-        int served_payloads_count;
-
-        // summation of payloads' size which passed this link
-        PayloadSize served_payloads_size;
-
-        // summation of total latency of each send
-        Latency total_latency;
+        int served_payloads_count;  // the number of served payloads
+        PayloadSize served_payloads_size;  // summation of payloads' size which passed this link
+        Latency total_latency;  // summation of total latency of each send
     };
 }
 

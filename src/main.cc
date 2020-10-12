@@ -31,8 +31,6 @@ Author : William Won (william.won@gatech.edu)
 #include "topology/Topology.hh"
 #include "topology/TopologyConfiguration.hh"
 #include "topology/Switch.hh"
-#include "topology/Torus2D.hh"
-#include "topology/Ring_AllToAll_Switch.hh"
 #include "api/AnalyticalNetwork.hh"
 #include "astra-sim/system/Sys.hh"
 #include "astra-sim/system/memory/SimpleMemory.hh"
@@ -135,11 +133,11 @@ int main(int argc, char* argv[]) {
         std::cout << "[Analytical] Failed to open network configuration file at: " << network_configuration << std::endl;
         exit(-1);
     }
-    
+
     nlohmann::json json_configuration;
     json_file >> json_configuration;
     json_file.close();
-    
+
     std::string topology_name = json_configuration["topology-name"];
     cmd_parser.set_if_defined("topology-name", &topology_name);
 
@@ -201,7 +199,7 @@ int main(int argc, char* argv[]) {
     // event queue instantiation
     auto event_queue = std::make_shared<Analytical::EventQueue>();
 
-    // compute total number of npus by multiplying counts of each dimension 
+    // compute total number of npus by multiplying counts of each dimension
     auto npus_count = 1;
     for (auto node_per_dim : nodes_per_dim) {
         npus_count *= node_per_dim;
@@ -216,141 +214,183 @@ int main(int argc, char* argv[]) {
     std::shared_ptr<Analytical::Topology> topology;
 
     // create topology and instantiate systems and memories
-    if (topology_name == "Ring_AllToAll_Switch") {
-        assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
+//    if (topology_name == "Ring_AllToAll_Switch") {
+//        assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
+//
+//        std::vector<Analytical::TopologyConfiguration> topology_configurations;
+//        for (int d = 0; d < dims_count; d++) {
+//            topology_configurations.emplace_back(
+//                    link_bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
+//                    link_latencies[d],  // link latency (ns)
+//                    nic_latencies[d],  // nic latency (ns)
+//                    router_latencies[d],  // router latency (ns): ring doesn't use this
+//                    hbm_bandwidths[d],  // memory bandwidth (GB/s) = (B/ns)
+//                    hbm_latencies[d],  // memory latency (ns),
+//                    hbm_scales[d]  // memory scaling factor
+//            );
+//        }
+//
+//        for (int i = 0; i < npus_count; i++) {
+//            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
+//
+//            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+//                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+//                    500, 270, 12.5);
+//
+//            systems[i] = new AstraSim::Sys(
+//                    analytical_networks[i].get(),  // AstraNetworkAPI
+//                    memories[i].get(),  // AstraMemoryAPI
+//                    i,  // id
+//                    num_passes,  // num_passes
+//                    nodes_per_dim[0], nodes_per_dim[2], nodes_per_dim[1], 1, 1,  // dimensions
+//                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+//                    system_configuration,  // system configuration
+//                    workload_configuration,  // workload configuration
+//                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+//                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
+//                    path,  // stat file path
+//                    run_name,  // run name
+//                    true,    // separate_log
+//                    rendezvous_protocol  // randezvous protocol
+//            );
+//        }
+//
+//        topology = std::make_shared<Analytical::Ring_AllToAll_Switch>(
+//                topology_configurations,  // topology configuration
+//                nodes_per_dim  // number of connected nodes
+//        );
+//    } else if (topology_name == "switch") {
+//        assert(dims_count == 1 && "[Main] Switch Dimension doesn't match");
+//
+//        auto topology_configuration = Analytical::TopologyConfiguration(
+//                link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
+//                link_latencies[0],  // link latency (ns)
+//                nic_latencies[0],  // nic latency (ns)
+//                router_latencies[0],  // router latency (ns): ring doesn't use this
+//                hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
+//                hbm_latencies[0],  // memory latency (ns),
+//                hbm_scales[0]  // memory scaling factor
+//        );
+//
+//        for (int i = 0; i < npus_count; i++) {
+//            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
+//
+//            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+//                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+//                    500, 270, 12.5);
+//
+//            systems[i] = new AstraSim::Sys(
+//                    analytical_networks[i].get(),  // AstraNetworkAPI
+//                    memories[i].get(),  // AstraMemoryAPI
+//                    i,  // id
+//                    num_passes,  // num_passes
+//                    1, 1, npus_count, 1, 1,  // dimensions
+//                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+//                    system_configuration,  // system configuration
+//                    workload_configuration,  // workload configuration
+//                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+//                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
+//                    path,  // stat file path
+//                    run_name,  // run name
+//                    true,    // separate_log
+//                    rendezvous_protocol  // randezvous protocol
+//            );
+//        }
+//
+//        topology = std::make_shared<Analytical::Switch>(
+//                topology_configuration,  // topology configuration
+//                nodes_per_dim[0]  // number of connected nodes
+//        );
+//    } else if (topology_name == "torus") {
+//        assert(dims_count == 1 && "[Main] Torus Dimension doesn't match");
+//
+//        auto topology_configuration = Analytical::TopologyConfiguration(
+//                link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
+//                link_latencies[0],  // link latency (ns)
+//                nic_latencies[0],  // nic latency (ns)
+//                router_latencies[0],  // router latency (ns): ring doesn't use this
+//                hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
+//                hbm_latencies[0],  // memory latency (ns),
+//                hbm_scales[0]  // memory scaling factor
+//        );
+//
+//        auto torus_width = (int)std::sqrt(npus_count);
+//
+//        for (int i = 0; i < npus_count; i++) {
+//            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
+//
+//            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+//                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+//                    500, 270, 12.5);
+//
+//            systems[i] = new AstraSim::Sys(
+//                    analytical_networks[i].get(),  // AstraNetworkAPI
+//                    memories[i].get(),  // AstraMemoryAPI
+//                    i,  // id
+//                    num_passes,  // num_passes
+//                    1, torus_width, torus_width, 1, 1,  // dimensions
+//                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+//                    system_configuration,  // system configuration
+//                    workload_configuration,  // workload configuration
+//                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+//                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
+//                    path,  // stat file path
+//                    run_name,  // run name
+//                    true,    // separate_log
+//                    rendezvous_protocol  // randezvous protocol
+//            );
+//        }
+//
+//        topology = std::make_shared<Analytical::Torus2D>(
+//                topology_configuration,  // topology configurarion
+//                nodes_per_dim[0]  // number of hosts connected
+//        );
+//    } else {
+//        std::cout << "Topology not implemented!" << std::endl;
+//        exit(-1);
+//    }
+    // TODO: remove this after topology implementation is finished
+    auto topology_configurations = std::vector<Analytical::TopologyConfiguration>();
+    topology_configurations.emplace_back(
+            link_latencies[0],  // link latency (ns)
+            link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
+            nic_latencies[0],  // nic latency (ns)
+            router_latencies[0]
+//            ,  // router latency (ns): ring doesn't use this
+//            hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
+//            hbm_latencies[0],  // memory latency (ns),
+//            hbm_scales[0]  // memory scaling factor
+    );
 
-        std::vector<Analytical::TopologyConfiguration> topology_configurations;
-        for (int d = 0; d < dims_count; d++) {
-            topology_configurations.emplace_back(
-                    link_bandwidths[d],  // link bandwidth (GB/s) = (B/ns)
-                    link_latencies[d],  // link latency (ns)
-                    nic_latencies[d],  // nic latency (ns)
-                    router_latencies[d],  // router latency (ns): ring doesn't use this
-                    hbm_bandwidths[d],  // memory bandwidth (GB/s) = (B/ns)
-                    hbm_latencies[d],  // memory latency (ns),
-                    hbm_scales[d]  // memory scaling factor
-            );
-        }
+    for (int i = 0; i < npus_count; i++) {
+        analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
 
-        for (int i = 0; i < npus_count; i++) {
-            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
+        memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+                (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+                500, 270, 12.5);
 
-            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
-                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
-                    500, 270, 12.5);
-
-            systems[i] = new AstraSim::Sys(
-                    analytical_networks[i].get(),  // AstraNetworkAPI
-                    memories[i].get(),  // AstraMemoryAPI
-                    i,  // id
-                    num_passes,  // num_passes
-                    nodes_per_dim[0], nodes_per_dim[2], nodes_per_dim[1], 1, 1,  // dimensions
-                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    system_configuration,  // system configuration
-                    workload_configuration,  // workload configuration
-                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
-                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    path,  // stat file path
-                    run_name,  // run name
-                    true,    // separate_log
-                    rendezvous_protocol  // randezvous protocol
-            );
-        }
-
-        topology = std::make_shared<Analytical::Ring_AllToAll_Switch>(
-                topology_configurations,  // topology configuration
-                nodes_per_dim  // number of connected nodes
+        systems[i] = new AstraSim::Sys(
+                analytical_networks[i].get(),  // AstraNetworkAPI
+                memories[i].get(),  // AstraMemoryAPI
+                i,  // id
+                num_passes,  // num_passes
+                1, 1, npus_count, 1, 1,  // dimensions
+                num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+                system_configuration,  // system configuration
+                workload_configuration,  // workload configuration
+                comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+                total_stat_rows, stat_row,  // total_stat_rows and stat_row
+                path,  // stat file path
+                run_name,  // run name
+                true,    // separate_log
+                rendezvous_protocol  // randezvous protocol
         );
-    } else if (topology_name == "switch") {
-        assert(dims_count == 1 && "[Main] Switch Dimension doesn't match");
-
-        auto topology_configuration = Analytical::TopologyConfiguration(
-                link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
-                link_latencies[0],  // link latency (ns)
-                nic_latencies[0],  // nic latency (ns)
-                router_latencies[0],  // router latency (ns): ring doesn't use this
-                hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
-                hbm_latencies[0],  // memory latency (ns),
-                hbm_scales[0]  // memory scaling factor
-        );
-
-        for (int i = 0; i < npus_count; i++) {
-            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
-
-            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
-                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
-                    500, 270, 12.5);
-
-            systems[i] = new AstraSim::Sys(
-                    analytical_networks[i].get(),  // AstraNetworkAPI
-                    memories[i].get(),  // AstraMemoryAPI
-                    i,  // id
-                    num_passes,  // num_passes
-                    1, 1, npus_count, 1, 1,  // dimensions
-                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    system_configuration,  // system configuration
-                    workload_configuration,  // workload configuration
-                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
-                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    path,  // stat file path
-                    run_name,  // run name
-                    true,    // separate_log
-                    rendezvous_protocol  // randezvous protocol
-            );
-        }
-
-        topology = std::make_shared<Analytical::Switch>(
-                topology_configuration,  // topology configuration
-                nodes_per_dim[0]  // number of connected nodes
-        );
-    } else if (topology_name == "torus") {
-        assert(dims_count == 1 && "[Main] Torus Dimension doesn't match");
-
-        auto topology_configuration = Analytical::TopologyConfiguration(
-                link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
-                link_latencies[0],  // link latency (ns)
-                nic_latencies[0],  // nic latency (ns)
-                router_latencies[0],  // router latency (ns): ring doesn't use this
-                hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
-                hbm_latencies[0],  // memory latency (ns),
-                hbm_scales[0]  // memory scaling factor
-        );
-
-        auto torus_width = (int)std::sqrt(npus_count);
-
-        for (int i = 0; i < npus_count; i++) {
-            analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
-
-            memories[i] = std::make_unique<AstraSim::SimpleMemory>(
-                    (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
-                    500, 270, 12.5);
-
-            systems[i] = new AstraSim::Sys(
-                    analytical_networks[i].get(),  // AstraNetworkAPI
-                    memories[i].get(),  // AstraMemoryAPI
-                    i,  // id
-                    num_passes,  // num_passes
-                    1, torus_width, torus_width, 1, 1,  // dimensions
-                    num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                    system_configuration,  // system configuration
-                    workload_configuration,  // workload configuration
-                    comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
-                    total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                    path,  // stat file path
-                    run_name,  // run name
-                    true,    // separate_log
-                    rendezvous_protocol  // randezvous protocol
-            );
-        }
-
-        topology = std::make_shared<Analytical::Torus2D>(
-                topology_configuration,  // topology configurarion
-                nodes_per_dim[0]  // number of hosts connected
-        );
-    } else {
-        std::cout << "Topology not implemented!" << std::endl;
-        exit(-1);
     }
+
+    topology = std::make_shared<Analytical::Switch>(
+            topology_configurations,  // topology configuration
+            nodes_per_dim[0]  // number of connected nodes
+    );
 
     // link event queue and topology
     Analytical::AnalyticalNetwork::set_event_queue(event_queue);

@@ -76,7 +76,7 @@ int Analytical::AnalyticalNetwork::sim_send(void *buffer, int count, int type, i
     // compute send latency in ns    // FIXME: if you want to use time_res other than NS
     AstraSim::timespec_t delta;
     delta.time_res = AstraSim::NS;
-    delta.time_val = topology->simulateSend(src, dst, count);  // simulate src->dst and get latency
+    delta.time_val = topology->send(src, dst, count);  // simulate src->dst and get latency
 
     if (send_recv_tracking_map.has_recv_operation(tag, src, dst, count)) {
         // recv operation already issued.
