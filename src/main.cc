@@ -96,19 +96,19 @@ int main(int argc, char* argv[]) {
     std::string workload_configuration = "workload path not defined";
     cmd_parser.set_if_defined("workload-configuration", &workload_configuration);
 
-    int num_passes = -1;
+    int num_passes = 1;
     cmd_parser.set_if_defined("num-passes", &num_passes);
 
-    int num_queues_per_dim = -1;
+    int num_queues_per_dim = 1;
     cmd_parser.set_if_defined("num-queues-per-dim", &num_queues_per_dim);
 
-    float comm_scale = -1;
+    float comm_scale = 1;
     cmd_parser.set_if_defined("comm-scale", &comm_scale);
 
-    float compute_scale = -1;
+    float compute_scale = 1;
     cmd_parser.set_if_defined("compute-scale", &compute_scale);
 
-    float injection_scale = -1;
+    float injection_scale = 1;
     cmd_parser.set_if_defined("injection-scale", &injection_scale);
 
     std::string path = "path not defined";
@@ -117,10 +117,10 @@ int main(int argc, char* argv[]) {
     std::string run_name = "unnamed run";
     cmd_parser.set_if_defined("run-name", &run_name);
 
-    int total_stat_rows = -1;
+    int total_stat_rows = 1;
     cmd_parser.set_if_defined("total-stat-rows", &total_stat_rows);
 
-    int stat_row = -1;
+    int stat_row = 0;
     cmd_parser.set_if_defined("stat-row", &stat_row);
 
     bool rendezvous_protocol = false;
