@@ -68,6 +68,11 @@ Torus2D::Torus2D(const TopologyConfigurations& configurations, int npus_count) n
 }
 
 Topology::Latency Torus2D::send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept {
+    if (src_id == dest_id) {
+        // guard statement
+        return 0;
+    }
+
     auto src_row = src_id / width;
     auto src_col = src_id % width;
     auto dest_row = dest_id / width;

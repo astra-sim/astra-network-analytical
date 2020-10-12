@@ -39,6 +39,11 @@ Switch::Switch(const TopologyConfigurations& configurations, int npus_count) noe
 }
 
 Topology::Latency Switch::send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept {
+    if (src_id == dest_id) {
+        // guard statement
+        return 0;
+    }
+
     // Switch routing scheme
     //      1. pass source nic
     //      2. move from src to switch
@@ -54,7 +59,7 @@ Topology::Latency Switch::send(NpuId src_id, NpuId dest_id, PayloadSize payload_
 
     auto hbm_latency = hbmLatency(payload_size, 0);
 
-    return (int)criticalLatency(link_latency, hbm_latency);
+    return criticalLatency(link_latency, hbm_latency);
 }
 
 Topology::NpuAddress Switch::npuIdToAddress(NpuId id) const noexcept {

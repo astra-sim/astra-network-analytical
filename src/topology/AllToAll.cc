@@ -36,6 +36,11 @@ AllToAll::AllToAll(const TopologyConfigurations& configurations, int npus_count)
 }
 
 Topology::Latency AllToAll::send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept {
+    if (src_id == dest_id) {
+        // guard statement
+        return 0;
+    }
+
     // 1. Source nic latency
     // 2. route packet from src to dest
     // 3. Dest nic latency

@@ -54,6 +54,11 @@ Ring::Ring(const TopologyConfigurations& configurations, int npus_count, bool bi
 }
 
 Topology::Latency Ring::send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept {
+    if (src_id == dest_id) {
+        // guard statement
+        return 0;
+    }
+
     // compute which direction to move
     auto direction = computeDirection(src_id, dest_id);
 
