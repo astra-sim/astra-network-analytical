@@ -21,13 +21,14 @@ Author : William Won (william.won@gatech.edu)
 
 #include "Topology.hh"
 #include <cassert>
-#include <iostream>
 
 using namespace Analytical;
 
 void Topology::connect(NpuId src_id, NpuId dest_id, int dimension) noexcept {
-    std::cout << "Connect: " << src_id << "->" << dest_id << std::endl;
     assert((dimension < configurations.size()) && "[Topology, method connect] dimension out of bound");
+    assert(src_id >= 0 && "[Topology, method connect] srcId is negative");
+    assert(src_id >= 0 && "[Topology, method connect] destId is negative");
+
     auto configuration = configurations[dimension];
 
     auto link_latency = configuration.getLinkLatency();

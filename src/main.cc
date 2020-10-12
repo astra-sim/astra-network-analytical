@@ -33,6 +33,7 @@ Author : William Won (william.won@gatech.edu)
 #include "topology/TopologyConfiguration.hh"
 #include "topology/Switch.hh"
 #include "topology/AllToAll.hh"
+#include "topology/Ring.hh"
 #include "topology/Torus2D.hh"
 #include "api/AnalyticalNetwork.hh"
 #include "astra-sim/system/Sys.hh"
@@ -257,7 +258,13 @@ int main(int argc, char* argv[]) {
         auto torus_width = (int)std::sqrt(npus_count);
         nodes_count_for_system[1] = torus_width;
         nodes_count_for_system[2] = torus_width;
-        exit(-1);
+    } else if (topology_name == "Ring") {
+        topology = std::make_shared<Analytical::Ring>(
+                topology_configurations,  // topology configuration
+                npus_count,  // number of connected nodes,
+                true  // is the ring bidirectional
+        );
+        nodes_count_for_system[2] = npus_count;
     } else {
         std::cout << "[Main] Topology not defined: " << topology_name << std::endl;
         exit(-1);
