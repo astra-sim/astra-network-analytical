@@ -23,6 +23,7 @@ Author : William Won (william.won@gatech.edu)
 #include <fstream>
 #include <memory>
 #include <cmath>
+#include <array>
 #include <cassert>
 #include "helper/CommandLineParser.hh"
 #include "helper/json.hpp"
@@ -31,6 +32,7 @@ Author : William Won (william.won@gatech.edu)
 #include "topology/Topology.hh"
 #include "topology/TopologyConfiguration.hh"
 #include "topology/Switch.hh"
+#include "topology/AllToAll.hh"
 #include "api/AnalyticalNetwork.hh"
 #include "astra-sim/system/Sys.hh"
 #include "astra-sim/system/memory/SimpleMemory.hh"
@@ -205,6 +207,12 @@ int main(int argc, char* argv[]) {
         npus_count *= node_per_dim;
     }
 
+    // number of nodes for each system layer dimension
+    auto nodes_count_for_system = std::array<int, 5>();
+    for (int i = 0; i < 4; i++) {
+        nodes_count_for_system[i] = 1;
+    }
+
     // Network and System layer initialization
     std::unique_ptr<Analytical::AnalyticalNetwork> analytical_networks[npus_count];
     AstraSim::Sys *systems[npus_count];
@@ -213,7 +221,93 @@ int main(int argc, char* argv[]) {
     // pointer to topology
     std::shared_ptr<Analytical::Topology> topology;
 
-    // create topology and instantiate systems and memories
+    // topology configuration for each dimension
+    auto topology_configurations = std::vector<Analytical::TopologyConfiguration>();
+    for (int i = 0; i < dims_count; i++) {
+        topology_configurations.emplace_back(
+                link_latencies[i],  // link latency (ns)
+                link_bandwidths[i],  // link bandwidth (GB/s) = (B/ns)
+                nic_latencies[i],  // nic latency (ns)
+                router_latencies[i]  // router latency (ns)
+        );
+    }
+
+    // Instantiate topology
+    if (topology_name == "Switch") {
+        topology = std::make_shared<Analytical::Switch>(
+                topology_configurations,  // topology configuration
+                nodes_per_dim[0]  // number of connected nodes
+        );
+        nodes_count_for_system[2] = npus_count;
+    } else if (topology_name == "AllToAll") {
+        topology = std::make_shared<Analytical::AllToAll>(
+                topology_configurations,  // topology configuration
+                nodes_per_dim[0]  // number of connected nodes
+        );
+        nodes_count_for_system[2] = npus_count;
+    } else {
+        std::cout << "[Main] Topology not defined: " << topology_name << std::endl;
+        exit(-1);
+    }
+
+    // Instantiate required network, memory, and system layers
+    for (int i = 0; i < npus_count; i++) {
+        analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
+
+        memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+                (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
+                500, 270, 12.5);
+
+        systems[i] = new AstraSim::Sys(
+                analytical_networks[i].get(),  // AstraNetworkAPI
+                memories[i].get(),  // AstraMemoryAPI
+                i,  // id
+                num_passes,  // num_passes
+                nodes_count_for_system[0], nodes_count_for_system[1],  nodes_count_for_system[2], nodes_count_for_system[3], nodes_count_for_system[4],  // dimensions
+                num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
+                system_configuration,  // system configuration
+                workload_configuration,  // workload configuration
+                comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
+                total_stat_rows, stat_row,  // total_stat_rows and stat_row
+                path,  // stat file path
+                run_name,  // run name
+                true,    // separate_log
+                rendezvous_protocol  // randezvous protocol
+        );
+    }
+
+    // link event queue and topology
+    Analytical::AnalyticalNetwork::set_event_queue(event_queue);
+    Analytical::AnalyticalNetwork::set_topology(topology);
+
+
+    /**
+     * Run Analytical Model
+     */
+    // Initialize event queue
+    for (int i = 0; i < npus_count; i++) {
+        systems[i]->workload->fire();
+    }
+
+    // Run events
+    while (!event_queue->empty()) {
+        event_queue->proceed();
+    }
+
+
+    /**
+     * Cleanup
+     */
+    // System class automatically deletes itself, so no need to free systems[i] here.
+    // Invoking `free systems[i]` here will trigger segfault (by trying to delete already deleted memory space)
+
+    // terminate program
+    return 0;
+}
+
+
+
+// create topology and instantiate systems and memories
 //    if (topology_name == "Ring_AllToAll_Switch") {
 //        assert(dims_count == 3 && "[Main] Ring_AllToAll_Switch Dimension doesn't match");
 //
@@ -349,75 +443,9 @@ int main(int argc, char* argv[]) {
 //        std::cout << "Topology not implemented!" << std::endl;
 //        exit(-1);
 //    }
-    // TODO: remove this after topology implementation is finished
-    auto topology_configurations = std::vector<Analytical::TopologyConfiguration>();
-    topology_configurations.emplace_back(
-            link_latencies[0],  // link latency (ns)
-            link_bandwidths[0],  // link bandwidth (GB/s) = (B/ns)
-            nic_latencies[0],  // nic latency (ns)
-            router_latencies[0]
+
+
 //            ,  // router latency (ns): ring doesn't use this
 //            hbm_bandwidths[0],  // memory bandwidth (GB/s) = (B/ns)
 //            hbm_latencies[0],  // memory latency (ns),
 //            hbm_scales[0]  // memory scaling factor
-    );
-
-    for (int i = 0; i < npus_count; i++) {
-        analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
-
-        memories[i] = std::make_unique<AstraSim::SimpleMemory>(
-                (AstraSim::AstraNetworkAPI *) (analytical_networks[i].get()),
-                500, 270, 12.5);
-
-        systems[i] = new AstraSim::Sys(
-                analytical_networks[i].get(),  // AstraNetworkAPI
-                memories[i].get(),  // AstraMemoryAPI
-                i,  // id
-                num_passes,  // num_passes
-                1, 1, npus_count, 1, 1,  // dimensions
-                num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim, num_queues_per_dim,  // queues per corresponding dimension
-                system_configuration,  // system configuration
-                workload_configuration,  // workload configuration
-                comm_scale, compute_scale, injection_scale,  // communication, computation, injection scale
-                total_stat_rows, stat_row,  // total_stat_rows and stat_row
-                path,  // stat file path
-                run_name,  // run name
-                true,    // separate_log
-                rendezvous_protocol  // randezvous protocol
-        );
-    }
-
-    topology = std::make_shared<Analytical::Switch>(
-            topology_configurations,  // topology configuration
-            nodes_per_dim[0]  // number of connected nodes
-    );
-
-    // link event queue and topology
-    Analytical::AnalyticalNetwork::set_event_queue(event_queue);
-    Analytical::AnalyticalNetwork::set_topology(topology);
-
-
-    /**
-     * Run Analytical Model
-     */
-    // Initialize event queue
-    for (int i = 0; i < npus_count; i++) {
-        systems[i]->workload->fire();
-    }
-
-    // Run events
-    while (!event_queue->empty()) {
-        event_queue->proceed();
-    }
-
-
-    /**
-     * Cleanup
-     */
-    // Free memory
-    // System class automatically deletes itself, so no need to free systems[i] here.
-    // Invoking `free systems[i]` here will trigger segfault (by trying to delete already deleted memory space)
-
-    // terminate program
-    return 0;
-}
