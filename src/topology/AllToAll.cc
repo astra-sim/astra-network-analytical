@@ -39,7 +39,8 @@ Topology::Latency AllToAll::send(NpuId src_id, NpuId dest_id, PayloadSize payloa
     // 1. Source nic latency
     // 2. route packet from src to dest
     // 3. Dest nic latency
-    auto link_latency = nicLatency(0);
+    auto link_latency = serialize(payload_size, 0);
+    link_latency += nicLatency(0);
     link_latency += route(src_id, dest_id, payload_size);
     link_latency += nicLatency(0);
 

@@ -24,25 +24,19 @@ Author : William Won (william.won@gatech.edu)
 
 using namespace Analytical;
 
-Link::Link(Latency link_latency, Bandwidth link_bandwidth) noexcept :
-        link_latency(link_latency),
-        link_bandwidth(link_bandwidth) { }
+Link::Link(Latency link_latency) noexcept :
+        link_latency(link_latency) { }
 
-Link::Link() noexcept : Link(-1, -1) { }
+Link::Link() noexcept : Link(-1) { }
 
 Link::Latency Link::send(PayloadSize payload_size) noexcept {
     assert(link_latency > 0
            && "[Link, method send] link latency is less than zero. Default constructor may be accidentally triggered somewhere.");
-    assert(link_bandwidth > 0
-           && "[Link, method send] link bandwidth is less than zero. Default constructor may be accidentally triggered somewhere.");
-
-    // compute transmission latency
-    auto latency = (payload_size / link_bandwidth) + link_latency;
 
     // update stats
     served_payloads_count++;
     served_payloads_size += payload_size;
-    total_latency += latency;
+    total_latency += link_latency;
 
-    return latency;
+    return link_latency;
 }

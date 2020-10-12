@@ -31,9 +31,8 @@ void Topology::connect(NpuId src_id, NpuId dest_id, int dimension) noexcept {
     auto configuration = configurations[dimension];
 
     auto link_latency = configuration.getLinkLatency();
-    auto link_bandwidth = configuration.getLinkBandwidth();
 
-    links[src_id][dest_id] = Link(link_latency, link_bandwidth);
+    links[src_id][dest_id] = Link(link_latency);
 }
 
 Topology::Latency Topology::route(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept {
@@ -41,6 +40,11 @@ Topology::Latency Topology::route(NpuId src_id, NpuId dest_id, PayloadSize paylo
     assert((links[src_id].find(dest_id) != links[src_id].end())
            && "[Topology, method route] link src->dest doesn't exist");
     return links[src_id][dest_id].send(payload_size);
+}
+
+Topology::Latency Topology::serialize(PayloadSize payload_size, int dimension) const noexcept {
+    assert((dimension < configurations.size()) && "[Topology, method serialize] dimension out of bound");
+    return payload_size / configurations[dimension].getLinkBandwidth();
 }
 
 Topology::Latency Topology::routerLatency(int dimension) const noexcept {

@@ -95,6 +95,13 @@ namespace Analytical {
         Latency route(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept;
 
         /**
+         * Simulate the serialization delay.
+         * @param dimension dimension to use
+         * @return serialization delay
+         */
+        Latency serialize(PayloadSize payload_size, int dimension) const noexcept;
+
+        /**
          * Simulate router latency.
          * @param dimension dimension of the router
          * @return router latency

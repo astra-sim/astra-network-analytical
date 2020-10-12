@@ -36,7 +36,7 @@ namespace Analytical {
          *
          * @param configuration Link configuration
          */
-        Link(Latency link_latency, Bandwidth link_bandwidth) noexcept;
+        explicit Link(Latency link_latency) noexcept;
 
         Link() noexcept;  // default constructor -- should not be called explicitly
 
@@ -44,14 +44,12 @@ namespace Analytical {
          * Send a payload of given size and update link stats.
          * Return the latency of transmission.
          *
-         * @param payload_size payload size in bytes
          * @return latency for this transmission
          */
         Latency send(PayloadSize payload_size) noexcept;
 
     private:
         Latency link_latency;
-        Bandwidth link_bandwidth;
 
         int served_payloads_count;  // the number of served payloads
         PayloadSize served_payloads_size;  // summation of payloads' size which passed this link
