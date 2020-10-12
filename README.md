@@ -23,7 +23,7 @@ Author : William Won (william.won@gatech.edu)
 
 ## What is this repository for?
 This repository serves the role of an analytical network backend for [ASTRA-sim]((https://github.com/astra-sim/astra-sim)).
-It models the latency and bandwidth for various network topologies.“
+It models the latency and bandwidth for various network topologies.
 
 ## How to use this repository?
 This repository should be cloned and used with the [ASTRA-sim](https://github.com/astra-sim/astra-sim).
