@@ -29,12 +29,14 @@ Author : William Won (william.won@gatech.edu)
 namespace Analytical {
     class AllToAll : public Topology {
     public:
+        using TopologyConfigurations = TopologyConfiguration::TopologyConfigurations;
+
         /**
          * Construct an AllToAll topology.
          * @param configurations configuration per each dimension
          * @param npus_count number of npus connected together
          */
-        AllToAll(const std::vector<TopologyConfiguration>& configurations, int npus_count) noexcept;
+        AllToAll(const TopologyConfigurations& configurations, int npus_count) noexcept;
 
         Latency send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept override;
 

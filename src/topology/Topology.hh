@@ -33,6 +33,7 @@ namespace Analytical {
         using Latency = TopologyConfiguration::Latency;
         using Bandwidth = TopologyConfiguration::Bandwidth;
         using PayloadSize = TopologyConfiguration::PayloadSize;
+        using TopologyConfigurations = TopologyConfiguration::TopologyConfigurations;
 
         using NpuId = int;  // Each NPU's ID is in 'int'
         using NpuAddress = std::vector<int>;  // NPU's address, denoted by PackageID of each dimension
@@ -69,7 +70,7 @@ namespace Analytical {
 
 
         // members
-        std::vector<TopologyConfiguration> configurations;  // topology configuration for each dimension
+        TopologyConfigurations configurations;  // topology configuration for each dimension
         std::map<NpuId, std::map<NpuId, Link>> links;  // links[src][dest] returns a link connecting two links
         int communication_bounds_count = 0;  // the number of occasions link_latency was larger
         int hbm_bounds_count = 0;  // the number of occasions hbm_latency was larger

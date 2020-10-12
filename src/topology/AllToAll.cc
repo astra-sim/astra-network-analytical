@@ -23,7 +23,7 @@ Author : William Won (william.won@gatech.edu)
 
 using namespace Analytical;
 
-AllToAll::AllToAll(const std::vector<TopologyConfiguration> &configurations, int npus_count) noexcept {
+AllToAll::AllToAll(const TopologyConfigurations& configurations, int npus_count) noexcept {
     this->configurations = configurations;
 
     // connect all npus directly

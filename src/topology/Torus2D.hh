@@ -29,7 +29,9 @@ Author : William Won (william.won@gatech.edu)
 namespace Analytical {
     class Torus2D : public Topology {
     public:
-        Torus2D(const std::vector<TopologyConfiguration>& configurations, int npus_count) noexcept;
+        using TopologyConfigurations = TopologyConfiguration::TopologyConfigurations;
+
+        Torus2D(const TopologyConfigurations& configurations, int npus_count) noexcept;
 
         Latency send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept override;
     private:

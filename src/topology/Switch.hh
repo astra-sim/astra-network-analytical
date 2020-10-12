@@ -29,13 +29,15 @@ Author : William Won (william.won@gatech.edu)
 namespace Analytical {
     class Switch : public Topology {
     public:
+        using TopologyConfigurations = TopologyConfiguration::TopologyConfigurations;
+
         /**
          * Constrct a switch.
          * @param configurations configuration for each dimensino
          *              - Simple switch has only 1 dim
          * @param npus_count number of npus connected to the switch
          */
-        Switch(const std::vector<TopologyConfiguration>& configurations, int npus_count) noexcept;
+        Switch(const TopologyConfigurations& configurations, int npus_count) noexcept;
 
         Latency send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept override;
 

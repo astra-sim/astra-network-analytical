@@ -24,7 +24,7 @@ Author : William Won (william.won@gatech.edu)
 using namespace Analytical;
 
 
-Switch::Switch(const std::vector<TopologyConfiguration>& configurations, int npus_count) noexcept {
+Switch::Switch(const TopologyConfigurations& configurations, int npus_count) noexcept {
     this->configurations = configurations;
 
     // set a switch id

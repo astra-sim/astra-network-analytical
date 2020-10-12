@@ -22,12 +22,15 @@ Author : William Won (william.won@gatech.edu)
 #ifndef __TOPOLOGYCONFIGURATION_HH__
 #define __TOPOLOGYCONFIGURATION_HH__
 
+#include <vector>
+
 namespace Analytical {
     struct TopologyConfiguration {
     public:
         using Latency = double;  // latency in ns
         using Bandwidth = double;  // bandwidth in GB/s (= B/ns)
         using PayloadSize = int;  // payload size in bytes
+        using TopologyConfigurations = std::vector<TopologyConfiguration>;  // Topology configurations for each dimension
 
         TopologyConfiguration(Latency link_latency,
                               Bandwidth link_bandwidth,

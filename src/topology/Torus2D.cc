@@ -25,7 +25,7 @@ Author : William Won (william.won@gatech.edu)
 
 using namespace Analytical;
 
-Torus2D::Torus2D(const std::vector<TopologyConfiguration> &configurations, int npus_count) noexcept {
+Torus2D::Torus2D(const TopologyConfigurations& configurations, int npus_count) noexcept {
     this->configurations = configurations;
 
     width = (int)std::sqrt(npus_count);
