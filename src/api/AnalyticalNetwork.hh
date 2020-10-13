@@ -8,8 +8,8 @@ LICENSE file in the root directory of this source tree.
 
 #include <memory>
 #include "../event-queue/EventQueue.hh"
-#include "../event-queue/SendRecvTrackingMap.hh"
 #include "../topology/Topology.hh"
+#include "SendRecvTrackingMap.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 
 namespace Analytical {
