@@ -6,7 +6,7 @@ It models the latency and bandwidth for various network topologies.
 
 ## How to use this repository?
 This repository should be cloned and used with the [ASTRA-sim](https://github.com/astra-sim/astra-sim).
-Please refer to [this page](https://github.com/astra-sim/astra-sim/tree/astra_dev_workloads/build/analytical) on how to compile and run this codebase.
+Please refer to [this page](https://github.com/astra-sim/astra-sim/tree/master/build/astra_analytical) on how to compile and run this codebase.
 
 ## Network configuration
 Below are the configurations the analytical network supports.
