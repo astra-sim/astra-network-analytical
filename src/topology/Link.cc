@@ -19,24 +19,24 @@ SOFTWARE.
 Author : William Won (william.won@gatech.edu)
 *******************************************************************************/
 
-#include <cassert>
 #include "Link.hh"
+#include <cassert>
 
 using namespace Analytical;
 
-Link::Link(Latency link_latency) noexcept :
-        link_latency(link_latency) { }
+Link::Link(Latency link_latency) noexcept : link_latency(link_latency) {}
 
-Link::Link() noexcept : Link(-1) { }
+Link::Link() noexcept : Link(-1) {}
 
 Link::Latency Link::send(PayloadSize payload_size) noexcept {
-    assert(link_latency > 0
-           && "[Link, method send] link latency is less than zero. Default constructor may be accidentally triggered somewhere.");
+  assert(
+      link_latency > 0 &&
+      "[Link, method send] link latency is less than zero. Default constructor may be accidentally triggered somewhere.");
 
-    // update stats
-    served_payloads_count++;
-    served_payloads_size += payload_size;
-    total_latency += link_latency;
+  // update stats
+  served_payloads_count++;
+  served_payloads_size += payload_size;
+  total_latency += link_latency;
 
-    return link_latency;
+  return link_latency;
 }

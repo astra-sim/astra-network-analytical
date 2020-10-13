@@ -27,23 +27,26 @@ Author : William Won (william.won@gatech.edu)
 #include "TopologyConfiguration.hh"
 
 namespace Analytical {
-    class AllToAll : public Topology {
-    public:
-        using TopologyConfigurations = TopologyConfiguration::TopologyConfigurations;
+class AllToAll : public Topology {
+ public:
+  using TopologyConfigurations = TopologyConfiguration::TopologyConfigurations;
 
-        /**
-         * Construct an AllToAll topology.
-         * @param configurations configuration per each dimension
-         * @param npus_count number of npus connected together
-         */
-        AllToAll(const TopologyConfigurations& configurations, int npus_count) noexcept;
+  /**
+   * Construct an AllToAll topology.
+   * @param configurations configuration per each dimension
+   * @param npus_count number of npus connected together
+   */
+  AllToAll(
+      const TopologyConfigurations& configurations,
+      int npus_count) noexcept;
 
-        Latency send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept override;
+  Latency send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept
+      override;
 
-    private:
-        NpuAddress npuIdToAddress(NpuId id) const noexcept override;
-        NpuId npuAddressToId(const NpuAddress& address) const noexcept override;
-    };
-}
+ private:
+  NpuAddress npuIdToAddress(NpuId id) const noexcept override;
+  NpuId npuAddressToId(const NpuAddress& address) const noexcept override;
+};
+} // namespace Analytical
 
 #endif

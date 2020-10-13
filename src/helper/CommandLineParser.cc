@@ -23,14 +23,17 @@ Author : William Won (william.won@gatech.edu)
 
 namespace po = boost::program_options;
 
-void Analytical::CommandLineParser::parse(int argc, char** argv) noexcept(false) {
-    po::store(po::parse_command_line(argc, argv, options_description), variables_map);
-    po::notify(variables_map);
+void Analytical::CommandLineParser::parse(int argc, char** argv) noexcept(
+    false) {
+  po::store(
+      po::parse_command_line(argc, argv, options_description), variables_map);
+  po::notify(variables_map);
 }
 
-void Analytical::CommandLineParser::print_help_message_if_required() const noexcept {
-    if (variables_map.count("help") > 0) {
-        std::cout << options_description << std::endl;
-        exit(0);
-    }
+void Analytical::CommandLineParser::print_help_message_if_required()
+    const noexcept {
+  if (variables_map.count("help") > 0) {
+    std::cout << options_description << std::endl;
+    exit(0);
+  }
 }

@@ -19,156 +19,164 @@ SOFTWARE.
 Author : William Won (william.won@gatech.edu)
 *******************************************************************************/
 
-#include <cmath>
-#include <cassert>
-#include <utility>
-#include <tuple>
 #include "Torus2D.hh"
+#include <cassert>
+#include <cmath>
 #include <iostream>
+#include <tuple>
+#include <utility>
 
 using namespace Analytical;
 
-Torus2D::Torus2D(const TopologyConfigurations& configurations, int npus_count) noexcept :
-    width((int)std::sqrt(npus_count)),
-    half_width(width / 2) {
-    assert(width * width == npus_count && "[Torus2D, constructor] Currently Torus2D only supports square");
+Torus2D::Torus2D(
+    const TopologyConfigurations& configurations,
+    int npus_count) noexcept
+    : width((int)std::sqrt(npus_count)), half_width(width / 2) {
+  assert(
+      width * width == npus_count &&
+      "[Torus2D, constructor] Currently Torus2D only supports square");
 
-    this->configurations = configurations;
+  this->configurations = configurations;
 
-    // connect each row
-    for (int row = 0; row < width; row++) {
-        // iterate over NPUs, except for last column
-        for (int col = 0; col < (width - 1); col++) {
-            auto n1 = (row * width) + col;
-            auto n2 = n1 + 1;  // node on right
-            connect(n1, n2, 0);
-            connect(n2, n1, 0);
-        }
-
-        // last column NPU
-        auto n1 = (row * width) + (width - 1);
-        auto n2 = row * width;
-        connect(n1, n2, 0);
-        connect(n2, n1, 0);
+  // connect each row
+  for (int row = 0; row < width; row++) {
+    // iterate over NPUs, except for last column
+    for (int col = 0; col < (width - 1); col++) {
+      auto n1 = (row * width) + col;
+      auto n2 = n1 + 1; // node on right
+      connect(n1, n2, 0);
+      connect(n2, n1, 0);
     }
 
-    // connect each column
-    for (int col = 0; col < width; col++) {
-        // iterate over NPUs, except for top row
-        for (int row = 0; row < (width - 1); row++) {
-            auto n1 = (row * width) + col;
-            auto n2 = n1 + width;  // node on top
-            connect(n1, n2, 0);
-            connect(n2, n1, 0);
-        }
+    // last column NPU
+    auto n1 = (row * width) + (width - 1);
+    auto n2 = row * width;
+    connect(n1, n2, 0);
+    connect(n2, n1, 0);
+  }
 
-        // top column NPU
-        auto n1 = (width - 1) * width + col;
-        auto n2 = col;
-        connect(n1, n2, 0);
-        connect(n2, n1, 0);
+  // connect each column
+  for (int col = 0; col < width; col++) {
+    // iterate over NPUs, except for top row
+    for (int row = 0; row < (width - 1); row++) {
+      auto n1 = (row * width) + col;
+      auto n2 = n1 + width; // node on top
+      connect(n1, n2, 0);
+      connect(n2, n1, 0);
     }
+
+    // top column NPU
+    auto n1 = (width - 1) * width + col;
+    auto n2 = col;
+    connect(n1, n2, 0);
+    connect(n2, n1, 0);
+  }
 }
 
-Topology::Latency Torus2D::send(NpuId src_id, NpuId dest_id, PayloadSize payload_size) noexcept {
-    if (src_id == dest_id) {
-        // guard statement
-        return 0;
+Topology::Latency Torus2D::send(
+    NpuId src_id,
+    NpuId dest_id,
+    PayloadSize payload_size) noexcept {
+  if (src_id == dest_id) {
+    // guard statement
+    return 0;
+  }
+
+  auto src_row = -1;
+  auto src_col = -1;
+  std::tie(src_row, src_col) = idToRowCol(src_id);
+
+  auto dest_row = -1;
+  auto dest_col = -1;
+  std::tie(dest_row, dest_col) = idToRowCol(dest_id);
+
+  // serialize
+  auto link_latency = serialize(payload_size, 0);
+  link_latency += nicLatency(0);
+
+  // xy routing
+
+  if (src_col != dest_col) {
+    // should move x direction (i.e., move within row)
+    auto direction = computeDirection(src_col, dest_col);
+
+    auto current_col = src_col;
+    while (current_col != dest_col) {
+      auto next_col = takeStep(current_col, direction);
+
+      auto current_id = rowColToId(src_row, current_col);
+      auto next_id = rowColToId(src_row, next_col);
+      link_latency += route(current_id, next_id, payload_size);
+
+      current_col = next_col;
     }
+  }
 
-    auto src_row = -1;
-    auto src_col = -1;
-    std::tie(src_row, src_col) = idToRowCol(src_id);
+  if (src_row != dest_row) {
+    // should move y direction (i.e., move within column)
+    // should move x direction (i.e., move within row)
+    auto direction = computeDirection(src_row, dest_row);
 
-    auto dest_row = -1;
-    auto dest_col = -1;
-    std::tie(dest_row, dest_col) = idToRowCol(dest_id);
+    auto current_row = src_row;
+    while (current_row != dest_row) {
+      auto next_row = takeStep(current_row, direction);
 
-    // serialize
-    auto link_latency = serialize(payload_size, 0);
-    link_latency += nicLatency(0);
+      auto current_id = rowColToId(current_row, dest_col);
+      auto next_id = rowColToId(next_row, dest_col);
+      link_latency += route(current_id, next_id, payload_size);
 
-    // xy routing
-
-    if (src_col != dest_col) {
-        // should move x direction (i.e., move within row)
-        auto direction = computeDirection(src_col, dest_col);
-
-        auto current_col = src_col;
-        while (current_col != dest_col) {
-            auto next_col = takeStep(current_col, direction);
-
-            auto current_id = rowColToId(src_row, current_col);
-            auto next_id = rowColToId(src_row, next_col);
-            link_latency += route(current_id, next_id, payload_size);
-
-            current_col = next_col;
-        }
+      current_row = next_row;
     }
+  }
 
-    if (src_row != dest_row) {
-        // should move y direction (i.e., move within column)
-        // should move x direction (i.e., move within row)
-        auto direction = computeDirection(src_row, dest_row);
+  link_latency += nicLatency(0);
 
-        auto current_row = src_row;
-        while (current_row != dest_row) {
-            auto next_row = takeStep(current_row, direction);
+  auto hbm_latency = hbmLatency(payload_size, 0);
 
-            auto current_id = rowColToId(current_row, dest_col);
-            auto next_id = rowColToId(next_row, dest_col);
-            link_latency += route(current_id, next_id, payload_size);
-
-            current_row = next_row;
-        }
-    }
-
-    link_latency += nicLatency(0);
-
-    auto hbm_latency = hbmLatency(payload_size, 0);
-
-    return criticalLatency(link_latency, hbm_latency);
+  return criticalLatency(link_latency, hbm_latency);
 }
 
 Topology::NpuAddress Torus2D::npuIdToAddress(NpuId id) const noexcept {
-    return NpuAddress(1, id);
+  return NpuAddress(1, id);
 }
 
-Topology::NpuId Torus2D::npuAddressToId(const NpuAddress& address) const noexcept {
-    return address[0];
+Topology::NpuId Torus2D::npuAddressToId(
+    const NpuAddress& address) const noexcept {
+  return address[0];
 }
 
-Torus2D::Direction Torus2D::computeDirection(NpuId src_index, NpuId dest_index) const noexcept {
-    // bidirectional: compute shortest path
-    if (src_index < dest_index) {
-        auto distance = dest_index - src_index;
-        return (distance <= half_width) ? 1 : -1;
-    }
+Torus2D::Direction Torus2D::computeDirection(NpuId src_index, NpuId dest_index)
+    const noexcept {
+  // bidirectional: compute shortest path
+  if (src_index < dest_index) {
+    auto distance = dest_index - src_index;
+    return (distance <= half_width) ? 1 : -1;
+  }
 
-    auto distance = src_index - dest_index;
-    return (distance <= half_width) ? -1 : 1;
+  auto distance = src_index - dest_index;
+  return (distance <= half_width) ? -1 : 1;
 }
 std::pair<int, int> Torus2D::idToRowCol(NpuId id) const noexcept {
-    auto row = id / width;
-    auto col = id % width;
-    return std::make_pair(row, col);
+  auto row = id / width;
+  auto col = id % width;
+  return std::make_pair(row, col);
 }
 
 Torus2D::NpuId Torus2D::rowColToId(int row, int column) const noexcept {
-    return (row * width) + column;
+  return (row * width) + column;
 }
 
 int Torus2D::takeStep(int current_index, Direction direction) const noexcept {
-    // compute next id of the ring
-    auto next_index = current_index + direction;
+  // compute next id of the ring
+  auto next_index = current_index + direction;
 
-    if (next_index >= width) {
-        // out of positive bounds
-        next_index %= width;
-    } else if (next_index < 0) {
-        // out of negative bounds
-        next_index = width + (next_index % width);
-    }
+  if (next_index >= width) {
+    // out of positive bounds
+    next_index %= width;
+  } else if (next_index < 0) {
+    // out of negative bounds
+    next_index = width + (next_index % width);
+  }
 
-    return next_index;
+  return next_index;
 }
