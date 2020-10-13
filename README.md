@@ -56,3 +56,15 @@ Below are the configurations the analytical network supports.
 --hbm-bandwidth="2000 2000" \
 --hbm-scale="1.5 1.5"
 ```
+
+## Contact
+Please email William Won (william.won@gatech.edu) or Saeed Rashidi (saeed.rashidi@gatech.edu) or Tushar Krishna (tushar@ece.gatech.edu) if you have any questions.
+
+## Core Developers
+* William Won (Georgia Tech)
+* Saeed Rashidi (Georgia Tech)
+
+## Additional Contributors
+* Sudarshan Srinivasan (Intel)
+* Srinivas Sridharan (Facebook)
+* Tushar Krishna (Georgia Tech)
