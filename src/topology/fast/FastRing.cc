@@ -30,7 +30,6 @@ double FastRing::send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept 
     auto communication_latency = linkLatency(0, hops_count);
     communication_latency += serializationLatency(0, payload_size);
     communication_latency += 2 * nicLatency(0);  // passes 2 NICs: input and output
-    communication_latency += routerLatency(0);
 
     // compute hbm latency
     auto hbm_latency = hbmLatency(0, payload_size);

@@ -22,3 +22,13 @@ Topology::~Topology() noexcept = default;
 void Topology::checkNpuIdBound(NpuId npu_id) const noexcept {
     assert(npu_id < npus_count && "[Topology, method checkNpuIdBound] NPU ID out of bounds");
 }
+
+Topology::NpuAddress Topology::npuIdToAddress(NpuId npu_id) const noexcept {
+    // Baseline implementation: assume 1d topology
+    return NpuAddress(1, npu_id);
+}
+
+Topology::NpuId Topology::npuAddressToId(NpuAddress npu_address) const noexcept {
+    // Baseline implementation: assume 1d topology
+    return npu_address[0];
+}

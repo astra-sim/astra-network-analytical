@@ -15,6 +15,7 @@ namespace Analytical {
         using TopologyConfigs = std::vector<TopologyConfig>;
 
         using NpuId = TopologyConfig::NpuId;
+        using NpuAddress = TopologyConfig::NpuAddress;
         using PayloadSize = TopologyConfig::PayloadSize;
         using Latency = TopologyConfig::Latency;
         using Bandwidth = TopologyConfig::Bandwidth;
@@ -30,6 +31,9 @@ namespace Analytical {
         int npus_count;  // NPUs count of the topology
 
         void checkNpuIdBound(NpuId npu_id) const noexcept;
+
+        virtual NpuAddress npuIdToAddress(NpuId npu_id) const noexcept;
+        virtual NpuId npuAddressToId(NpuAddress npu_address) const noexcept;
     };
 }
 
