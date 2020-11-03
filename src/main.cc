@@ -19,6 +19,7 @@ LICENSE file in the root directory of this source tree.
 #include "topology/Topology.hh"
 #include "topology/TopologyConfig.hh"
 #include "topology/fast/FastSwitch.hh"
+#include "topology/fast/FastAllToAll.hh"
 #include "topology/fast/FastRing.hh"
 #include "topology/fast/FastTorus2D.hh"
 
@@ -238,17 +239,17 @@ int main(int argc, char* argv[]) {
     } else if (topology_name == "AllToAll") {
         assert(dimensions_count == 1 && "[main] AllToAll is the given topology but dimension != 1");
 
-//        if (use_fast_version) {
-//            topology = std::make_shared<Analytical::FastSwitch>(
-//                    topology_configs
-//            );
-//        } else {
-//            // non-fast version
-//            // TODO: implement this
-//            std::cout << "Detailed version not implemented yet" << std::endl;
-//            exit(-1);
-//        }
-//        nodes_count_for_system[2] = npus_count;
+        if (use_fast_version) {
+            topology = std::make_shared<Analytical::FastAllToAll>(
+                    topology_configs
+            );
+        } else {
+            // non-fast version
+            // TODO: implement this
+            std::cout << "Detailed version not implemented yet" << std::endl;
+            exit(-1);
+        }
+        nodes_count_for_system[2] = npus_count;
     } else if (topology_name == "Torus2D") {
         assert(dimensions_count == 2 && "[main] Torus2D is the given topology but dimension != 2");
 
