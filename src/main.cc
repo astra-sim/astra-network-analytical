@@ -22,6 +22,7 @@ LICENSE file in the root directory of this source tree.
 #include "topology/fast/FastAllToAll.hh"
 #include "topology/fast/FastRing.hh"
 #include "topology/fast/FastTorus2D.hh"
+#include "topology/fast/FastRing_AllToAll_Switch.hh"
 
 namespace po = boost::program_options;
 
@@ -57,9 +58,9 @@ int main(int argc, char* argv[]) {
     cmd_parser.add_command_line_option<bool>(
             "rendezvous-protocol", "Whether to enable rendezvous protocol");
 
-//    // Define network-related command line arguments here
-//    cmd_parser.add_command_line_multitoken_option<std::vector<int>>(
-//            "packages-counts", "Packages count per each dimension");
+    // Define network-related command line arguments here
+    cmd_parser.add_command_line_multitoken_option<std::vector<int>>(
+            "units-count", "Units count per each dimension");
 
     // Parse command line arguments
     try {
@@ -140,7 +141,7 @@ int main(int argc, char* argv[]) {
     for (int units_count : json_configuration["units-count"]) {
         units_counts.emplace_back(units_count);
     }
-//    cmd_parser.set_if_defined("packages-counts", &units_counts);
+    cmd_parser.set_if_defined("units-count", &units_counts);
 
     std::vector<double> link_latencies;
     for (double link_latency : json_configuration["link-latency"]) {
@@ -280,6 +281,22 @@ int main(int argc, char* argv[]) {
             exit(-1);
         }
         nodes_count_for_system[2] = npus_count;
+    } else if (topology_name == "Ring_AllToAll_Switch") {
+        assert(dimensions_count == 3 && "[main] Ring_AllToAll_Switch is the given topology but dimension != 3");
+
+        if (use_fast_version) {
+            topology = std::make_shared<Analytical::FastRing_AllToAll_Switch>(
+                    topology_configs
+            );
+        } else {
+            // non-fast version
+            // TODO: implement this
+            std::cout << "Detailed version not implemented yet" << std::endl;
+            exit(-1);
+        }
+        nodes_count_for_system[0] = units_counts[0];
+        nodes_count_for_system[1] = units_counts[2];
+        nodes_count_for_system[2] = units_counts[1];
     } else {
         std::cout << "[Main] Topology not defined: " << topology_name << std::endl;
         exit(-1);
@@ -349,5 +366,8 @@ int main(int argc, char* argv[]) {
     // delete already deleted memory space)
 
     // terminate program
+    for (auto i : units_counts) {
+        std::cout << i << std::endl;
+    }
     return 0;
 }
