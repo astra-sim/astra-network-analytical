@@ -239,7 +239,7 @@ int main(int argc, char* argv[]) {
                     topology_configs
             );
         }
-        nodes_count_for_system[2] = npus_count;
+        nodes_count_for_system[0] = npus_count;
     } else if (topology_name == "AllToAll") {
         assert(dimensions_count == 1 && "[main] AllToAll is the given topology but dimension != 1");
 
@@ -252,7 +252,7 @@ int main(int argc, char* argv[]) {
                     topology_configs
             );
         }
-        nodes_count_for_system[2] = npus_count;
+        nodes_count_for_system[0] = npus_count;
     } else if (topology_name == "Torus2D") {
         assert(dimensions_count == 2 && "[main] Torus2D is the given topology but dimension != 2");
 
@@ -266,8 +266,8 @@ int main(int argc, char* argv[]) {
             );
         }
 
-        nodes_count_for_system[1] = units_counts[1];
-        nodes_count_for_system[2] = units_counts[0];
+        nodes_count_for_system[0] = units_counts[1];
+        nodes_count_for_system[1] = units_counts[0];
     } else if (topology_name == "Ring") {
         assert(dimensions_count == 1 && "[main] Ring is the given topology but dimension != 1");
 
@@ -280,7 +280,7 @@ int main(int argc, char* argv[]) {
                     topology_configs
             );
         }
-        nodes_count_for_system[2] = npus_count;
+        nodes_count_for_system[0] = npus_count;
     } else if (topology_name == "Ring_AllToAll_Switch") {
         assert(dimensions_count == 3 && "[main] Ring_AllToAll_Switch is the given topology but dimension != 3");
 
@@ -295,8 +295,8 @@ int main(int argc, char* argv[]) {
             exit(-1);
         }
         nodes_count_for_system[0] = units_counts[0];
-        nodes_count_for_system[1] = units_counts[2];
-        nodes_count_for_system[2] = units_counts[1];
+        nodes_count_for_system[1] = units_counts[1];
+        nodes_count_for_system[2] = units_counts[2];
     } else {
         std::cout << "[Main] Topology not defined: " << topology_name << std::endl;
         exit(-1);
