@@ -32,3 +32,26 @@ Topology::NpuId Topology::npuAddressToId(NpuAddress npu_address) const noexcept 
     // Baseline implementation: assume 1d topology
     return npu_address[0];
 }
+
+Topology::Latency Topology::serializationLatency(int dimension, PayloadSize payload_size) const noexcept {
+    return payload_size / configs[dimension].getLinkBandwidth();
+}
+
+Topology::Latency Topology::nicLatency(int dimension) const noexcept {
+    return configs[dimension].getNicLatency();
+}
+
+Topology::Latency Topology::routerLatency(int dimension) const noexcept {
+    return configs[dimension].getRouterLatency();
+}
+
+Topology::Latency Topology::hbmLatency(int dimension, PayloadSize payload_size) const noexcept {
+    auto hbm_latency = configs[dimension].getHbmLatency();  // HBM baseline latency
+    hbm_latency += payload_size / configs[dimension].getHbmBandwidth();  // HBM serialization latency
+    return hbm_latency * configs[dimension].getHbmScale();  // return scaled HBM latency
+}
+
+Topology::Latency Topology::criticalLatency(Latency communication_latency, Latency hbm_latency) const noexcept {
+    // return larger latency
+    return (communication_latency > hbm_latency) ? communication_latency : hbm_latency;
+}

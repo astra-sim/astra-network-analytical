@@ -32,6 +32,12 @@ namespace Analytical {
 
         void checkNpuIdBound(NpuId npu_id) const noexcept;
 
+        Latency serializationLatency(int dimension, PayloadSize payload_size) const noexcept;
+        Latency nicLatency(int dimension) const noexcept;
+        Latency routerLatency(int dimension) const noexcept;
+        Latency hbmLatency(int dimension, PayloadSize payload_size) const noexcept;
+        Latency criticalLatency(Latency communication_latency, Latency hbm_latency) const noexcept;
+
         virtual NpuAddress npuIdToAddress(NpuId npu_id) const noexcept;
         virtual NpuId npuAddressToId(NpuAddress npu_address) const noexcept;
     };

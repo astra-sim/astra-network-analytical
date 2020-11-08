@@ -14,15 +14,10 @@ namespace Analytical {
     public:
         FastTopology(TopologyConfigs configs) noexcept;
 
-        virtual ~FastTopology() noexcept = 0;
+        ~FastTopology() noexcept override = 0;
 
     protected:
         Latency linkLatency(int dimension, int hops_count) const noexcept;
-        Latency serializationLatency(int dimension, PayloadSize payload_size) const noexcept;
-        Latency nicLatency(int dimension) const noexcept;
-        Latency routerLatency(int dimension) const noexcept;
-        Latency hbmLatency(int dimension, PayloadSize payload_size) const noexcept;
-        Latency criticalLatency(Latency communication_latency, Latency hbm_latency) const noexcept;
     };
 }
 
