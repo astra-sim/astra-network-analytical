@@ -5,6 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #include "DetailedTopology.hh"
 #include <cassert>
+#include <iostream>
 
 using namespace Analytical;
 
@@ -28,6 +29,7 @@ void DetailedTopology::connect(NpuId src, NpuId dest, int dimension) noexcept {
 }
 
 DetailedTopology::Latency DetailedTopology::transmit(NpuId src, NpuId dest, PayloadSize payload_size) noexcept {
+    std::cout << "send: " << src << " -> " << dest << std::endl;
     auto src_entry = links.find(src);
     assert(src_entry != links.end() && "[DetailedTopology, method transmit] Link doesn't exist.");
 

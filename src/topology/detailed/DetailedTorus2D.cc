@@ -4,6 +4,7 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include <cmath>
+#include <iostream>
 #include "DetailedTorus2D.hh"
 
 using namespace Analytical;
@@ -25,10 +26,12 @@ DetailedTorus2D::DetailedTorus2D(TopologyConfigs configs) noexcept :
         }
 
         // connect (end-1) <-> 0
-        auto src = (width * h) + (width - 1);
-        auto dest = (width * h);
-        connect(src, dest, 0);
-        connect(dest, src, 0);
+        if (width > 2) {
+            auto src = (width * h) + (width - 1);
+            auto dest = (width * h);
+            connect(src, dest, 0);
+            connect(dest, src, 0);
+        }
     }
 
     // connect vertical rings
@@ -42,10 +45,12 @@ DetailedTorus2D::DetailedTorus2D(TopologyConfigs configs) noexcept :
         }
 
         // connect (end-1) <-> 0
-        auto src = (width * (height - 1)) + w;
-        auto dest = w;
-        connect(src, dest, 1);
-        connect(dest, src, 1);
+        if (height > 2) {
+            auto src = (width * (height - 1)) + w;
+            auto dest = w;
+            connect(src, dest, 1);
+            connect(dest, src, 1);
+        }
     }
 }
 
@@ -104,6 +109,7 @@ double DetailedTorus2D::send(NpuId src, NpuId dest, PayloadSize payload_size) no
     // serialization delay
     // FIXME: assuming dim0 = dim1, so using dim0 here
     communication_latency += serializationLatency(0, payload_size);
+    std::cout << "latency: " << communication_latency << std::endl;
 
     // hbm
     // FIXME: assuming dim0 = dim1, so using dim0 here

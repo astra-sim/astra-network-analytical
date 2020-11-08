@@ -20,10 +20,12 @@ DetailedRing::DetailedRing(TopologyConfigs configs) noexcept :
     }
 
     // connect (end-1) <-> 0
-    auto src = npus_count - 1;
-    auto dest = 0;
-    connect(src, dest, 0);
-    connect(dest, src, 0);
+    if (npus_count > 2) {
+        auto src = npus_count - 1;
+        auto dest = 0;
+        connect(src, dest, 0);
+        connect(dest, src, 0);
+    }
 }
 
 DetailedRing::~DetailedRing() noexcept = default;
