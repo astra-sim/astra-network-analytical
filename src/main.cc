@@ -23,6 +23,10 @@ LICENSE file in the root directory of this source tree.
 #include "topology/fast/FastRing.hh"
 #include "topology/fast/FastTorus2D.hh"
 #include "topology/fast/FastRing_AllToAll_Switch.hh"
+#include "topology/detailed/DetailedSwitch.hh"
+#include "topology/detailed/DetailedAllToAll.hh"
+#include "topology/detailed/DetailedRing.hh"
+#include "topology/detailed/DetailedTorus2D.hh"
 
 namespace po = boost::program_options;
 
@@ -231,10 +235,9 @@ int main(int argc, char* argv[]) {
                     topology_configs
             );
         } else {
-            // non-fast version
-            // TODO: implement this
-            std::cout << "Detailed version not implemented yet" << std::endl;
-            exit(-1);
+            topology = std::make_shared<Analytical::DetailedSwitch>(
+                    topology_configs
+            );
         }
         nodes_count_for_system[2] = npus_count;
     } else if (topology_name == "AllToAll") {
@@ -245,10 +248,9 @@ int main(int argc, char* argv[]) {
                     topology_configs
             );
         } else {
-            // non-fast version
-            // TODO: implement this
-            std::cout << "Detailed version not implemented yet" << std::endl;
-            exit(-1);
+            topology = std::make_shared<Analytical::DetailedAllToAll>(
+                    topology_configs
+            );
         }
         nodes_count_for_system[2] = npus_count;
     } else if (topology_name == "Torus2D") {
@@ -259,10 +261,9 @@ int main(int argc, char* argv[]) {
                     topology_configs
             );
         } else {
-            // non-fast version
-            // TODO: implement this
-            std::cout << "Detailed version not implemented yet" << std::endl;
-            exit(-1);
+            topology = std::make_shared<Analytical::DetailedTorus2D>(
+                    topology_configs
+            );
         }
 
         nodes_count_for_system[1] = units_counts[1];
@@ -275,10 +276,9 @@ int main(int argc, char* argv[]) {
                     topology_configs
             );
         } else {
-            // non-fast version
-            // TODO: implement this
-            std::cout << "Detailed version not implemented yet" << std::endl;
-            exit(-1);
+            topology = std::make_shared<Analytical::DetailedRing>(
+                    topology_configs
+            );
         }
         nodes_count_for_system[2] = npus_count;
     } else if (topology_name == "Ring_AllToAll_Switch") {
