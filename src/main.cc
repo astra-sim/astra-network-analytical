@@ -6,7 +6,6 @@ LICENSE file in the root directory of this source tree.
 #include <array>
 #include <cassert>
 #include <cmath>
-#include <fstream>
 #include <iostream>
 #include <memory>
 #include "api/AnalyticalNetwork.hh"
@@ -73,7 +72,7 @@ int main(int argc, char* argv[]) {
     // Parse command line arguments
     try {
         cmd_parser.parse(argc, argv);
-    } catch (const Analytical::CommandLineParser::ParsingError& e) {
+    } catch (const Analytical::CommandLineParser::ParsingError &e) {
         std::cout << e.what() << std::endl;
         exit(-1);
     }
@@ -128,63 +127,18 @@ int main(int argc, char* argv[]) {
     }
 
     // parse configuration.json file
-    auto json_file = std::ifstream(network_configuration, std::ifstream::in);
-    if (!json_file) {
-        std::cout << "[Analytical] Failed to open network configuration file at: "
-                  << network_configuration << std::endl;
-        exit(-1);
-    }
-
-    nlohmann::json json_configuration;
-    json_file >> json_configuration;
-    json_file.close();
-
-    auto network_parser = Analytical::NetworkConfigParser(json_configuration);
-
-    std::string topology_name = json_configuration["topology-name"];
-
-    int dimensions_count = json_configuration["dimensions-count"];
-
-    std::vector<int> units_counts;
-    for (int units_count : json_configuration["units-count"]) {
-        units_counts.emplace_back(units_count);
-    }
+    auto network_parser = Analytical::NetworkConfigParser(network_configuration);
+    auto topology_name = network_parser.get<std::string>("topology-name");
+    auto dimensions_count = network_parser.get<int>("dimensions-count");
+    auto units_counts = network_parser.get<std::vector<int>>("units-count");
     cmd_parser.set_if_defined("units-count", &units_counts);
-
-    std::vector<double> link_latencies;
-    for (double link_latency : json_configuration["link-latency"]) {
-        link_latencies.emplace_back(link_latency);
-    }
-
-    std::vector<double> link_bandwidths;
-    for (double link_bandwidth : json_configuration["link-bandwidth"]) {
-        link_bandwidths.emplace_back(link_bandwidth);
-    }
-
-    std::vector<double> nic_latencies;
-    for (double nic_latency : json_configuration["nic-latency"]) {
-        nic_latencies.emplace_back(nic_latency);
-    }
-
-    std::vector<double> router_latencies;
-    for (double router_latency : json_configuration["router-latency"]) {
-        router_latencies.emplace_back(router_latency);
-    }
-
-    std::vector<double> hbm_latencies;
-    for (double hbm_latency : json_configuration["hbm-latency"]) {
-        hbm_latencies.emplace_back(hbm_latency);
-    }
-
-    std::vector<double> hbm_bandwidths;
-    for (double hbm_bandwidth : json_configuration["hbm-bandwidth"]) {
-        hbm_bandwidths.emplace_back(hbm_bandwidth);
-    }
-
-    std::vector<double> hbm_scales;
-    for (double hbm_scale : json_configuration["hbm-scale"]) {
-        hbm_scales.emplace_back(hbm_scale);
-    }
+    auto link_latencies = network_parser.get<std::vector<double>>("link-latency");
+    auto link_bandwidths = network_parser.get<std::vector<double>>("link-bandwidth");
+    auto nic_latencies = network_parser.get<std::vector<double>>("nic-latency");
+    auto router_latencies = network_parser.get<std::vector<double>>("router-latency");
+    auto hbm_latencies = network_parser.get<std::vector<double>>("hbm-latency");
+    auto hbm_bandwidths = network_parser.get<std::vector<double>>("hbm-bandwidth");
+    auto hbm_scales = network_parser.get<std::vector<double>>("hbm-scale");
 
 
     /**

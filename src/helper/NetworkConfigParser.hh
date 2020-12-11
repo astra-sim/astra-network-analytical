@@ -15,11 +15,16 @@ namespace Analytical {
     public:
         using TopologyList = HierarchicalTopologyConfig::TopologyList;
 
-        NetworkConfigParser(nlohmann::json& json_configuration) noexcept;
-
-        std::vector<TopologyList> parseHierarchicalTopologyList() const noexcept;
+        explicit NetworkConfigParser(const std::string& network_configuration) noexcept;
 
         bool useFastVersion() const noexcept;
+
+        template<typename T>
+        T get(const char* arg_name) const noexcept {
+            return json_configuration[arg_name];
+        }
+
+        std::vector<TopologyList> parseHierarchicalTopologyList() const noexcept;
 
     private:
         nlohmann::json json_configuration;
