@@ -9,7 +9,7 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-DetailedTorus2D::DetailedTorus2D(TopologyConfigs configs, CostModel cost_model) noexcept :
+DetailedTorus2D::DetailedTorus2D(TopologyConfigs configs, CostModel& cost_model) noexcept :
         DetailedTopology(configs, cost_model) {
     // FIXME: assume the ring is bidirectional
     width = configs[0].getNpusCount();

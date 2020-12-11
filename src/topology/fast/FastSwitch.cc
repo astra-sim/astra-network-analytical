@@ -7,8 +7,15 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastSwitch::FastSwitch(TopologyConfigs configs, CostModel cost_model) noexcept :
-        FastTopology(configs, cost_model) { }
+FastSwitch::FastSwitch(TopologyConfigs configs, CostModel& cost_model) noexcept :
+        FastTopology(configs, cost_model) {
+    auto link_latency = configs[0].getLinkLatency();
+    auto link_bandwidth = configs[0].getLinkBandwidth();
+
+    cost_model.createLink(2 * npus_count, link_latency, link_bandwidth);
+    cost_model.createNpu(npus_count, 2);
+    cost_model.createSwitch(1, 2 * npus_count);
+}
 
 FastSwitch::~FastSwitch() noexcept = default;
 

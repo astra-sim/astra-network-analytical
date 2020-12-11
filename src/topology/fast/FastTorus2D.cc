@@ -8,8 +8,14 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastTorus2D::FastTorus2D(TopologyConfigs configs, CostModel cost_model) noexcept :
-        FastTopology(configs, cost_model) { }
+FastTorus2D::FastTorus2D(TopologyConfigs configs, CostModel& cost_model) noexcept :
+        FastTopology(configs, cost_model) {
+    auto link_latency = configs[0].getLinkLatency();
+    auto link_bandwidth = configs[0].getLinkBandwidth();
+
+    cost_model.createLink(4 * npus_count, link_latency, link_bandwidth);
+    cost_model.createNpu(npus_count, 8);
+}
 
 FastTorus2D::~FastTorus2D() noexcept = default;
 

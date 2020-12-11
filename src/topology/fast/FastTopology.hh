@@ -12,7 +12,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
     class FastTopology : public Topology {
     public:
-        FastTopology(TopologyConfigs configs, CostModel cost_model) noexcept;
+        FastTopology(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
         ~FastTopology() noexcept override = 0;
 

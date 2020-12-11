@@ -77,7 +77,7 @@ void CostModel::computeCost() const noexcept {
 
         std::cout << "\t" << count << " (Latency: " << latency << ", Bandwidth: " << bandwidth << ")" << std::endl;
     }
-    std::cout << "[CostModel] Total links usage: " << links_count << std::endl;
+    std::cout << "[CostModel] Total links usage: " << links_count << std::endl << std::endl;;
 
     std::cout << "[CostModel] NIC Usage" << std::endl;
     for (const auto& nic : nic_map) {
@@ -90,7 +90,7 @@ void CostModel::computeCost() const noexcept {
         
         std::cout << "\t" << count << " (Latency: " << latency << ", Bandwidth: " << bandwidth << ")" << std::endl;
     }
-    std::cout << "[CostModel] Total NIC usage: " << nics_count << std::endl;
+    std::cout << "[CostModel] Total NIC usage: " << nics_count << std::endl << std::endl;;
     
     std::cout << "[CostModel] NPUs Usage" << std::endl;
     for (const auto& npu : npu_map) {
@@ -99,7 +99,7 @@ void CostModel::computeCost() const noexcept {
         npus_count += count;
         std::cout << "\t" << count << " (Radix: " << radix << ")" << std::endl;
     }
-    std::cout << "[CostModel] Total NPU usage: " << npus_count << std::endl;
+    std::cout << "[CostModel] Total NPU usage: " << npus_count << std::endl << std::endl;;
     
     std::cout << "[CostModel] Switch Usage" << std::endl;
     for (const auto& s : switch_map) {
@@ -108,7 +108,7 @@ void CostModel::computeCost() const noexcept {
         switches_count += count;
         std::cout << "\t" << count << " (Radix: " << radix << ")" << std::endl;
     }
-    std::cout << "[CostModel] Total switch usage: " << switches_count << std::endl;
+    std::cout << "[CostModel] Total switch usage: " << switches_count << std::endl << std::endl;
 
     // Compute total cost
     auto total_cost = links_count + nics_count + npus_count + switches_count;

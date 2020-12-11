@@ -21,7 +21,7 @@ namespace Analytical {
         using Latency = TopologyConfig::Latency;
         using Bandwidth = TopologyConfig::Bandwidth;
 
-        Topology(TopologyConfigs configs, CostModel cost_model) noexcept;
+        Topology(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
         virtual ~Topology() noexcept = 0;
 

@@ -14,7 +14,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
     class DetailedTopology : public Topology {
     public:
-        DetailedTopology(TopologyConfigs configs, CostModel cost_model) noexcept;
+        DetailedTopology(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
         ~DetailedTopology() noexcept override = 0;
 

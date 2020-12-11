@@ -8,7 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-DetailedRing::DetailedRing(TopologyConfigs configs, CostModel cost_model) noexcept :
+DetailedRing::DetailedRing(TopologyConfigs configs, CostModel& cost_model) noexcept :
         DetailedTopology(configs, cost_model) {
     // FIXME: assume the ring is bidirectional
 

@@ -7,8 +7,17 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastAllToAll::FastAllToAll(TopologyConfigs configs, CostModel cost_model) noexcept :
-        FastTopology(configs, cost_model) { }
+FastAllToAll::FastAllToAll(TopologyConfigs configs, CostModel& cost_model) noexcept :
+        FastTopology(configs, cost_model) {
+    auto link_latency = configs[0].getLinkLatency();
+    auto link_bandwidth = configs[0].getLinkBandwidth();
+
+    auto links_count = npus_count * (npus_count - 1);
+    cost_model.createLink(links_count, link_latency, link_bandwidth);
+
+    auto radix = (npus_count - 1) * 2;
+    cost_model.createNpu(npus_count, radix);
+}
 
 FastAllToAll::~FastAllToAll() noexcept = default;
 

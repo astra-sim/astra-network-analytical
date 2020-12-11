@@ -8,8 +8,17 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastRing::FastRing(TopologyConfigs configs, CostModel cost_model) noexcept :
-        FastTopology(configs, cost_model) { }
+FastRing::FastRing(TopologyConfigs configs, CostModel& cost_model) noexcept :
+        FastTopology(configs, cost_model) {
+    auto link_latency = configs[0].getLinkLatency();
+    auto link_bandwidth = configs[0].getLinkBandwidth();
+
+    // FIXME: assuming one link among nodes
+    cost_model.createLink(npus_count * 2, link_latency, link_bandwidth);
+
+    // left and right
+    cost_model.createNpu(npus_count, 4);
+}
 
 FastRing::~FastRing() noexcept = default;
 
