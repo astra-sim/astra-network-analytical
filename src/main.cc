@@ -10,6 +10,7 @@ LICENSE file in the root directory of this source tree.
 #include <iostream>
 #include <memory>
 #include "api/AnalyticalNetwork.hh"
+#include "helper/NetworkConfigParser.hh"
 #include "astra-sim/system/Sys.hh"
 #include "astra-sim/system/memory/SimpleMemory.hh"
 #include "event-queue/EventQueue.hh"
@@ -17,6 +18,8 @@ LICENSE file in the root directory of this source tree.
 #include "helper/CommandLineParser.hh"
 #include "helper/json.hh"
 #include "topology/CostModel.hh"
+#include "topology/hierarchical/HierarchicalTopology.hh"
+#include "topology/hierarchical/HierarchicalTopologyConfig.hh"
 #include "topology/Topology.hh"
 #include "topology/TopologyConfig.hh"
 #include "topology/fast/FastSwitch.hh"
@@ -136,9 +139,9 @@ int main(int argc, char* argv[]) {
     json_file >> json_configuration;
     json_file.close();
 
-    std::string topology_name = json_configuration["topology-name"];
+    auto network_parser = Analytical::NetworkConfigParser(json_configuration);
 
-    bool use_fast_version = json_configuration["use-fast-version"];
+    std::string topology_name = json_configuration["topology-name"];
 
     int dimensions_count = json_configuration["dimensions-count"];
 
@@ -231,25 +234,38 @@ int main(int argc, char* argv[]) {
     }
 
     // Instantiate topology
-    if (topology_name == "Switch") {
+    if (topology_name == "Hierarchical") {
+        // Parse networks per each dimension
+        auto topologies_per_dim = network_parser.parseHierarchicalTopologyList();
+        auto hierarchy_config = Analytical::HierarchicalTopologyConfig(dimensions_count, topologies_per_dim);
+
+        topology = std::make_shared<Analytical::HierarchicalTopology>(
+                topology_configs,
+                hierarchy_config,
+                cost_model
+        );
+        for (int dim = 0; dim < dimensions_count; dim++) {
+            nodes_count_for_system[dim] = units_counts[dim];
+        }
+    } else if (topology_name == "Switch") {
         assert(dimensions_count == 1 && "[main] Switch is the given topology but dimension != 1");
 
-        if (use_fast_version) {
+        if (network_parser.useFastVersion()) {
             topology = std::make_shared<Analytical::FastSwitch>(
                     topology_configs,
                     cost_model
-            );
+                    );
         } else {
             topology = std::make_shared<Analytical::DetailedSwitch>(
                     topology_configs,
                     cost_model
-            );
+                    );
         }
         nodes_count_for_system[0] = npus_count;
     } else if (topology_name == "AllToAll") {
         assert(dimensions_count == 1 && "[main] AllToAll is the given topology but dimension != 1");
 
-        if (use_fast_version) {
+        if (network_parser.useFastVersion()) {
             topology = std::make_shared<Analytical::FastAllToAll>(
                     topology_configs,
                     cost_model
@@ -264,7 +280,7 @@ int main(int argc, char* argv[]) {
     } else if (topology_name == "Torus2D") {
         assert(dimensions_count == 2 && "[main] Torus2D is the given topology but dimension != 2");
 
-        if (use_fast_version) {
+        if (network_parser.useFastVersion()) {
             topology = std::make_shared<Analytical::FastTorus2D>(
                     topology_configs,
                     cost_model
@@ -281,7 +297,7 @@ int main(int argc, char* argv[]) {
     } else if (topology_name == "Ring") {
         assert(dimensions_count == 1 && "[main] Ring is the given topology but dimension != 1");
 
-        if (use_fast_version) {
+        if (network_parser.useFastVersion()) {
             topology = std::make_shared<Analytical::FastRing>(
                     topology_configs,
                     cost_model
@@ -296,7 +312,7 @@ int main(int argc, char* argv[]) {
     } else if (topology_name == "Ring_AllToAll_Switch") {
         assert(dimensions_count == 3 && "[main] Ring_AllToAll_Switch is the given topology but dimension != 3");
 
-        if (use_fast_version) {
+        if (network_parser.useFastVersion()) {
             topology = std::make_shared<Analytical::FastRing_AllToAll_Switch>(
                     topology_configs,
                     cost_model
