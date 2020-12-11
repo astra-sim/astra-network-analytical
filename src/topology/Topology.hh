@@ -7,43 +7,48 @@ LICENSE file in the root directory of this source tree.
 #define __TOPOLOGY_HH__
 
 #include <vector>
-#include "TopologyConfig.hh"
 #include "CostModel.hh"
+#include "TopologyConfig.hh"
 
 namespace Analytical {
-    class Topology {
-    public:
-        using TopologyConfigs = std::vector<TopologyConfig>;
+class Topology {
+ public:
+  using TopologyConfigs = std::vector<TopologyConfig>;
 
-        using NpuId = TopologyConfig::NpuId;
-        using NpuAddress = TopologyConfig::NpuAddress;
-        using PayloadSize = TopologyConfig::PayloadSize;
-        using Latency = TopologyConfig::Latency;
-        using Bandwidth = TopologyConfig::Bandwidth;
+  using NpuId = TopologyConfig::NpuId;
+  using NpuAddress = TopologyConfig::NpuAddress;
+  using PayloadSize = TopologyConfig::PayloadSize;
+  using Latency = TopologyConfig::Latency;
+  using Bandwidth = TopologyConfig::Bandwidth;
 
-        Topology(TopologyConfigs configs, CostModel& cost_model) noexcept;
+  Topology(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
-        virtual ~Topology() noexcept = 0;
+  virtual ~Topology() noexcept = 0;
 
-        virtual double send(NpuId src, NpuId dest, PayloadSize payloadSize) noexcept = 0;
+  virtual double send(
+      NpuId src,
+      NpuId dest,
+      PayloadSize payloadSize) noexcept = 0;
 
-    protected:
-        TopologyConfigs configs;  // TopologyConfigs for each dimension
-        int npus_count;  // NPUs count of the topology
+ protected:
+  TopologyConfigs configs; // TopologyConfigs for each dimension
+  int npus_count; // NPUs count of the topology
 
-        CostModel cost_model;
+  CostModel cost_model;
 
-        void checkNpuIdBound(NpuId npu_id) const noexcept;
+  void checkNpuIdBound(NpuId npu_id) const noexcept;
 
-        Latency serializationLatency(int dimension, PayloadSize payload_size) const noexcept;
-        Latency nicLatency(int dimension) const noexcept;
-        Latency routerLatency(int dimension) const noexcept;
-        Latency hbmLatency(int dimension, PayloadSize payload_size) const noexcept;
-        Latency criticalLatency(Latency communication_latency, Latency hbm_latency) const noexcept;
+  Latency serializationLatency(int dimension, PayloadSize payload_size)
+      const noexcept;
+  Latency nicLatency(int dimension) const noexcept;
+  Latency routerLatency(int dimension) const noexcept;
+  Latency hbmLatency(int dimension, PayloadSize payload_size) const noexcept;
+  Latency criticalLatency(Latency communication_latency, Latency hbm_latency)
+      const noexcept;
 
-        virtual NpuAddress npuIdToAddress(NpuId npu_id) const noexcept;
-        virtual NpuId npuAddressToId(NpuAddress npu_address) const noexcept;
-    };
-}
+  virtual NpuAddress npuIdToAddress(NpuId npu_id) const noexcept;
+  virtual NpuId npuAddressToId(NpuAddress npu_address) const noexcept;
+};
+} // namespace Analytical
 
 #endif

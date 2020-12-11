@@ -10,18 +10,19 @@ LICENSE file in the root directory of this source tree.
 #include "FastTopology.hh"
 
 namespace Analytical {
-    class FastTorus2D : public FastTopology {
-    public:
-        FastTorus2D(TopologyConfigs configs, CostModel& cost_model) noexcept;
+class FastTorus2D : public FastTopology {
+ public:
+  FastTorus2D(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
-        ~FastTorus2D() noexcept;
+  ~FastTorus2D() noexcept;
 
-        double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept override;
+  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+      override;
 
-    private:
-        NpuAddress npuIdToAddress(NpuId npu_id) const noexcept override;
-        NpuId npuAddressToId(NpuAddress npu_address) const noexcept override;
-    };
-}
+ private:
+  NpuAddress npuIdToAddress(NpuId npu_id) const noexcept override;
+  NpuId npuAddressToId(NpuAddress npu_address) const noexcept override;
+};
+} // namespace Analytical
 
 #endif

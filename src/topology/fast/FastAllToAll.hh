@@ -10,15 +10,15 @@ LICENSE file in the root directory of this source tree.
 #include "FastTopology.hh"
 
 namespace Analytical {
-    class FastAllToAll : public FastTopology {
-    public:
-        FastAllToAll(TopologyConfigs configs, CostModel& cost_model) noexcept;
+class FastAllToAll : public FastTopology {
+ public:
+  FastAllToAll(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
-        ~FastAllToAll() noexcept;
+  ~FastAllToAll() noexcept;
 
-        double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept override;
-    };
-}
-
+  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+      override;
+};
+} // namespace Analytical
 
 #endif

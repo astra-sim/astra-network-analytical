@@ -9,17 +9,18 @@ LICENSE file in the root directory of this source tree.
 #include "DetailedTopology.hh"
 
 namespace Analytical {
-    class DetailedSwitch : public DetailedTopology {
-    public:
-        DetailedSwitch(TopologyConfigs configs, CostModel& cost_model) noexcept;
+class DetailedSwitch : public DetailedTopology {
+ public:
+  DetailedSwitch(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
-        ~DetailedSwitch() noexcept override;
+  ~DetailedSwitch() noexcept override;
 
-        double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept override;
+  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+      override;
 
-    private:
-        NpuId switch_id;
-    };
-}
+ private:
+  NpuId switch_id;
+};
+} // namespace Analytical
 
 #endif

@@ -10,19 +10,21 @@ LICENSE file in the root directory of this source tree.
 #include "FastTopology.hh"
 
 namespace Analytical {
-    class FastRing_AllToAll_Switch : public FastTopology {
-    public:
-        FastRing_AllToAll_Switch(TopologyConfigs configs, CostModel& cost_model) noexcept;
+class FastRing_AllToAll_Switch : public FastTopology {
+ public:
+  FastRing_AllToAll_Switch(
+      TopologyConfigs configs,
+      CostModel& cost_model) noexcept;
 
-        ~FastRing_AllToAll_Switch() noexcept;
+  ~FastRing_AllToAll_Switch() noexcept;
 
-        double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept override;
+  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+      override;
 
-    private:
-        NpuAddress npuIdToAddress(NpuId npu_id) const noexcept override;
-        NpuId npuAddressToId(NpuAddress npu_address) const noexcept override;
-    };
-}
-
+ private:
+  NpuAddress npuIdToAddress(NpuId npu_id) const noexcept override;
+  NpuId npuAddressToId(NpuAddress npu_address) const noexcept override;
+};
+} // namespace Analytical
 
 #endif

@@ -8,16 +8,16 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-Link::Link(Latency link_latency) noexcept:
-        sent_packets_count(0),
-        total_payload_size(0),
-        link_latency(link_latency) { }
+Link::Link(Latency link_latency) noexcept
+    : sent_packets_count(0),
+      total_payload_size(0),
+      link_latency(link_latency) {}
 
 Link::Latency Link::transmit(PayloadSize payload_size) noexcept {
-    // update stats
-    sent_packets_count++;
-    total_payload_size += payload_size;
+  // update stats
+  sent_packets_count++;
+  total_payload_size += payload_size;
 
-    // return link latency
-    return link_latency;
+  // return link latency
+  return link_latency;
 }

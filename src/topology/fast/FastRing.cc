@@ -8,41 +8,45 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastRing::FastRing(TopologyConfigs configs, CostModel& cost_model) noexcept :
-        FastTopology(configs, cost_model) {
-    auto link_latency = configs[0].getLinkLatency();
-    auto link_bandwidth = configs[0].getLinkBandwidth();
+FastRing::FastRing(TopologyConfigs configs, CostModel& cost_model) noexcept
+    : FastTopology(configs, cost_model) {
+  auto link_latency = configs[0].getLinkLatency();
+  auto link_bandwidth = configs[0].getLinkBandwidth();
 
-    // FIXME: assuming one link among nodes
-    cost_model.createLink(npus_count * 2, link_latency, link_bandwidth);
+  // FIXME: assuming one link among nodes
+  cost_model.createLink(npus_count * 2, link_latency, link_bandwidth);
 
-    // left and right
-    cost_model.createNpu(npus_count, 4);
+  // left and right
+  cost_model.createNpu(npus_count, 4);
 }
 
 FastRing::~FastRing() noexcept = default;
 
-double FastRing::send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept {
-    // check NPU ID validity
-    checkNpuIdBound(src);
-    checkNpuIdBound(dest);
+double FastRing::send(
+    NpuId src,
+    NpuId dest,
+    PayloadSize payload_size) noexcept {
+  // check NPU ID validity
+  checkNpuIdBound(src);
+  checkNpuIdBound(dest);
 
+  // ring topology: compute hops count
+  // FIXME: assume bidirectional ring (always takes shortest path)
+  auto distanceA = std::abs(src - dest);
+  auto distanceB = npus_count - distanceA;
+  auto hops_count = (distanceA < distanceB)
+      ? distanceA
+      : distanceB; // shorter one becomes the hop count
 
-    // ring topology: compute hops count
-    // FIXME: assume bidirectional ring (always takes shortest path)
-    auto distanceA = std::abs(src - dest);
-    auto distanceB = npus_count - distanceA;
-    auto hops_count = (distanceA < distanceB) ? distanceA : distanceB;  // shorter one becomes the hop count
+  // compute communication latency
+  // dimension is 0
+  auto communication_latency = linkLatency(0, hops_count);
+  communication_latency += serializationLatency(0, payload_size);
+  communication_latency += 2 * nicLatency(0); // passes 2 NICs: input and output
 
-    // compute communication latency
-    // dimension is 0
-    auto communication_latency = linkLatency(0, hops_count);
-    communication_latency += serializationLatency(0, payload_size);
-    communication_latency += 2 * nicLatency(0);  // passes 2 NICs: input and output
+  // compute hbm latency
+  auto hbm_latency = hbmLatency(0, payload_size);
 
-    // compute hbm latency
-    auto hbm_latency = hbmLatency(0, payload_size);
-
-    // return critical latency
-    return criticalLatency(communication_latency, hbm_latency);
+  // return critical latency
+  return criticalLatency(communication_latency, hbm_latency);
 }

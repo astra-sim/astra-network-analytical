@@ -9,21 +9,21 @@ LICENSE file in the root directory of this source tree.
 #include <vector>
 
 namespace Analytical {
-    struct HierarchicalTopologyConfig {
-    public:
-        enum class TopologyList {
-            Ring, Switch, AllToAll
-        };
+struct HierarchicalTopologyConfig {
+ public:
+  enum class TopologyList { Ring, Switch, AllToAll };
 
-        HierarchicalTopologyConfig(int dimensions_count, std::vector<TopologyList> topologies_per_dim) noexcept;
+  HierarchicalTopologyConfig(
+      int dimensions_count,
+      std::vector<TopologyList> topologies_per_dim) noexcept;
 
-        int getDimensionsCount() const noexcept;
-        TopologyList getTopologyForDim(int dimension) const noexcept;
+  int getDimensionsCount() const noexcept;
+  TopologyList getTopologyForDim(int dimension) const noexcept;
 
-    private:
-        int dimensions_count;
-        std::vector<TopologyList> topologies_per_dim;
-    };
-}
+ private:
+  int dimensions_count;
+  std::vector<TopologyList> topologies_per_dim;
+};
+} // namespace Analytical
 
 #endif

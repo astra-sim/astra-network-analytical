@@ -7,39 +7,44 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-DetailedAllToAll::DetailedAllToAll(TopologyConfigs configs, CostModel& cost_model) noexcept :
-        DetailedTopology(configs, cost_model) {
-    // connect all (src, dest) pair
-    for (int src = 0; src < npus_count; src++) {
-        for (int dest = 0; dest < npus_count; dest++) {
-            if (src == dest) {
-                continue;
-            }
+DetailedAllToAll::DetailedAllToAll(
+    TopologyConfigs configs,
+    CostModel& cost_model) noexcept
+    : DetailedTopology(configs, cost_model) {
+  // connect all (src, dest) pair
+  for (int src = 0; src < npus_count; src++) {
+    for (int dest = 0; dest < npus_count; dest++) {
+      if (src == dest) {
+        continue;
+      }
 
-            // AllToAll has only one dimension
-            connect(src, dest, 0);
-        }
+      // AllToAll has only one dimension
+      connect(src, dest, 0);
     }
+  }
 }
 
 DetailedAllToAll::~DetailedAllToAll() noexcept = default;
 
-double DetailedAllToAll::send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept {
-    // check NPU ID validity
-    checkNpuIdBound(src);
-    checkNpuIdBound(dest);
+double DetailedAllToAll::send(
+    NpuId src,
+    NpuId dest,
+    PayloadSize payload_size) noexcept {
+  // check NPU ID validity
+  checkNpuIdBound(src);
+  checkNpuIdBound(dest);
 
-    // Check src and dest differs
-    if (src == dest) {
-        return 0;
-    }
+  // Check src and dest differs
+  if (src == dest) {
+    return 0;
+  }
 
-    // directly send from src to dest
-    auto communication_latency = transmit(src, dest, payload_size);
-    communication_latency += serializationLatency(0, payload_size);
-    communication_latency += 2 * nicLatency(0);
+  // directly send from src to dest
+  auto communication_latency = transmit(src, dest, payload_size);
+  communication_latency += serializationLatency(0, payload_size);
+  communication_latency += 2 * nicLatency(0);
 
-    auto hbm_latency = hbmLatency(0, payload_size);
+  auto hbm_latency = hbmLatency(0, payload_size);
 
-    return criticalLatency(communication_latency, hbm_latency);
+  return criticalLatency(communication_latency, hbm_latency);
 }

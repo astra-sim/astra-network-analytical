@@ -7,28 +7,29 @@ LICENSE file in the root directory of this source tree.
 #define __NETWORKCONFIGPARSER_HH__
 
 #include <vector>
-#include "json.hh"
 #include "../topology/hierarchical/HierarchicalTopologyConfig.hh"
+#include "json.hh"
 
 namespace Analytical {
-    class NetworkConfigParser {
-    public:
-        using TopologyList = HierarchicalTopologyConfig::TopologyList;
+class NetworkConfigParser {
+ public:
+  using TopologyList = HierarchicalTopologyConfig::TopologyList;
 
-        explicit NetworkConfigParser(const std::string& network_configuration) noexcept;
+  explicit NetworkConfigParser(
+      const std::string& network_configuration) noexcept;
 
-        bool useFastVersion() const noexcept;
+  bool useFastVersion() const noexcept;
 
-        template<typename T>
-        T get(const char* arg_name) const noexcept {
-            return json_configuration[arg_name];
-        }
+  template <typename T>
+  T get(const char* arg_name) const noexcept {
+    return json_configuration[arg_name];
+  }
 
-        std::vector<TopologyList> parseHierarchicalTopologyList() const noexcept;
+  std::vector<TopologyList> parseHierarchicalTopologyList() const noexcept;
 
-    private:
-        nlohmann::json json_configuration;
-    };
-}
+ private:
+  nlohmann::json json_configuration;
+};
+} // namespace Analytical
 
 #endif

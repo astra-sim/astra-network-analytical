@@ -6,20 +6,19 @@ LICENSE file in the root directory of this source tree.
 #ifndef __FASTTOPOLOGY_HH__
 #define __FASTTOPOLOGY_HH__
 
-#include "../TopologyConfig.hh"
 #include "../Topology.hh"
+#include "../TopologyConfig.hh"
 
 namespace Analytical {
-    class FastTopology : public Topology {
-    public:
-        FastTopology(TopologyConfigs configs, CostModel& cost_model) noexcept;
+class FastTopology : public Topology {
+ public:
+  FastTopology(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
-        ~FastTopology() noexcept override = 0;
+  ~FastTopology() noexcept override = 0;
 
-    protected:
-        Latency linkLatency(int dimension, int hops_count) const noexcept;
-    };
-}
-
+ protected:
+  Latency linkLatency(int dimension, int hops_count) const noexcept;
+};
+} // namespace Analytical
 
 #endif

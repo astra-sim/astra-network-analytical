@@ -9,14 +9,15 @@ LICENSE file in the root directory of this source tree.
 #include "DetailedTopology.hh"
 
 namespace Analytical {
-    class DetailedAllToAll : public DetailedTopology {
-    public:
-        DetailedAllToAll(TopologyConfigs configs, CostModel& cost_model) noexcept;
+class DetailedAllToAll : public DetailedTopology {
+ public:
+  DetailedAllToAll(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
-        ~DetailedAllToAll() noexcept override;
+  ~DetailedAllToAll() noexcept override;
 
-        double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept override;
-    };
-}
+  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+      override;
+};
+} // namespace Analytical
 
 #endif

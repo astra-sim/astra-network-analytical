@@ -11,25 +11,28 @@ LICENSE file in the root directory of this source tree.
 #include "HierarchicalTopologyConfig.hh"
 
 namespace Analytical {
-    class HierarchicalTopology : public Topology {
-    public:
-        using TopologyList = HierarchicalTopologyConfig::TopologyList;
+class HierarchicalTopology : public Topology {
+ public:
+  using TopologyList = HierarchicalTopologyConfig::TopologyList;
 
-        HierarchicalTopology(TopologyConfigs configs, HierarchicalTopologyConfig hierarchy_config, CostModel& cost_model) noexcept;
+  HierarchicalTopology(
+      TopologyConfigs configs,
+      HierarchicalTopologyConfig hierarchy_config,
+      CostModel& cost_model) noexcept;
 
-        ~HierarchicalTopology() noexcept override;
+  ~HierarchicalTopology() noexcept override;
 
-        double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept override;
+  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+      override;
 
-    private:
-        HierarchicalTopologyConfig hierarchy_config;
+ private:
+  HierarchicalTopologyConfig hierarchy_config;
 
-        Latency linkLatency(int dimension, int hops_count) const noexcept;
+  Latency linkLatency(int dimension, int hops_count) const noexcept;
 
-        NpuAddress npuIdToAddress(NpuId npu_id) const noexcept override;
-        NpuId npuAddressToId(NpuAddress npu_address) const noexcept override;
-    };
-}
-
+  NpuAddress npuIdToAddress(NpuId npu_id) const noexcept override;
+  NpuId npuAddressToId(NpuAddress npu_address) const noexcept override;
+};
+} // namespace Analytical
 
 #endif

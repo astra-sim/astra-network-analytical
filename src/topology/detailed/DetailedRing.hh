@@ -9,20 +9,21 @@ LICENSE file in the root directory of this source tree.
 #include "DetailedTopology.hh"
 
 namespace Analytical {
-    class DetailedRing : public DetailedTopology {
-    public:
-        DetailedRing(TopologyConfigs configs, CostModel& cost_model) noexcept;
+class DetailedRing : public DetailedTopology {
+ public:
+  DetailedRing(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
-        ~DetailedRing() noexcept override;
+  ~DetailedRing() noexcept override;
 
-        double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept override;
+  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+      override;
 
-    private:
-        using Direction = int;
+ private:
+  using Direction = int;
 
-        Direction computeDirection(NpuId src, NpuId dest);
-        NpuId takeStep(NpuId current_node, Direction direction);
-    };
-}
+  Direction computeDirection(NpuId src, NpuId dest);
+  NpuId takeStep(NpuId current_node, Direction direction);
+};
+} // namespace Analytical
 
 #endif

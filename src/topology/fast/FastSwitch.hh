@@ -10,14 +10,15 @@ LICENSE file in the root directory of this source tree.
 #include "FastTopology.hh"
 
 namespace Analytical {
-    class FastSwitch : public FastTopology {
-    public:
-        FastSwitch(TopologyConfigs configs, CostModel& cost_model) noexcept;
+class FastSwitch : public FastTopology {
+ public:
+  FastSwitch(TopologyConfigs configs, CostModel& cost_model) noexcept;
 
-        ~FastSwitch() noexcept;
+  ~FastSwitch() noexcept;
 
-        double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept override;
-    };
-}
+  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+      override;
+};
+} // namespace Analytical
 
 #endif
