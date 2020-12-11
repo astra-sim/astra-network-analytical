@@ -156,10 +156,7 @@ int main(int argc, char* argv[]) {
   }
 
   // number of nodes for each system layer dimension
-  auto nodes_count_for_system = std::array<int, 5>();
-  for (int i = 0; i < 4; i++) {
-    nodes_count_for_system[i] = 1;
-  }
+  auto physical_dims = std::vector<int>();
 
   // Network and System layer initialization
   std::unique_ptr<Analytical::AnalyticalNetwork>
@@ -198,7 +195,7 @@ int main(int argc, char* argv[]) {
     topology = std::make_shared<Analytical::HierarchicalTopology>(
         topology_configs, hierarchy_config, cost_model);
     for (int dim = 0; dim < dimensions_count; dim++) {
-      nodes_count_for_system[dim] = units_counts[dim];
+      physical_dims.emplace_back(units_counts[dim]);
     }
   } else if (topology_name == "Switch") {
     assert(
@@ -212,7 +209,7 @@ int main(int argc, char* argv[]) {
       topology = std::make_shared<Analytical::DetailedSwitch>(
           topology_configs, cost_model);
     }
-    nodes_count_for_system[0] = npus_count;
+    physical_dims.emplace_back(npus_count);
   } else if (topology_name == "AllToAll") {
     assert(
         dimensions_count == 1 &&
@@ -225,7 +222,7 @@ int main(int argc, char* argv[]) {
       topology = std::make_shared<Analytical::DetailedAllToAll>(
           topology_configs, cost_model);
     }
-    nodes_count_for_system[0] = npus_count;
+    physical_dims.emplace_back(npus_count);
   } else if (topology_name == "Torus2D") {
     assert(
         dimensions_count == 2 &&
@@ -239,8 +236,8 @@ int main(int argc, char* argv[]) {
           topology_configs, cost_model);
     }
 
-    nodes_count_for_system[0] = units_counts[1];
-    nodes_count_for_system[1] = units_counts[0];
+    physical_dims.emplace_back(units_counts[0]);
+    physical_dims.emplace_back(units_counts[1]);
   } else if (topology_name == "Ring") {
     assert(
         dimensions_count == 1 &&
@@ -253,7 +250,7 @@ int main(int argc, char* argv[]) {
       topology = std::make_shared<Analytical::DetailedRing>(
           topology_configs, cost_model);
     }
-    nodes_count_for_system[0] = npus_count;
+    physical_dims.emplace_back(npus_count);
   } else if (topology_name == "Ring_AllToAll_Switch") {
     assert(
         dimensions_count == 3 &&
@@ -268,15 +265,17 @@ int main(int argc, char* argv[]) {
       std::cout << "Detailed version not implemented yet" << std::endl;
       exit(-1);
     }
-    nodes_count_for_system[0] = units_counts[0];
-    nodes_count_for_system[1] = units_counts[1];
-    nodes_count_for_system[2] = units_counts[2];
+    physical_dims.emplace_back(units_counts[0]);
+    physical_dims.emplace_back(units_counts[1]);
+    physical_dims.emplace_back(units_counts[2]);
   } else {
     std::cout << "[Main] Topology not defined: " << topology_name << std::endl;
     exit(-1);
   }
 
   // Instantiate required network, memory, and system layers
+  auto queues_per_dim = std::vector<int>(dimensions_count, num_queues_per_dim);
+
   for (int i = 0; i < npus_count; i++) {
     analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
 
@@ -291,16 +290,8 @@ int main(int argc, char* argv[]) {
         memories[i].get(), // AstraMemoryAPI
         i, // id
         num_passes, // num_passes
-        nodes_count_for_system[0],
-        nodes_count_for_system[1],
-        nodes_count_for_system[2],
-        nodes_count_for_system[3],
-        nodes_count_for_system[4], // dimensions
-        num_queues_per_dim,
-        num_queues_per_dim,
-        num_queues_per_dim,
-        num_queues_per_dim,
-        num_queues_per_dim, // queues per corresponding dimension
+        physical_dims, // dimensions
+        queues_per_dim, // queues per corresponding dimension
         system_configuration, // system configuration
         workload_configuration, // workload configuration
         comm_scale,
