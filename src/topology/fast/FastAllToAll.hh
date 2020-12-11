@@ -12,7 +12,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
     class FastAllToAll : public FastTopology {
     public:
-        FastAllToAll(TopologyConfigs configs) noexcept;
+        FastAllToAll(TopologyConfigs configs, CostModel cost_model) noexcept;
 
         ~FastAllToAll() noexcept;
 

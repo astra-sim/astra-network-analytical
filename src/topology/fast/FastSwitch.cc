@@ -7,8 +7,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastSwitch::FastSwitch(TopologyConfigs configs) noexcept :
-        FastTopology(configs) { }
+FastSwitch::FastSwitch(TopologyConfigs configs, CostModel cost_model) noexcept :
+        FastTopology(configs, cost_model) { }
 
 FastSwitch::~FastSwitch() noexcept = default;
 

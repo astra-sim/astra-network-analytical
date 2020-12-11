@@ -9,8 +9,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-DetailedTopology::DetailedTopology(TopologyConfigs configs) noexcept:
-        Topology(configs) { }
+DetailedTopology::DetailedTopology(TopologyConfigs configs, CostModel cost_model) noexcept:
+        Topology(configs, cost_model) { }
 
 DetailedTopology::~DetailedTopology() noexcept = default;
 

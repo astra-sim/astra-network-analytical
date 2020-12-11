@@ -12,7 +12,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
     class FastTorus2D : public FastTopology {
     public:
-        FastTorus2D(TopologyConfigs configs) noexcept;
+        FastTorus2D(TopologyConfigs configs, CostModel cost_model) noexcept;
 
         ~FastTorus2D() noexcept;
 

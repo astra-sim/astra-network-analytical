@@ -8,8 +8,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastRing::FastRing(TopologyConfigs configs) noexcept :
-        FastTopology(configs) { }
+FastRing::FastRing(TopologyConfigs configs, CostModel cost_model) noexcept :
+        FastTopology(configs, cost_model) { }
 
 FastRing::~FastRing() noexcept = default;
 

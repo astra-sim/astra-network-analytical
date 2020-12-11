@@ -11,7 +11,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
     class DetailedAllToAll : public DetailedTopology {
     public:
-        DetailedAllToAll(TopologyConfigs configs) noexcept;
+        DetailedAllToAll(TopologyConfigs configs, CostModel cost_model) noexcept;
 
         ~DetailedAllToAll() noexcept override;
 

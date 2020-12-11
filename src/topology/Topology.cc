@@ -8,8 +8,9 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-Topology::Topology(TopologyConfigs configs) noexcept :
-        configs(configs) {
+Topology::Topology(TopologyConfigs configs, CostModel cost_model) noexcept :
+        configs(configs),
+        cost_model(cost_model) {
     // get total npus_count by multiplying npus_count of each dimension
     npus_count = 1;
     for (const auto& config : configs) {

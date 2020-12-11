@@ -9,8 +9,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(TopologyConfigs configs) noexcept :
-        FastTopology(configs) { }
+FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(TopologyConfigs configs, CostModel cost_model) noexcept :
+        FastTopology(configs, cost_model) { }
 
 FastRing_AllToAll_Switch::~FastRing_AllToAll_Switch() noexcept = default;
 

@@ -16,6 +16,7 @@ LICENSE file in the root directory of this source tree.
 #include "event-queue/EventQueueEntry.hh"
 #include "helper/CommandLineParser.hh"
 #include "helper/json.hh"
+#include "topology/CostModel.hh"
 #include "topology/Topology.hh"
 #include "topology/TopologyConfig.hh"
 #include "topology/fast/FastSwitch.hh"
@@ -210,6 +211,9 @@ int main(int argc, char* argv[]) {
     // pointer to topology
     std::shared_ptr<Analytical::Topology> topology;
 
+    // cost model
+    auto cost_model = Analytical::CostModel();
+
     // topology configuration for each dimension
     auto topology_configs =
             Analytical::Topology::TopologyConfigs();
@@ -232,11 +236,13 @@ int main(int argc, char* argv[]) {
 
         if (use_fast_version) {
             topology = std::make_shared<Analytical::FastSwitch>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         } else {
             topology = std::make_shared<Analytical::DetailedSwitch>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         }
         nodes_count_for_system[0] = npus_count;
@@ -245,11 +251,13 @@ int main(int argc, char* argv[]) {
 
         if (use_fast_version) {
             topology = std::make_shared<Analytical::FastAllToAll>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         } else {
             topology = std::make_shared<Analytical::DetailedAllToAll>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         }
         nodes_count_for_system[0] = npus_count;
@@ -258,11 +266,13 @@ int main(int argc, char* argv[]) {
 
         if (use_fast_version) {
             topology = std::make_shared<Analytical::FastTorus2D>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         } else {
             topology = std::make_shared<Analytical::DetailedTorus2D>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         }
 
@@ -273,11 +283,13 @@ int main(int argc, char* argv[]) {
 
         if (use_fast_version) {
             topology = std::make_shared<Analytical::FastRing>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         } else {
             topology = std::make_shared<Analytical::DetailedRing>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         }
         nodes_count_for_system[0] = npus_count;
@@ -286,7 +298,8 @@ int main(int argc, char* argv[]) {
 
         if (use_fast_version) {
             topology = std::make_shared<Analytical::FastRing_AllToAll_Switch>(
-                    topology_configs
+                    topology_configs,
+                    cost_model
             );
         } else {
             // non-fast version
@@ -359,6 +372,11 @@ int main(int argc, char* argv[]) {
     }
 
     /**
+     * Print results
+     */
+     cost_model.computeCost();
+
+    /**
      * Cleanup
      */
     // System class automatically deletes itself, so no need to free systems[i]
@@ -366,8 +384,5 @@ int main(int argc, char* argv[]) {
     // delete already deleted memory space)
 
     // terminate program
-    for (auto i : units_counts) {
-        std::cout << i << std::endl;
-    }
     return 0;
 }

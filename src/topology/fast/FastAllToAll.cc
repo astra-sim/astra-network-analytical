@@ -7,8 +7,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastAllToAll::FastAllToAll(TopologyConfigs configs) noexcept :
-        FastTopology(configs) { }
+FastAllToAll::FastAllToAll(TopologyConfigs configs, CostModel cost_model) noexcept :
+        FastTopology(configs, cost_model) { }
 
 FastAllToAll::~FastAllToAll() noexcept = default;
 

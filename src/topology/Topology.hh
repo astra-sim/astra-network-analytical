@@ -8,6 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <vector>
 #include "TopologyConfig.hh"
+#include "CostModel.hh"
 
 namespace Analytical {
     class Topology {
@@ -20,7 +21,7 @@ namespace Analytical {
         using Latency = TopologyConfig::Latency;
         using Bandwidth = TopologyConfig::Bandwidth;
 
-        Topology(TopologyConfigs configs) noexcept;
+        Topology(TopologyConfigs configs, CostModel cost_model) noexcept;
 
         virtual ~Topology() noexcept = 0;
 
@@ -29,6 +30,8 @@ namespace Analytical {
     protected:
         TopologyConfigs configs;  // TopologyConfigs for each dimension
         int npus_count;  // NPUs count of the topology
+
+        CostModel cost_model;
 
         void checkNpuIdBound(NpuId npu_id) const noexcept;
 
