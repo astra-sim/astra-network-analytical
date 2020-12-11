@@ -6,8 +6,8 @@ LICENSE file in the root directory of this source tree.
 #ifndef __FASTTOPOLOGY_HH__
 #define __FASTTOPOLOGY_HH__
 
-#include "TopologyConfig.hh"
-#include "Topology.hh"
+#include "../TopologyConfig.hh"
+#include "../Topology.hh"
 
 namespace Analytical {
     class FastTopology : public Topology {

@@ -6,7 +6,7 @@ LICENSE file in the root directory of this source tree.
 #ifndef __DETAILEDRING_HH__
 #define __DETAILEDRING_HH__
 
-#include "../DetailedTopology.hh"
+#include "DetailedTopology.hh"
 
 namespace Analytical {
     class DetailedRing : public DetailedTopology {

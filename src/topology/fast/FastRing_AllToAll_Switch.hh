@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 #define __FASTRING_ALLTOALL_SWITCH_HH__
 
 #include "../TopologyConfig.hh"
-#include "../FastTopology.hh"
+#include "FastTopology.hh"
 
 namespace Analytical {
     class FastRing_AllToAll_Switch : public FastTopology {

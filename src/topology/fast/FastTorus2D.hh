@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 #define __FASTTORUS2D_HH__
 
 #include "../TopologyConfig.hh"
-#include "../FastTopology.hh"
+#include "FastTopology.hh"
 
 namespace Analytical {
     class FastTorus2D : public FastTopology {

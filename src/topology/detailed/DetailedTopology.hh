@@ -7,8 +7,8 @@ LICENSE file in the root directory of this source tree.
 #define __DETAILEDTOPOLOGY_HH__
 
 #include <map>
-#include "Topology.hh"
-#include "TopologyConfig.hh"
+#include "../Topology.hh"
+#include "../TopologyConfig.hh"
 #include "Link.hh"
 
 namespace Analytical {

@@ -6,7 +6,7 @@ LICENSE file in the root directory of this source tree.
 #ifndef __DETAILEDSWITCH_HH__
 #define __DETAILEDSWITCH_HH__
 
-#include "../DetailedTopology.hh"
+#include "DetailedTopology.hh"
 
 namespace Analytical {
     class DetailedSwitch : public DetailedTopology {

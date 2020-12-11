@@ -6,7 +6,7 @@ LICENSE file in the root directory of this source tree.
 #ifndef __DETAILEDTORUS2D_HH__
 #define __DETAILEDTORUS2D_HH__
 
-#include "../DetailedTopology.hh"
+#include "DetailedTopology.hh"
 
 namespace Analytical {
     class DetailedTorus2D : public DetailedTopology {

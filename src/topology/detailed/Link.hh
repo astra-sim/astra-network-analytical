@@ -6,7 +6,7 @@ LICENSE file in the root directory of this source tree.
 #ifndef __LINK_HH__
 #define __LINK_HH__
 
-#include "TopologyConfig.hh"
+#include "../TopologyConfig.hh"
 
 namespace Analytical {
     class Link {
