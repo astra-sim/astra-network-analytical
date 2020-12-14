@@ -68,6 +68,8 @@ int main(int argc, char* argv[]) {
   // Define network-related command line arguments here
   cmd_parser.add_command_line_multitoken_option<std::vector<int>>(
       "units-count", "Units count per each dimension");
+  cmd_parser.add_command_line_multitoken_option<std::vector<int>>(
+      "links-count", "Links count per each dimension");
 
   // Parse command line arguments
   try {
@@ -190,6 +192,7 @@ int main(int argc, char* argv[]) {
     // Parse networks per each dimension
     auto topologies_per_dim = network_parser.parseHierarchicalTopologyList();
     auto links_count_per_dim = network_parser.parseLinksCountPerDim();
+    cmd_parser.set_if_defined("links-count", &links_count_per_dim);
     auto hierarchy_config = Analytical::HierarchicalTopologyConfig(
         dimensions_count, topologies_per_dim, links_count_per_dim);
 
