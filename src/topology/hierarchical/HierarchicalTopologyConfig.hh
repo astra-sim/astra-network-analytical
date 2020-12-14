@@ -15,14 +15,18 @@ struct HierarchicalTopologyConfig {
 
   HierarchicalTopologyConfig(
       int dimensions_count,
-      std::vector<TopologyList> topologies_per_dim) noexcept;
+      std::vector<TopologyList> topologies_per_dim,
+      std::vector<int> links_count_per_dim) noexcept;
 
   int getDimensionsCount() const noexcept;
   TopologyList getTopologyForDim(int dimension) const noexcept;
 
+  int getLinksCountForDim(int dimension) const noexcept;
+
  private:
   int dimensions_count;
   std::vector<TopologyList> topologies_per_dim;
+  std::vector<int> links_count_per_dim;
 };
 } // namespace Analytical
 

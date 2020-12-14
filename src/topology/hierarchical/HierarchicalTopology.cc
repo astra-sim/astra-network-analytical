@@ -13,6 +13,60 @@ HierarchicalTopology::HierarchicalTopology(
     HierarchicalTopologyConfig hierarchy_config,
     CostModel& cost_model) noexcept
     : Topology(configs, cost_model), hierarchy_config(hierarchy_config) {
+  // Update bandwidth as required
+  for (int dim = 0; dim < hierarchy_config.getDimensionsCount(); dim++) {
+    auto topology = hierarchy_config.getTopologyForDim(dim);
+    auto links_count = hierarchy_config.getLinksCountForDim(dim);
+    auto adjacent_packages_count = configs[dim].getNpusCount() - 1;
+    auto bandwidth_scalar = 1.0;
+
+    switch (topology) {
+      case TopologyList::Ring:
+        if (links_count % 2 != 0) {
+          std::cout
+              << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
+              << dim << " (Ring) has " << links_count << " links (not even)."
+              << std::endl;
+          bandwidth_scalar = links_count - 1;
+        } else {
+          bandwidth_scalar = links_count;
+        }
+        break;
+
+      case TopologyList::AllToAll:
+        if (links_count % adjacent_packages_count != 0) {
+          std::cout
+              << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
+              << dim << " (AllToAll) has " << links_count
+              << " links (not a multiple of " << adjacent_packages_count << ")."
+              << std::endl;
+        }
+        bandwidth_scalar = links_count / adjacent_packages_count;
+        break;
+
+      case TopologyList::Switch:
+        bandwidth_scalar = links_count;
+        break;
+
+      default:
+        std::cout
+            << "[HierarchicalTopology, constructor] Topology at dimension "
+            << dim << " not defined" << std::endl;
+        exit(-1);
+    }
+
+    // update bandwidth
+    if (bandwidth_scalar == 0) {
+      std::cout
+          << "[Hierarchical, constructor] [Error] Bandwidth scalar of dimension "
+          << dim << " is 0." << std::endl;
+      exit(-1);
+    }
+
+    configs[dim].multiplyLinkBandwidth(bandwidth_scalar);
+  }
+
+  // Implement cost model
   auto npu_radix = 0;
   auto topology_size_up_to = 1;
 

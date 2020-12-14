@@ -37,6 +37,10 @@ TopologyConfig::Bandwidth TopologyConfig::getLinkBandwidth() const noexcept {
   return link_bandwidth;
 }
 
+void TopologyConfig::multiplyLinkBandwidth(double scalar) noexcept {
+  link_bandwidth *= scalar;
+}
+
 TopologyConfig::Latency TopologyConfig::getNicLatency() const noexcept {
   return nic_latency;
 }

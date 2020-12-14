@@ -37,6 +37,8 @@ struct TopologyConfig {
   Bandwidth getHbmBandwidth() const noexcept;
   double getHbmScale() const noexcept;
 
+  void multiplyLinkBandwidth(double scalar) noexcept;
+
  private:
   int npus_count; // number of npus
   Latency link_latency;

@@ -189,8 +189,9 @@ int main(int argc, char* argv[]) {
   if (topology_name == "Hierarchical") {
     // Parse networks per each dimension
     auto topologies_per_dim = network_parser.parseHierarchicalTopologyList();
+    auto links_count_per_dim = network_parser.parseLinksCountPerDim();
     auto hierarchy_config = Analytical::HierarchicalTopologyConfig(
-        dimensions_count, topologies_per_dim);
+        dimensions_count, topologies_per_dim, links_count_per_dim);
 
     topology = std::make_shared<Analytical::HierarchicalTopology>(
         topology_configs, hierarchy_config, cost_model);

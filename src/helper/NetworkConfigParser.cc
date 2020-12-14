@@ -47,3 +47,7 @@ std::vector<NetworkConfigParser::TopologyList> NetworkConfigParser::
 
   return topologies_per_dim;
 }
+
+std::vector<int> NetworkConfigParser::parseLinksCountPerDim() const noexcept {
+  return this->get<std::vector<int>>("links-count");
+}

@@ -27,6 +27,8 @@ class NetworkConfigParser {
 
   std::vector<TopologyList> parseHierarchicalTopologyList() const noexcept;
 
+  std::vector<int> parseLinksCountPerDim() const noexcept;
+
  private:
   nlohmann::json json_configuration;
 };
