@@ -10,7 +10,7 @@ LICENSE file in the root directory of this source tree.
 using namespace Analytical;
 
 DetailedTopology::DetailedTopology(
-    TopologyConfigs configs,
+    TopologyConfigs& configs,
     CostModel& cost_model) noexcept
     : Topology(configs, cost_model) {}
 

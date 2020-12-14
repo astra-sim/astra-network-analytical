@@ -11,7 +11,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
 class DetailedSwitch : public DetailedTopology {
  public:
-  DetailedSwitch(TopologyConfigs configs, CostModel& cost_model) noexcept;
+  DetailedSwitch(TopologyConfigs& configs, CostModel& cost_model) noexcept;
 
   ~DetailedSwitch() noexcept override;
 

@@ -9,7 +9,7 @@ LICENSE file in the root directory of this source tree.
 using namespace Analytical;
 
 FastTorus2D::FastTorus2D(
-    TopologyConfigs configs,
+    TopologyConfigs& configs,
     CostModel& cost_model) noexcept
     : FastTopology(configs, cost_model) {
   auto link_latency = configs[0].getLinkLatency();

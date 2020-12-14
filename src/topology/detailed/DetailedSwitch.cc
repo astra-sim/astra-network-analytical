@@ -8,7 +8,7 @@ LICENSE file in the root directory of this source tree.
 using namespace Analytical;
 
 DetailedSwitch::DetailedSwitch(
-    TopologyConfigs configs,
+    TopologyConfigs& configs,
     CostModel& cost_model) noexcept
     : DetailedTopology(configs, cost_model) {
   // set switch id

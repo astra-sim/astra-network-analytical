@@ -12,7 +12,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
 class FastRing : public FastTopology {
  public:
-  FastRing(TopologyConfigs configs, CostModel& cost_model) noexcept;
+  FastRing(TopologyConfigs& configs, CostModel& cost_model) noexcept;
 
   ~FastRing() noexcept;
 

@@ -8,7 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastRing::FastRing(TopologyConfigs configs, CostModel& cost_model) noexcept
+FastRing::FastRing(TopologyConfigs& configs, CostModel& cost_model) noexcept
     : FastTopology(configs, cost_model) {
   auto link_latency = configs[0].getLinkLatency();
   auto link_bandwidth = configs[0].getLinkBandwidth();

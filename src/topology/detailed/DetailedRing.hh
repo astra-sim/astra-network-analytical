@@ -11,7 +11,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
 class DetailedRing : public DetailedTopology {
  public:
-  DetailedRing(TopologyConfigs configs, CostModel& cost_model) noexcept;
+  DetailedRing(TopologyConfigs& configs, CostModel& cost_model) noexcept;
 
   ~DetailedRing() noexcept override;
 

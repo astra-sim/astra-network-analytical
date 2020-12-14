@@ -16,7 +16,7 @@ class HierarchicalTopology : public Topology {
   using TopologyList = HierarchicalTopologyConfig::TopologyList;
 
   HierarchicalTopology(
-      TopologyConfigs configs,
+      TopologyConfigs& configs,
       HierarchicalTopologyConfig hierarchy_config,
       CostModel& cost_model) noexcept;
 

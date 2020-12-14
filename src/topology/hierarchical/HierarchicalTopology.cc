@@ -9,7 +9,7 @@ LICENSE file in the root directory of this source tree.
 using namespace Analytical;
 
 HierarchicalTopology::HierarchicalTopology(
-    TopologyConfigs configs,
+    TopologyConfigs& configs,
     HierarchicalTopologyConfig hierarchy_config,
     CostModel& cost_model) noexcept
     : Topology(configs, cost_model), hierarchy_config(hierarchy_config) {

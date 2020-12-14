@@ -8,7 +8,7 @@ LICENSE file in the root directory of this source tree.
 using namespace Analytical;
 
 DetailedAllToAll::DetailedAllToAll(
-    TopologyConfigs configs,
+    TopologyConfigs& configs,
     CostModel& cost_model) noexcept
     : DetailedTopology(configs, cost_model) {
   // connect all (src, dest) pair

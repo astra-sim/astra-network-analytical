@@ -12,7 +12,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
 class FastSwitch : public FastTopology {
  public:
-  FastSwitch(TopologyConfigs configs, CostModel& cost_model) noexcept;
+  FastSwitch(TopologyConfigs& configs, CostModel& cost_model) noexcept;
 
   ~FastSwitch() noexcept;
 

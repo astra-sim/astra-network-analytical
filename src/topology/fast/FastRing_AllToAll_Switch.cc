@@ -10,7 +10,7 @@ LICENSE file in the root directory of this source tree.
 using namespace Analytical;
 
 FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(
-    TopologyConfigs configs,
+    TopologyConfigs& configs,
     CostModel& cost_model) noexcept
     : FastTopology(configs, cost_model) {
   // Ring
