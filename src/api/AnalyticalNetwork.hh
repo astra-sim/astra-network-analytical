@@ -11,6 +11,8 @@ LICENSE file in the root directory of this source tree.
 #include "../topology/Topology.hh"
 #include "SendRecvTrackingMap.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
+#include "astra-sim/system/AstraSimDataAPI.hh"
+#include "astra-sim/workload/CSVWriter.hh"
 
 namespace Analytical {
 class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
@@ -30,10 +32,25 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
       const std::shared_ptr<Topology>& topology_ptr) noexcept;
 
   /**
+   * Set static values for backend CSV logging
+   * @param stat_path
+   * @param stat_row
+   * @param total_stat_rows
+   * @param end_to_end_csv
+   * @param dimensional_info_csv
+   */
+  static void set_csv_configuration(
+      const std::string& stat_path,
+      int stat_row,
+      int total_stat_rows,
+      std::shared_ptr<AstraSim::CSVWriter> end_to_end_csv,
+      std::shared_ptr<AstraSim::CSVWriter> dimensional_info_csv) noexcept;
+
+  /**
    * ========================= AstraNetworkAPIs
    * =================================================
    */
-  explicit AnalyticalNetwork(int rank) : AstraSim::AstraNetworkAPI(rank) {}
+  AnalyticalNetwork(int rank) noexcept;
 
   int sim_comm_size(AstraSim::sim_comm comm, int* size) override;
 
@@ -69,6 +86,9 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
       AstraSim::sim_request* request,
       void (*msg_handler)(void* fun_arg),
       void* fun_arg) override;
+
+  void pass_front_end_report(
+      AstraSim::AstraSimDataAPI astraSimDataAPI) override;
   /**
    * ===========================================================================================
    */
@@ -77,6 +97,12 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
   static std::shared_ptr<EventQueue> event_queue;
   static std::shared_ptr<Topology> topology;
   static SendRecvTrackingMap send_recv_tracking_map;
+
+  static std::string stat_path;
+  static int stat_row;
+  static int total_stat_rows;
+  static std::shared_ptr<AstraSim::CSVWriter> end_to_end_csv;
+  static std::shared_ptr<AstraSim::CSVWriter> dimensional_info_csv;
 };
 } // namespace Analytical
 

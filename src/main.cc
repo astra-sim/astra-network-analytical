@@ -11,6 +11,7 @@ LICENSE file in the root directory of this source tree.
 #include "api/AnalyticalNetwork.hh"
 #include "astra-sim/system/Sys.hh"
 #include "astra-sim/system/memory/SimpleMemory.hh"
+#include "astra-sim/workload/CSVWriter.hh"
 #include "event-queue/EventQueue.hh"
 #include "event-queue/EventQueueEntry.hh"
 #include "helper/CommandLineParser.hh"
@@ -313,6 +314,29 @@ int main(int argc, char* argv[]) {
   // link event queue and topology
   Analytical::AnalyticalNetwork::set_event_queue(event_queue);
   Analytical::AnalyticalNetwork::set_topology(topology);
+
+  // link csv
+  auto end_to_env_csv =
+      std::make_shared<AstraSim::CSVWriter>(path, "backend_end_to_end.csv");
+  auto dimensional_info_csv =
+      std::make_shared<AstraSim::CSVWriter>(path, "backend_dim_info.csv");
+  if (stat_row == 0) {
+    end_to_env_csv->initialize_csv(total_stat_rows + 1, 4);
+    end_to_env_csv->write_cell(0, 0, "Run name");
+    end_to_env_csv->write_cell(0, 1, "Running time");
+    end_to_env_csv->write_cell(0, 2, "Compute time");
+    end_to_env_csv->write_cell(0, 3, "Exposed comm time");
+
+    // fixme: assuming max_dimension is 10
+    // fixme: dimensions_count for every topology differs
+    auto dimension_csv_rows_count = (total_stat_rows * 10) + 1;
+    dimensional_info_csv->initialize_csv(dimension_csv_rows_count, 3);
+    dimensional_info_csv->write_cell(0, 0, "Run name");
+    dimensional_info_csv->write_cell(0, 1, "Dimension index");
+    dimensional_info_csv->write_cell(0, 2, "Average chunk latency");
+  }
+  Analytical::AnalyticalNetwork::set_csv_configuration(
+      path, stat_row, total_stat_rows, end_to_env_csv, dimensional_info_csv);
 
   /**
    * Run Analytical Model

@@ -5,47 +5,71 @@ LICENSE file in the root directory of this source tree.
 
 #include "AnalyticalNetwork.hh"
 
-std::shared_ptr<Analytical::EventQueue>
-    Analytical::AnalyticalNetwork::event_queue;
+using namespace Analytical;
 
-std::shared_ptr<Analytical::Topology> Analytical::AnalyticalNetwork::topology;
+std::shared_ptr<Analytical::EventQueue> AnalyticalNetwork::event_queue;
 
-Analytical::SendRecvTrackingMap
-    Analytical::AnalyticalNetwork::send_recv_tracking_map;
+std::shared_ptr<Analytical::Topology> AnalyticalNetwork::topology;
 
-void Analytical::AnalyticalNetwork::set_event_queue(
+Analytical::SendRecvTrackingMap AnalyticalNetwork::send_recv_tracking_map;
+
+std::string AnalyticalNetwork::stat_path;
+
+int AnalyticalNetwork::stat_row;
+
+int AnalyticalNetwork::total_stat_rows;
+
+std::shared_ptr<AstraSim::CSVWriter> AnalyticalNetwork::end_to_end_csv;
+
+std::shared_ptr<AstraSim::CSVWriter> AnalyticalNetwork::dimensional_info_csv;
+
+void AnalyticalNetwork::set_event_queue(
     const std::shared_ptr<EventQueue>& event_queue_ptr) noexcept {
   AnalyticalNetwork::event_queue = event_queue_ptr;
 }
 
-void Analytical::AnalyticalNetwork::set_topology(
+void AnalyticalNetwork::set_topology(
     const std::shared_ptr<Topology>& topology_ptr) noexcept {
   AnalyticalNetwork::topology = topology_ptr;
 }
 
-int Analytical::AnalyticalNetwork::sim_comm_size(
-    AstraSim::sim_comm comm,
-    int* size) {
+void AnalyticalNetwork::set_csv_configuration(
+    const std::string& stat_path,
+    int stat_row,
+    int total_stat_rows,
+    std::shared_ptr<AstraSim::CSVWriter> end_to_end_csv,
+    std::shared_ptr<AstraSim::CSVWriter> dimensional_info_csv) noexcept {
+  AnalyticalNetwork::stat_path = stat_path;
+  AnalyticalNetwork::stat_row = stat_row;
+  AnalyticalNetwork::total_stat_rows = total_stat_rows;
+  AnalyticalNetwork::end_to_end_csv = end_to_end_csv;
+  AnalyticalNetwork::dimensional_info_csv = dimensional_info_csv;
+}
+
+AnalyticalNetwork::AnalyticalNetwork(int rank) noexcept
+    : AstraSim::AstraNetworkAPI(rank) {}
+
+int AnalyticalNetwork::sim_comm_size(AstraSim::sim_comm comm, int* size) {
   return 0;
 }
 
-int Analytical::AnalyticalNetwork::sim_finish() {
+int AnalyticalNetwork::sim_finish() {
   return 0;
 }
 
-double Analytical::AnalyticalNetwork::sim_time_resolution() {
+double AnalyticalNetwork::sim_time_resolution() {
   return 0;
 }
 
-int Analytical::AnalyticalNetwork::sim_init(AstraSim::AstraMemoryAPI* MEM) {
+int AnalyticalNetwork::sim_init(AstraSim::AstraMemoryAPI* MEM) {
   return 0;
 }
 
-AstraSim::timespec_t Analytical::AnalyticalNetwork::sim_get_time() {
+AstraSim::timespec_t AnalyticalNetwork::sim_get_time() {
   return event_queue->get_current_time();
 }
 
-void Analytical::AnalyticalNetwork::sim_schedule(
+void AnalyticalNetwork::sim_schedule(
     AstraSim::timespec_t delta,
     void (*fun_ptr)(void*),
     void* fun_arg) {
@@ -59,7 +83,7 @@ void Analytical::AnalyticalNetwork::sim_schedule(
   event_queue->add_event(event_time, fun_ptr, fun_arg);
 }
 
-int Analytical::AnalyticalNetwork::sim_send(
+int AnalyticalNetwork::sim_send(
     void* buffer,
     int count,
     int type,
@@ -107,7 +131,7 @@ int Analytical::AnalyticalNetwork::sim_send(
   return 0;
 }
 
-int Analytical::AnalyticalNetwork::sim_recv(
+int AnalyticalNetwork::sim_recv(
     void* buffer,
     int count,
     int type,
@@ -151,4 +175,38 @@ int Analytical::AnalyticalNetwork::sim_recv(
   }
 
   return 0;
+}
+
+void AnalyticalNetwork::pass_front_end_report(
+    AstraSim::AstraSimDataAPI astraSimDataAPI) {
+  auto run_name = astraSimDataAPI.run_name;
+  auto running_time = std::to_string(astraSimDataAPI.workload_finished_time);
+  auto compute_time = std::to_string(astraSimDataAPI.total_compute);
+  auto expoed_comm_time = std::to_string(astraSimDataAPI.total_exposed_comm);
+
+  AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 0, run_name);
+  AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 1, running_time);
+  AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 2, compute_time);
+  AnalyticalNetwork::end_to_end_csv->write_cell(
+      stat_row + 1, 3, expoed_comm_time);
+
+  auto chunk_latencies =
+      astraSimDataAPI.avg_chunk_latency_per_logical_dimension;
+  // fixme: assuming max_dimension is 10
+  // fixme: dimensions_count for every topology differs
+  auto base_index = (stat_row * 10) + 1;
+  for (auto i = 0; i < chunk_latencies.size(); i++) {
+    std::cout << stat_row << " " << total_stat_rows << " " << i << " "
+              << base_index << std::endl;
+    auto row_to_write = base_index + i;
+    auto dimension_id = std::to_string(i);
+    auto chunk_latency = std::to_string(chunk_latencies[i]);
+
+    AnalyticalNetwork::dimensional_info_csv->write_cell(
+        row_to_write, 0, run_name);
+    AnalyticalNetwork::dimensional_info_csv->write_cell(
+        row_to_write, 1, dimension_id);
+    AnalyticalNetwork::dimensional_info_csv->write_cell(
+        row_to_write, 2, chunk_latency);
+  }
 }
