@@ -76,6 +76,9 @@ int main(int argc, char* argv[]) {
   try {
     cmd_parser.parse(argc, argv);
   } catch (const Analytical::CommandLineParser::ParsingError& e) {
+    std::cout
+        << "[Analytical, main] Command line argument parsing error caputured. Error message: "
+        << std::endl;
     std::cout << e.what() << std::endl;
     exit(-1);
   }
@@ -123,9 +126,8 @@ int main(int argc, char* argv[]) {
   std::string network_configuration = "";
   cmd_parser.set_if_defined("network-configuration", &network_configuration);
   if (network_configuration.empty()) {
-    std::cout
-        << "[Analytical, function main] Network configuration file path not given!"
-        << std::endl;
+    std::cout << "[Analytical, main] Network configuration file path not given!"
+              << std::endl;
     exit(-1);
   }
 
@@ -192,10 +194,15 @@ int main(int argc, char* argv[]) {
   if (topology_name == "Hierarchical") {
     // Parse networks per each dimension
     auto topologies_per_dim = network_parser.parseHierarchicalTopologyList();
+    auto dimension_types = network_parser.parseHierarchicalDimensionType();
     auto links_count_per_dim = network_parser.parseLinksCountPerDim();
     cmd_parser.set_if_defined("links-count", &links_count_per_dim);
+
     auto hierarchy_config = Analytical::HierarchicalTopologyConfig(
-        dimensions_count, topologies_per_dim, links_count_per_dim);
+        dimensions_count,
+        topologies_per_dim,
+        dimension_types,
+        links_count_per_dim);
 
     topology = std::make_shared<Analytical::HierarchicalTopology>(
         topology_configs, hierarchy_config, cost_model);
@@ -205,7 +212,7 @@ int main(int argc, char* argv[]) {
   } else if (topology_name == "Switch") {
     assert(
         dimensions_count == 1 &&
-        "[main] Switch is the given topology but dimension != 1");
+        "[Analytical, main] Switch is the given topology but dimension != 1");
 
     if (network_parser.useFastVersion()) {
       topology = std::make_shared<Analytical::FastSwitch>(
@@ -218,7 +225,7 @@ int main(int argc, char* argv[]) {
   } else if (topology_name == "AllToAll") {
     assert(
         dimensions_count == 1 &&
-        "[main] AllToAll is the given topology but dimension != 1");
+        "[Analytical, main] AllToAll is the given topology but dimension != 1");
 
     if (network_parser.useFastVersion()) {
       topology = std::make_shared<Analytical::FastAllToAll>(
@@ -231,7 +238,7 @@ int main(int argc, char* argv[]) {
   } else if (topology_name == "Torus2D") {
     assert(
         dimensions_count == 2 &&
-        "[main] Torus2D is the given topology but dimension != 2");
+        "[Analytical, main] Torus2D is the given topology but dimension != 2");
 
     if (network_parser.useFastVersion()) {
       topology = std::make_shared<Analytical::FastTorus2D>(
@@ -246,7 +253,7 @@ int main(int argc, char* argv[]) {
   } else if (topology_name == "Ring") {
     assert(
         dimensions_count == 1 &&
-        "[main] Ring is the given topology but dimension != 1");
+        "[Analytical, main] Ring is the given topology but dimension != 1");
 
     if (network_parser.useFastVersion()) {
       topology =
@@ -259,7 +266,7 @@ int main(int argc, char* argv[]) {
   } else if (topology_name == "Ring_AllToAll_Switch") {
     assert(
         dimensions_count == 3 &&
-        "[main] Ring_AllToAll_Switch is the given topology but dimension != 3");
+        "[Analytical, main] Ring_AllToAll_Switch is the given topology but dimension != 3");
 
     if (network_parser.useFastVersion()) {
       topology = std::make_shared<Analytical::FastRing_AllToAll_Switch>(
@@ -267,14 +274,16 @@ int main(int argc, char* argv[]) {
     } else {
       // non-fast version
       // TODO: implement this
-      std::cout << "Detailed version not implemented yet" << std::endl;
+      std::cout << "[Analytical, main] Detailed version not implemented yet"
+                << std::endl;
       exit(-1);
     }
     physical_dims.emplace_back(units_counts[0]);
     physical_dims.emplace_back(units_counts[1]);
     physical_dims.emplace_back(units_counts[2]);
   } else {
-    std::cout << "[Main] Topology not defined: " << topology_name << std::endl;
+    std::cout << "[Analytical, main] Topology not defined: " << topology_name
+              << std::endl;
     exit(-1);
   }
 
@@ -354,7 +363,9 @@ int main(int argc, char* argv[]) {
   /**
    * Print results
    */
-  cost_model.computeCost();
+  auto topology_cost = cost_model.computeTotalCost();
+  std::cout << "\n[Analytical, main] Total Cost: $" << topology_cost
+            << std::endl;
 
   /**
    * Cleanup

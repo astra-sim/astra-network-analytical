@@ -14,6 +14,7 @@ namespace Analytical {
 class HierarchicalTopology : public Topology {
  public:
   using TopologyList = HierarchicalTopologyConfig::TopologyList;
+  using DimensionType = HierarchicalTopologyConfig::DimensionType;
 
   HierarchicalTopology(
       TopologyConfigs& configs,

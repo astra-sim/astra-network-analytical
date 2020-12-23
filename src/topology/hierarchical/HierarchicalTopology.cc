@@ -14,45 +14,43 @@ HierarchicalTopology::HierarchicalTopology(
     CostModel& cost_model) noexcept
     : Topology(configs, cost_model), hierarchy_config(hierarchy_config) {
   // Update bandwidth as required
+  auto topology_size_up_to = 1;
+  auto package_size = 1;
+
   for (int dim = 0; dim < hierarchy_config.getDimensionsCount(); dim++) {
     auto topology = hierarchy_config.getTopologyForDim(dim);
     auto links_count = hierarchy_config.getLinksCountForDim(dim);
-    auto adjacent_packages_count = configs[dim].getNpusCount() - 1;
+    auto topology_size = configs[dim].getNpusCount();
+    auto adjacent_packages_count = topology_size - 1;
+
     auto bandwidth_scalar = 1.0;
 
-    switch (topology) {
-      case TopologyList::Ring:
-        if (links_count % 2 != 0) {
-          std::cout
-              << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
-              << dim << " (Ring) has " << links_count << " links (not even)."
-              << std::endl;
-          bandwidth_scalar = links_count - 1;
-        } else {
-          bandwidth_scalar = links_count;
-        }
-        break;
-
-      case TopologyList::AllToAll:
-        if (links_count % adjacent_packages_count != 0) {
-          std::cout
-              << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
-              << dim << " (AllToAll) has " << links_count
-              << " links (not a multiple of " << adjacent_packages_count << ")."
-              << std::endl;
-        }
-        bandwidth_scalar = links_count / adjacent_packages_count;
-        break;
-
-      case TopologyList::Switch:
-        bandwidth_scalar = links_count;
-        break;
-
-      default:
+    // compute bandwidth_scalar
+    if (topology == TopologyList::Ring) {
+      if (links_count % 2 != 0) {
         std::cout
-            << "[HierarchicalTopology, constructor] Topology at dimension "
-            << dim << " not defined" << std::endl;
-        exit(-1);
+            << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
+            << dim << " (Ring) has " << links_count << " links (not even)."
+            << std::endl;
+        bandwidth_scalar = links_count - 1;
+      } else {
+        bandwidth_scalar = links_count;
+      }
+    } else if (topology == TopologyList::AllToAll) {
+      if (links_count % adjacent_packages_count != 0) {
+        std::cout
+            << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
+            << dim << " (AllToAll) has " << links_count
+            << " links (not a multiple of " << adjacent_packages_count << ")."
+            << std::endl;
+      }
+      bandwidth_scalar = links_count / adjacent_packages_count;
+    } else if (topology == TopologyList::Switch) {
+      bandwidth_scalar = links_count;
+    } else {
+      std::cout << "[HierarchicalTopology, constructor] Topology at dimension "
+                << dim << " not defined" << std::endl;
+      exit(-1);
     }
 
     // update bandwidth
@@ -62,61 +60,146 @@ HierarchicalTopology::HierarchicalTopology(
           << dim << " is 0." << std::endl;
       exit(-1);
     }
-
     configs[dim].multiplyLinkBandwidth(bandwidth_scalar);
-  }
 
-  // Implement cost model
-  auto npu_radix = 0;
-  auto topology_size_up_to = 1;
+    // compute cost model
+    auto dimension_type = hierarchy_config.getDimensionType(dim);
 
-  for (int dim = 0; dim < hierarchy_config.getDimensionsCount(); dim++) {
-    auto topology = hierarchy_config.getTopologyForDim(dim);
-
-    auto link_latency = configs[dim].getLinkLatency();
-    auto link_bandwidth = configs[dim].getLinkBandwidth();
-    auto nic_latency = configs[dim].getNicLatency();
-
-    auto topology_size = configs[dim].getNpusCount();
     topology_size_up_to *= topology_size;
-
-    // e.g., if npus_count=64 and ring_size=4, there are 16 rings in total
-    auto topologies_count = npus_count / configs[dim].getNpusCount();
-
-    if (topology == TopologyList::Ring) {
-      auto links_count = (topology_size * 2);
-      auto total_links_count = links_count * topologies_count;
-
-      cost_model.createLink(total_links_count, link_latency, link_bandwidth);
-
-      npu_radix += 4;
-    } else if (topology == TopologyList::AllToAll) {
-      auto links_count = (topology_size - 1) * topology_size;
-      auto total_links_count = links_count * topologies_count;
-
-      cost_model.createLink(total_links_count, link_latency, link_bandwidth);
-
-      npu_radix += (topology_size - 1) * 2;
-    } else if (topology == TopologyList::Switch) {
-      auto links_count = topology_size * 2;
-      auto total_links_count = links_count * topologies_count;
-
-      cost_model.createLink(total_links_count, link_latency, link_bandwidth);
-
-      auto switches_count = npus_count / topology_size_up_to;
-      cost_model.createSwitch(switches_count, 2 * topology_size_up_to);
-
-      npu_radix += 2;
+    if (dimension_type == DimensionType::T) {
+      // package size is defined by Tile-to-tile dimension
+      package_size *= topology_size;
     }
 
-    // add nic if required
-    if (nic_latency > 0) {
-      cost_model.createNic(npus_count, link_latency, link_bandwidth);
+    auto nic_latency = configs[dim].getNicLatency();
+    auto topologies_count = npus_count / topology_size;
+
+    if (topology == TopologyList::Ring) {
+      auto links_count_per_node = links_count / 2;
+      auto ring_links_count = topology_size * links_count_per_node;
+      auto total_ring_links_count = topologies_count * ring_links_count;
+
+      if (dimension_type == DimensionType::T) {
+        cost_model.addResource(
+            CostModel::Resource::TileToTileLink, total_ring_links_count);
+      } else if (dimension_type == DimensionType::N) {
+        cost_model.addResource(
+            CostModel::Resource::NVLink, total_ring_links_count);
+      } else if (dimension_type == DimensionType::P) {
+        cost_model.addResource(
+            CostModel::Resource::NVLink, total_ring_links_count);
+      } else if (dimension_type == DimensionType::PP) {
+        if (nic_latency > 0) {
+          // 1 Link and 2 NICs
+          auto package_links_count = total_ring_links_count / package_size;
+          auto package_nics_count = package_links_count * 2;
+
+          // fixme: pod-to-pod dimension may use other than NVLink
+          cost_model.addResource(
+              CostModel::Resource::NVLink, package_links_count);
+          cost_model.addResource(
+              CostModel::Resource::InfiniBandNic, package_nics_count);
+        } else {
+          // fixme: pod-to-pod dimension may use other than NVLink
+          cost_model.addResource(
+              CostModel::Resource::NVLink, total_ring_links_count);
+        }
+      } else {
+        std::cout
+            << "[HierarchicalTopology, constructor] Given dimension type not implemented"
+            << std::endl;
+        exit(-1);
+      }
+    } else if (topology == TopologyList::AllToAll) {
+      auto links_count_per_node = links_count / adjacent_packages_count;
+      auto a2a_links_count =
+          (topology_size * (topology_size - 1) / 2) * links_count_per_node;
+      auto total_a2a_links_count = topologies_count * a2a_links_count;
+
+      if (dimension_type == DimensionType::T) {
+        cost_model.addResource(
+            CostModel::Resource::TileToTileLink, total_a2a_links_count);
+      } else if (dimension_type == DimensionType::N) {
+        cost_model.addResource(
+            CostModel::Resource::NVLink, total_a2a_links_count);
+      } else if (dimension_type == DimensionType::P) {
+        cost_model.addResource(
+            CostModel::Resource::NVLink, total_a2a_links_count);
+      } else if (dimension_type == DimensionType::PP) {
+        if (nic_latency > 0) {
+          // 1 Link and 2 NICs
+          auto package_links_count = total_a2a_links_count / package_size;
+          auto package_nics_count = package_links_count * 2;
+
+          // fixme: pod-to-pod dimension may use other than NVLink
+          cost_model.addResource(
+              CostModel::Resource::NVLink, package_links_count);
+          cost_model.addResource(
+              CostModel::Resource::InfiniBandNic, package_nics_count);
+        } else {
+          // fixme: pod-to-pod dimension may use other than NVLink
+          cost_model.addResource(
+              CostModel::Resource::NVLink, total_a2a_links_count);
+        }
+      } else {
+        std::cout
+            << "[HierarchicalTopology, constructor] Given dimension type not implemented"
+            << std::endl;
+        exit(-1);
+      }
+    } else if (topology == TopologyList::Switch) {
+      auto links_count_per_node = links_count;
+      auto switch_links_count = topology_size_up_to * links_count_per_node;
+      auto switches_count = cost_model.getNVSwitchesCount(switch_links_count);
+
+      if (dimension_type == DimensionType::T) {
+        // fixme: Switch in tile-to-tile level (if possible) may not use
+        // NVSwitch
+        cost_model.addResource(
+            CostModel::Resource::TileToTileLink, switch_links_count);
+        cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+      } else if (dimension_type == DimensionType::N) {
+        cost_model.addResource(CostModel::Resource::NVLink, switch_links_count);
+        cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+      } else if (dimension_type == DimensionType::P) {
+        cost_model.addResource(CostModel::Resource::NVLink, switch_links_count);
+        cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+      } else if (dimension_type == DimensionType::PP) {
+        if (nic_latency > 0) {
+          // 1 Link and 1 NICs
+          auto package_links_count = switch_links_count / package_size;
+          auto package_nics_count = package_links_count;
+          auto package_switches_count =
+              cost_model.getNVSwitchesCount(package_links_count);
+
+          // fixme: pod-to-pod dimension may use other than NVLink
+          cost_model.addResource(
+              CostModel::Resource::NVLink, package_links_count);
+          cost_model.addResource(
+              CostModel::Resource::InfiniBandNic, package_nics_count);
+          cost_model.addResource(
+              CostModel::Resource::NVSwitch, package_switches_count);
+        } else {
+          // fixme: pod-to-pod dimension may use other than NVLink
+          cost_model.addResource(
+              CostModel::Resource::NVLink, switch_links_count);
+          cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+        }
+      } else {
+        std::cout
+            << "[HierarchicalTopology, constructor] Given dimension type not implemented"
+            << std::endl;
+        exit(-1);
+      }
+    } else {
+      std::cout << "[HierarchicalTopology, constructor] Topology at dimension "
+                << dim << " not defined" << std::endl;
+      exit(-1);
     }
   }
 
   // add NPUs
-  cost_model.createNpu(npus_count, npu_radix);
+  cost_model.addResource(CostModel::Resource::Npu, npus_count);
 }
 
 HierarchicalTopology::~HierarchicalTopology() noexcept = default;

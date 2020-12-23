@@ -7,30 +7,45 @@ LICENSE file in the root directory of this source tree.
 #define __COSTMODEL_HH__
 
 #include <map>
-#include <tuple>
 #include "TopologyConfig.hh"
 
 namespace Analytical {
 class CostModel {
  public:
-  using Latency = TopologyConfig::Latency;
-  using Bandwidth = TopologyConfig::Bandwidth;
-  using Radix = int;
+  /**
+   * How to add new Resource element
+   *   1. Add new resource element to Resource enum class
+   *   2. Update CostModel() constructor
+   *          set resource_usage_table to 0
+   *          set resource_cost_table to cost
+   *   3. Update computeTotalCost() method
+   *          add cost to total_cost
+   */
+  // Resources definition
+  enum class Resource {
+    // fixme: Update this accordingly when required
+    Npu, // todo: must be refined or removed
+    TileToTileLink, // todo: must be refined or removed
+    NVLink,
+    NVSwitch,
+    InfiniBandNic, // todo: change name
+  };
 
   CostModel() noexcept;
 
-  void createLink(int count, Latency latency, Bandwidth bandwidth) noexcept;
-  void createNic(int count, Latency latency, Bandwidth bandwidth) noexcept;
-  void createNpu(int count, Radix radix) noexcept;
-  void createSwitch(int count, Radix radix) noexcept;
+  ~CostModel();
 
-  void computeCost() const noexcept;
+  void addResource(Resource resource, int count) noexcept;
+
+  double computeTotalCost() const noexcept;
+
+  int getNVSwitchesCount(int radix) const noexcept;
 
  private:
-  std::map<std::tuple<Latency, Bandwidth>, int> link_map;
-  std::map<std::tuple<Latency, Bandwidth>, int> nic_map;
-  std::map<Radix, int> npu_map;
-  std::map<Radix, int> switch_map;
+  std::map<Resource, int> resources_usage_table;
+  std::map<Resource, int> resources_cost_table;
+
+  int nvSwitchRadix;
 };
 } // namespace Analytical
 

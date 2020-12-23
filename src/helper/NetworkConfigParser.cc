@@ -48,6 +48,29 @@ std::vector<NetworkConfigParser::TopologyList> NetworkConfigParser::
   return topologies_per_dim;
 }
 
+std::vector<NetworkConfigParser::DimensionType> NetworkConfigParser::
+    parseHierarchicalDimensionType() const noexcept {
+  auto dimension_types = std::vector<DimensionType>();
+
+  for (const auto& type : json_configuration["dimension-type"]) {
+    if (type == "T") {
+      dimension_types.emplace_back(DimensionType::T);
+    } else if (type == "N") {
+      dimension_types.emplace_back(DimensionType::N);
+    } else if (type == "P") {
+      dimension_types.emplace_back(DimensionType::P);
+    } else if (type == "PP") {
+      dimension_types.emplace_back(DimensionType::PP);
+    } else {
+      std::cout << "[NetworkConfigParser] Given Dimension type " << type
+                << " is not supported." << std::endl;
+      exit(-1);
+    }
+  }
+
+  return dimension_types;
+}
+
 std::vector<int> NetworkConfigParser::parseLinksCountPerDim() const noexcept {
   return this->get<std::vector<int>>("links-count");
 }

@@ -14,6 +14,7 @@ namespace Analytical {
 class NetworkConfigParser {
  public:
   using TopologyList = HierarchicalTopologyConfig::TopologyList;
+  using DimensionType = HierarchicalTopologyConfig::DimensionType;
 
   explicit NetworkConfigParser(
       const std::string& network_configuration) noexcept;
@@ -26,6 +27,8 @@ class NetworkConfigParser {
   }
 
   std::vector<TopologyList> parseHierarchicalTopologyList() const noexcept;
+
+  std::vector<DimensionType> parseHierarchicalDimensionType() const noexcept;
 
   std::vector<int> parseLinksCountPerDim() const noexcept;
 

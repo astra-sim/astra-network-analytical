@@ -10,14 +10,11 @@ using namespace Analytical;
 
 FastRing::FastRing(TopologyConfigs& configs, CostModel& cost_model) noexcept
     : FastTopology(configs, cost_model) {
-  auto link_latency = configs[0].getLinkLatency();
-  auto link_bandwidth = configs[0].getLinkBandwidth();
+  auto links_count = npus_count;
 
-  // FIXME: assuming one link among nodes
-  cost_model.createLink(npus_count * 2, link_latency, link_bandwidth);
-
-  // left and right
-  cost_model.createNpu(npus_count, 4);
+  // fixme: assuming 2 links per node
+  cost_model.addResource(CostModel::Resource::Npu, npus_count);
+  cost_model.addResource(CostModel::Resource::NVLink, links_count);
 }
 
 FastRing::~FastRing() noexcept = default;

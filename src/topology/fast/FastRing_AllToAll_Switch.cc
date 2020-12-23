@@ -15,36 +15,31 @@ FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(
     : FastTopology(configs, cost_model) {
   // Ring
   auto ring_size = configs[0].getNpusCount();
-  auto ring_links_count = ring_size * 2;
+  auto ring_links_count = ring_size;
   auto rings_count = npus_count / ring_size;
   auto total_ring_links_count = rings_count * ring_links_count;
-  cost_model.createLink(
-      total_ring_links_count,
-      configs[0].getLinkLatency(),
-      configs[0].getLinkBandwidth());
 
   // AllToAll
   auto a2a_size = configs[1].getNpusCount();
   auto a2a_count = configs[2].getNpusCount() * ring_size;
-  auto a2a_links_count = (a2a_size - 1) * a2a_size;
+  auto a2a_links_count = (a2a_size - 1) * a2a_size / 2;
   auto total_a2a_links_count = a2a_count * a2a_links_count;
-  cost_model.createLink(
-      total_a2a_links_count,
-      configs[1].getLinkLatency(),
-      configs[1].getLinkBandwidth());
 
   // Switch
-  cost_model.createLink(
-      2 * npus_count,
-      configs[2].getLinkLatency(),
-      configs[2].getLinkBandwidth());
-  cost_model.createNic(
-      npus_count, configs[2].getLinkLatency(), configs[2].getLinkBandwidth());
-  cost_model.createSwitch(1, 2 * npus_count);
+  auto switch_links_count = npus_count;
+  auto switches_count = cost_model.getNVSwitchesCount(switch_links_count);
 
-  // NPUs
-  auto npu_radix = ring_links_count + (2 * (a2a_size - 1)) + 2;
-  cost_model.createNpu(npus_count, npu_radix);
+  // Cost
+  cost_model.addResource(CostModel::Resource::Npu, npus_count);
+
+  cost_model.addResource(CostModel::Resource::NVLink, total_ring_links_count);
+  cost_model.addResource(CostModel::Resource::NVLink, total_a2a_links_count);
+  cost_model.addResource(CostModel::Resource::NVLink, switch_links_count);
+
+  cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+
+  cost_model.addResource(
+      CostModel::Resource::InfiniBandNic, switch_links_count);
 }
 
 FastRing_AllToAll_Switch::~FastRing_AllToAll_Switch() noexcept = default;

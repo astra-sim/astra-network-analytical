@@ -9,12 +9,12 @@ using namespace Analytical;
 
 FastSwitch::FastSwitch(TopologyConfigs& configs, CostModel& cost_model) noexcept
     : FastTopology(configs, cost_model) {
-  auto link_latency = configs[0].getLinkLatency();
-  auto link_bandwidth = configs[0].getLinkBandwidth();
+  auto links_count = npus_count;
+  auto switches_count = cost_model.getNVSwitchesCount(npus_count);
 
-  cost_model.createLink(2 * npus_count, link_latency, link_bandwidth);
-  cost_model.createNpu(npus_count, 2);
-  cost_model.createSwitch(1, 2 * npus_count);
+  cost_model.addResource(CostModel::Resource::Npu, npus_count);
+  cost_model.addResource(CostModel::Resource::NVLink, links_count);
+  cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
 }
 
 FastSwitch::~FastSwitch() noexcept = default;

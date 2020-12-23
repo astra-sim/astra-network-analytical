@@ -12,11 +12,11 @@ FastTorus2D::FastTorus2D(
     TopologyConfigs& configs,
     CostModel& cost_model) noexcept
     : FastTopology(configs, cost_model) {
-  auto link_latency = configs[0].getLinkLatency();
-  auto link_bandwidth = configs[0].getLinkBandwidth();
+  // fixme: assuming 1 link per each (src, dest) pair
+  auto links_count = 2 * npus_count;
 
-  cost_model.createLink(4 * npus_count, link_latency, link_bandwidth);
-  cost_model.createNpu(npus_count, 8);
+  cost_model.addResource(CostModel::Resource::Npu, npus_count);
+  cost_model.addResource(CostModel::Resource::NVLink, links_count);
 }
 
 FastTorus2D::~FastTorus2D() noexcept = default;

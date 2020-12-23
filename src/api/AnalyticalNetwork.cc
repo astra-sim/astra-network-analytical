@@ -196,8 +196,6 @@ void AnalyticalNetwork::pass_front_end_report(
   // fixme: dimensions_count for every topology differs
   auto base_index = (stat_row * 10) + 1;
   for (auto i = 0; i < chunk_latencies.size(); i++) {
-    std::cout << stat_row << " " << total_stat_rows << " " << i << " "
-              << base_index << std::endl;
     auto row_to_write = base_index + i;
     auto dimension_id = std::to_string(i);
     auto chunk_latency = std::to_string(chunk_latencies[i]);
