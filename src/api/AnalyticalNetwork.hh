@@ -8,6 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <memory>
 #include "../event-queue/EventQueue.hh"
+#include "../topology/CostModel.hh"
 #include "../topology/Topology.hh"
 #include "SendRecvTrackingMap.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
@@ -21,15 +22,17 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
    * set event_queue to the given pointer.
    * @param new_event_queue pointer to the new event_queue
    */
-  static void set_event_queue(
+  static void setEventQueue(
       const std::shared_ptr<EventQueue>& event_queue_ptr) noexcept;
 
   /**
    * set topology to the given pointer
    * @param new_topology pointer to the new topology
    */
-  static void set_topology(
+  static void setTopology(
       const std::shared_ptr<Topology>& topology_ptr) noexcept;
+
+  static void setCostModel(CostModel* const cost_model_ptr) noexcept;
 
   /**
    * Set static values for backend CSV logging
@@ -39,7 +42,7 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
    * @param end_to_end_csv
    * @param dimensional_info_csv
    */
-  static void set_csv_configuration(
+  static void setCsvConfiguration(
       const std::string& stat_path,
       int stat_row,
       int total_stat_rows,
@@ -97,6 +100,7 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
   static std::shared_ptr<EventQueue> event_queue;
   static std::shared_ptr<Topology> topology;
   static SendRecvTrackingMap send_recv_tracking_map;
+  static CostModel* cost_model;
 
   static std::string stat_path;
   static int stat_row;

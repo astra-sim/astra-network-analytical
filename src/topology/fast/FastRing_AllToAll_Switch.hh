@@ -12,8 +12,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
 class FastRing_AllToAll_Switch : public FastTopology {
  public:
-  FastRing_AllToAll_Switch(
-      TopologyConfigs& configs) noexcept;
+  FastRing_AllToAll_Switch(TopologyConfigs& configs) noexcept;
 
   ~FastRing_AllToAll_Switch() noexcept;
 

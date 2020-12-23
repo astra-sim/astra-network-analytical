@@ -212,11 +212,9 @@ int main(int argc, char* argv[]) {
         "[Analytical, main] Switch is the given topology but dimension != 1");
 
     if (network_parser.useFastVersion()) {
-      topology = std::make_shared<Analytical::FastSwitch>(
-          topology_configs);
+      topology = std::make_shared<Analytical::FastSwitch>(topology_configs);
     } else {
-      topology = std::make_shared<Analytical::DetailedSwitch>(
-          topology_configs);
+      topology = std::make_shared<Analytical::DetailedSwitch>(topology_configs);
     }
     physical_dims.emplace_back(npus_count);
   } else if (topology_name == "AllToAll") {
@@ -225,11 +223,10 @@ int main(int argc, char* argv[]) {
         "[Analytical, main] AllToAll is the given topology but dimension != 1");
 
     if (network_parser.useFastVersion()) {
-      topology = std::make_shared<Analytical::FastAllToAll>(
-          topology_configs);
+      topology = std::make_shared<Analytical::FastAllToAll>(topology_configs);
     } else {
-      topology = std::make_shared<Analytical::DetailedAllToAll>(
-          topology_configs);
+      topology =
+          std::make_shared<Analytical::DetailedAllToAll>(topology_configs);
     }
     physical_dims.emplace_back(npus_count);
   } else if (topology_name == "Torus2D") {
@@ -238,11 +235,10 @@ int main(int argc, char* argv[]) {
         "[Analytical, main] Torus2D is the given topology but dimension != 2");
 
     if (network_parser.useFastVersion()) {
-      topology = std::make_shared<Analytical::FastTorus2D>(
-          topology_configs);
+      topology = std::make_shared<Analytical::FastTorus2D>(topology_configs);
     } else {
-      topology = std::make_shared<Analytical::DetailedTorus2D>(
-          topology_configs);
+      topology =
+          std::make_shared<Analytical::DetailedTorus2D>(topology_configs);
     }
 
     physical_dims.emplace_back(units_counts[0]);
@@ -253,11 +249,9 @@ int main(int argc, char* argv[]) {
         "[Analytical, main] Ring is the given topology but dimension != 1");
 
     if (network_parser.useFastVersion()) {
-      topology =
-          std::make_shared<Analytical::FastRing>(topology_configs);
+      topology = std::make_shared<Analytical::FastRing>(topology_configs);
     } else {
-      topology = std::make_shared<Analytical::DetailedRing>(
-          topology_configs);
+      topology = std::make_shared<Analytical::DetailedRing>(topology_configs);
     }
     physical_dims.emplace_back(npus_count);
   } else if (topology_name == "Ring_AllToAll_Switch") {
@@ -284,8 +278,8 @@ int main(int argc, char* argv[]) {
     exit(-1);
   }
 
-    // Retrieve cost_model
-    auto& cost_model = topology->getCostModel();
+  // Retrieve cost_model
+  auto& cost_model = topology->getCostModel();
 
   // Instantiate required network, memory, and system layers
   auto queues_per_dim = std::vector<int>(dimensions_count, num_queues_per_dim);
@@ -321,8 +315,9 @@ int main(int argc, char* argv[]) {
   }
 
   // link event queue and topology
-  Analytical::AnalyticalNetwork::set_event_queue(event_queue);
-  Analytical::AnalyticalNetwork::set_topology(topology);
+  Analytical::AnalyticalNetwork::setEventQueue(event_queue);
+  Analytical::AnalyticalNetwork::setTopology(topology);
+  Analytical::AnalyticalNetwork::setCostModel(&cost_model);
 
   // link csv
   auto end_to_env_csv =
@@ -330,11 +325,12 @@ int main(int argc, char* argv[]) {
   auto dimensional_info_csv =
       std::make_shared<AstraSim::CSVWriter>(path, "backend_dim_info.csv");
   if (stat_row == 0) {
-    end_to_env_csv->initialize_csv(total_stat_rows + 1, 4);
+    end_to_env_csv->initialize_csv(total_stat_rows + 1, 5);
     end_to_env_csv->write_cell(0, 0, "Run name");
     end_to_env_csv->write_cell(0, 1, "Running time");
     end_to_env_csv->write_cell(0, 2, "Compute time");
     end_to_env_csv->write_cell(0, 3, "Exposed comm time");
+    end_to_env_csv->write_cell(0, 4, "Cost");
 
     // fixme: assuming max_dimension is 10
     // fixme: dimensions_count for every topology differs
@@ -344,7 +340,7 @@ int main(int argc, char* argv[]) {
     dimensional_info_csv->write_cell(0, 1, "Dimension index");
     dimensional_info_csv->write_cell(0, 2, "Average chunk latency");
   }
-  Analytical::AnalyticalNetwork::set_csv_configuration(
+  Analytical::AnalyticalNetwork::setCsvConfiguration(
       path, stat_row, total_stat_rows, end_to_env_csv, dimensional_info_csv);
 
   /**

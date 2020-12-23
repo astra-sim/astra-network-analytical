@@ -8,8 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastRing::FastRing(TopologyConfigs& configs) noexcept
-    : FastTopology(configs) {
+FastRing::FastRing(TopologyConfigs& configs) noexcept : FastTopology(configs) {
   auto links_count = npus_count;
 
   // fixme: assuming 2 links per node

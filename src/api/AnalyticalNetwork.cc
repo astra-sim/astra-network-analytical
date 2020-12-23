@@ -7,11 +7,13 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-std::shared_ptr<Analytical::EventQueue> AnalyticalNetwork::event_queue;
+std::shared_ptr<EventQueue> AnalyticalNetwork::event_queue;
 
-std::shared_ptr<Analytical::Topology> AnalyticalNetwork::topology;
+std::shared_ptr<Topology> AnalyticalNetwork::topology;
 
-Analytical::SendRecvTrackingMap AnalyticalNetwork::send_recv_tracking_map;
+SendRecvTrackingMap AnalyticalNetwork::send_recv_tracking_map;
+
+CostModel* AnalyticalNetwork::cost_model;
 
 std::string AnalyticalNetwork::stat_path;
 
@@ -23,17 +25,21 @@ std::shared_ptr<AstraSim::CSVWriter> AnalyticalNetwork::end_to_end_csv;
 
 std::shared_ptr<AstraSim::CSVWriter> AnalyticalNetwork::dimensional_info_csv;
 
-void AnalyticalNetwork::set_event_queue(
+void AnalyticalNetwork::setEventQueue(
     const std::shared_ptr<EventQueue>& event_queue_ptr) noexcept {
   AnalyticalNetwork::event_queue = event_queue_ptr;
 }
 
-void AnalyticalNetwork::set_topology(
+void AnalyticalNetwork::setTopology(
     const std::shared_ptr<Topology>& topology_ptr) noexcept {
   AnalyticalNetwork::topology = topology_ptr;
 }
 
-void AnalyticalNetwork::set_csv_configuration(
+void AnalyticalNetwork::setCostModel(CostModel* const cost_model_ptr) noexcept {
+  AnalyticalNetwork::cost_model = cost_model_ptr;
+}
+
+void AnalyticalNetwork::setCsvConfiguration(
     const std::string& stat_path,
     int stat_row,
     int total_stat_rows,
@@ -182,13 +188,17 @@ void AnalyticalNetwork::pass_front_end_report(
   auto run_name = astraSimDataAPI.run_name;
   auto running_time = std::to_string(astraSimDataAPI.workload_finished_time);
   auto compute_time = std::to_string(astraSimDataAPI.total_compute);
-  auto expoed_comm_time = std::to_string(astraSimDataAPI.total_exposed_comm);
+  auto exposed_comm_time = std::to_string(astraSimDataAPI.total_exposed_comm);
+  auto total_cost = std::to_string(cost_model->computeTotalCost());
+
 
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 0, run_name);
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 1, running_time);
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 2, compute_time);
   AnalyticalNetwork::end_to_end_csv->write_cell(
-      stat_row + 1, 3, expoed_comm_time);
+      stat_row + 1, 3, exposed_comm_time);
+  AnalyticalNetwork::end_to_end_csv->write_cell(
+      stat_row + 1, 4, total_cost);
 
   auto chunk_latencies =
       astraSimDataAPI.avg_chunk_latency_per_logical_dimension;
