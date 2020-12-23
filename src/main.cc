@@ -172,9 +172,6 @@ int main(int argc, char* argv[]) {
   // pointer to topology
   std::shared_ptr<Analytical::Topology> topology;
 
-  // cost model
-  auto cost_model = Analytical::CostModel();
-
   // topology configuration for each dimension
   auto topology_configs = Analytical::Topology::TopologyConfigs();
   for (int i = 0; i < dimensions_count; i++) {
@@ -205,7 +202,7 @@ int main(int argc, char* argv[]) {
         links_count_per_dim);
 
     topology = std::make_shared<Analytical::HierarchicalTopology>(
-        topology_configs, hierarchy_config, cost_model);
+        topology_configs, hierarchy_config);
     for (int dim = 0; dim < dimensions_count; dim++) {
       physical_dims.emplace_back(units_counts[dim]);
     }
@@ -216,10 +213,10 @@ int main(int argc, char* argv[]) {
 
     if (network_parser.useFastVersion()) {
       topology = std::make_shared<Analytical::FastSwitch>(
-          topology_configs, cost_model);
+          topology_configs);
     } else {
       topology = std::make_shared<Analytical::DetailedSwitch>(
-          topology_configs, cost_model);
+          topology_configs);
     }
     physical_dims.emplace_back(npus_count);
   } else if (topology_name == "AllToAll") {
@@ -229,10 +226,10 @@ int main(int argc, char* argv[]) {
 
     if (network_parser.useFastVersion()) {
       topology = std::make_shared<Analytical::FastAllToAll>(
-          topology_configs, cost_model);
+          topology_configs);
     } else {
       topology = std::make_shared<Analytical::DetailedAllToAll>(
-          topology_configs, cost_model);
+          topology_configs);
     }
     physical_dims.emplace_back(npus_count);
   } else if (topology_name == "Torus2D") {
@@ -242,10 +239,10 @@ int main(int argc, char* argv[]) {
 
     if (network_parser.useFastVersion()) {
       topology = std::make_shared<Analytical::FastTorus2D>(
-          topology_configs, cost_model);
+          topology_configs);
     } else {
       topology = std::make_shared<Analytical::DetailedTorus2D>(
-          topology_configs, cost_model);
+          topology_configs);
     }
 
     physical_dims.emplace_back(units_counts[0]);
@@ -257,10 +254,10 @@ int main(int argc, char* argv[]) {
 
     if (network_parser.useFastVersion()) {
       topology =
-          std::make_shared<Analytical::FastRing>(topology_configs, cost_model);
+          std::make_shared<Analytical::FastRing>(topology_configs);
     } else {
       topology = std::make_shared<Analytical::DetailedRing>(
-          topology_configs, cost_model);
+          topology_configs);
     }
     physical_dims.emplace_back(npus_count);
   } else if (topology_name == "Ring_AllToAll_Switch") {
@@ -270,7 +267,7 @@ int main(int argc, char* argv[]) {
 
     if (network_parser.useFastVersion()) {
       topology = std::make_shared<Analytical::FastRing_AllToAll_Switch>(
-          topology_configs, cost_model);
+          topology_configs);
     } else {
       // non-fast version
       // TODO: implement this
@@ -286,6 +283,9 @@ int main(int argc, char* argv[]) {
               << std::endl;
     exit(-1);
   }
+
+    // Retrieve cost_model
+    auto& cost_model = topology->getCostModel();
 
   // Instantiate required network, memory, and system layers
   auto queues_per_dim = std::vector<int>(dimensions_count, num_queues_per_dim);

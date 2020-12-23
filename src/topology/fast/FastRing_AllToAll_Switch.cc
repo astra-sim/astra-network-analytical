@@ -9,10 +9,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(
-    TopologyConfigs& configs,
-    CostModel& cost_model) noexcept
-    : FastTopology(configs, cost_model) {
+FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(TopologyConfigs& configs) noexcept
+    : FastTopology(configs) {
   // Ring
   auto ring_size = configs[0].getNpusCount();
   auto ring_links_count = ring_size;

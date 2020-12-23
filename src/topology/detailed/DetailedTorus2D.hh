@@ -11,7 +11,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
 class DetailedTorus2D : public DetailedTopology {
  public:
-  DetailedTorus2D(TopologyConfigs& configs, CostModel& cost_model) noexcept;
+  DetailedTorus2D(TopologyConfigs& configs) noexcept;
 
   ~DetailedTorus2D() noexcept override;
 

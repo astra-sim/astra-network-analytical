@@ -7,8 +7,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastSwitch::FastSwitch(TopologyConfigs& configs, CostModel& cost_model) noexcept
-    : FastTopology(configs, cost_model) {
+FastSwitch::FastSwitch(TopologyConfigs& configs) noexcept
+    : FastTopology(configs) {
   auto links_count = npus_count;
   auto switches_count = cost_model.getNVSwitchesCount(npus_count);
 

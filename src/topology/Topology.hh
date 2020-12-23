@@ -21,7 +21,9 @@ class Topology {
   using Latency = TopologyConfig::Latency;
   using Bandwidth = TopologyConfig::Bandwidth;
 
-  Topology(TopologyConfigs& configs, CostModel& cost_model) noexcept;
+  Topology(TopologyConfigs& configs) noexcept;
+
+  CostModel& getCostModel() noexcept;
 
   virtual ~Topology() noexcept = 0;
 
@@ -34,7 +36,7 @@ class Topology {
   TopologyConfigs& configs; // TopologyConfigs for each dimension
   int npus_count; // NPUs count of the topology
 
-  CostModel& cost_model;
+  CostModel cost_model;
 
   void checkNpuIdBound(NpuId npu_id) const noexcept;
 

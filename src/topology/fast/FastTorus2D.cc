@@ -8,10 +8,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastTorus2D::FastTorus2D(
-    TopologyConfigs& configs,
-    CostModel& cost_model) noexcept
-    : FastTopology(configs, cost_model) {
+FastTorus2D::FastTorus2D(TopologyConfigs& configs) noexcept
+    : FastTopology(configs) {
   // fixme: assuming 1 link per each (src, dest) pair
   auto links_count = 2 * npus_count;
 

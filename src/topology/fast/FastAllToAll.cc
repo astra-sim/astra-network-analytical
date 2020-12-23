@@ -7,10 +7,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-FastAllToAll::FastAllToAll(
-    TopologyConfigs& configs,
-    CostModel& cost_model) noexcept
-    : FastTopology(configs, cost_model) {
+FastAllToAll::FastAllToAll(TopologyConfigs& configs) noexcept
+    : FastTopology(configs) {
   // fixme: assuming 1 link per (src, dest) pair
   auto links_count = npus_count * (npus_count - 1) / 2;
 

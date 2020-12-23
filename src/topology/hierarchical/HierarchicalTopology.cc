@@ -10,9 +10,8 @@ using namespace Analytical;
 
 HierarchicalTopology::HierarchicalTopology(
     TopologyConfigs& configs,
-    HierarchicalTopologyConfig hierarchy_config,
-    CostModel& cost_model) noexcept
-    : Topology(configs, cost_model), hierarchy_config(hierarchy_config) {
+    HierarchicalTopologyConfig hierarchy_config) noexcept
+    : Topology(configs), hierarchy_config(hierarchy_config) {
   // Update bandwidth as required
   auto topology_size_up_to = 1;
   auto package_size = 1;

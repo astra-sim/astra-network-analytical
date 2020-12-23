@@ -18,8 +18,7 @@ class HierarchicalTopology : public Topology {
 
   HierarchicalTopology(
       TopologyConfigs& configs,
-      HierarchicalTopologyConfig hierarchy_config,
-      CostModel& cost_model) noexcept;
+      HierarchicalTopologyConfig hierarchy_config) noexcept;
 
   ~HierarchicalTopology() noexcept override;
 
