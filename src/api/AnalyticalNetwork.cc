@@ -53,7 +53,8 @@ void AnalyticalNetwork::setCsvConfiguration(
 }
 
 AnalyticalNetwork::AnalyticalNetwork(int rank) noexcept
-    : AstraSim::AstraNetworkAPI(rank) {}
+    : AstraSim::AstraNetworkAPI(rank),
+    total_message_size(0) {}
 
 int AnalyticalNetwork::sim_comm_size(AstraSim::sim_comm comm, int* size) {
   return 0;
@@ -100,6 +101,11 @@ int AnalyticalNetwork::sim_send(
     void* fun_arg) {
   // get source id
   auto src = sim_comm_get_rank();
+
+  // accumulate total message size
+  if (src == 0) {
+    total_message_size += count;
+  }
 
   // compute send latency in ns    // FIXME: if you want to use time_res other
   // than NS
@@ -190,6 +196,7 @@ void AnalyticalNetwork::pass_front_end_report(
   auto compute_time = std::to_string(astraSimDataAPI.total_compute);
   auto exposed_comm_time = std::to_string(astraSimDataAPI.total_exposed_comm);
   auto total_cost = std::to_string(cost_model->computeTotalCost());
+  auto total_message_size_str = std::to_string(total_message_size / (1024 * 1024));  // in MB
 
 
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 0, run_name);
@@ -199,6 +206,8 @@ void AnalyticalNetwork::pass_front_end_report(
       stat_row + 1, 3, exposed_comm_time);
   AnalyticalNetwork::end_to_end_csv->write_cell(
       stat_row + 1, 4, total_cost);
+  AnalyticalNetwork::end_to_end_csv->write_cell(
+  stat_row + 1, 5, total_message_size_str);
 
   auto chunk_latencies =
       astraSimDataAPI.avg_chunk_latency_per_logical_dimension;

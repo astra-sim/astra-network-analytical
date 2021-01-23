@@ -175,10 +175,12 @@ int main(int argc, char* argv[]) {
   // topology configuration for each dimension
   auto topology_configs = Analytical::Topology::TopologyConfigs();
   for (int i = 0; i < dimensions_count; i++) {
+    auto link_bandwidth_b_ns = (double)link_bandwidths[i] * (1 << 30) / (1'000'000'000);  // link bandwidth in B/ns
+
     topology_configs.emplace_back(
         units_counts[i], // NPUs count
         link_latencies[i], // link latency (ns)
-        link_bandwidths[i], // link bandwidth (GB/s) = (B/ns)
+        link_bandwidth_b_ns,  // link bandwidth (B/ns)
         nic_latencies[i], // nic latency (ns)
         router_latencies[i], // router latency (ns)
         hbm_latencies[i], // memory latency (ns),
@@ -289,8 +291,8 @@ int main(int argc, char* argv[]) {
 
     memories[i] = std::make_unique<AstraSim::SimpleMemory>(
         (AstraSim::AstraNetworkAPI*)(analytical_networks[i].get()),
-        500,
-        270,
+        1,
+        500000,
         12.5);
 
     systems[i] = new AstraSim::Sys(
@@ -325,20 +327,21 @@ int main(int argc, char* argv[]) {
   auto dimensional_info_csv =
       std::make_shared<AstraSim::CSVWriter>(path, "backend_dim_info.csv");
   if (stat_row == 0) {
-    end_to_env_csv->initialize_csv(total_stat_rows + 1, 5);
-    end_to_env_csv->write_cell(0, 0, "Run name");
-    end_to_env_csv->write_cell(0, 1, "Running time");
-    end_to_env_csv->write_cell(0, 2, "Compute time");
-    end_to_env_csv->write_cell(0, 3, "Exposed comm time");
+    end_to_env_csv->initialize_csv(total_stat_rows + 1, 6);
+    end_to_env_csv->write_cell(0, 0, "RunName");
+    end_to_env_csv->write_cell(0, 1, "CommsTime");
+    end_to_env_csv->write_cell(0, 2, "ComputeTime");
+    end_to_env_csv->write_cell(0, 3, "ExposedCommsTime");
     end_to_env_csv->write_cell(0, 4, "Cost");
+    end_to_env_csv->write_cell(0, 5, "TotalMessageSize");
 
     // fixme: assuming max_dimension is 10
     // fixme: dimensions_count for every topology differs
     auto dimension_csv_rows_count = (total_stat_rows * 10) + 1;
     dimensional_info_csv->initialize_csv(dimension_csv_rows_count, 3);
-    dimensional_info_csv->write_cell(0, 0, "Run name");
-    dimensional_info_csv->write_cell(0, 1, "Dimension index");
-    dimensional_info_csv->write_cell(0, 2, "Average chunk latency");
+    dimensional_info_csv->write_cell(0, 0, "RunName");
+    dimensional_info_csv->write_cell(0, 1, "DimensionIndex");
+    dimensional_info_csv->write_cell(0, 2, "AverageChunkLatency");
   }
   Analytical::AnalyticalNetwork::setCsvConfiguration(
       path, stat_row, total_stat_rows, end_to_env_csv, dimensional_info_csv);
