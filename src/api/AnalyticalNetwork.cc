@@ -227,3 +227,7 @@ void AnalyticalNetwork::pass_front_end_report(
         row_to_write, 2, chunk_latency);
   }
 }
+
+double AnalyticalNetwork::get_BW_at_dimension(int dim) {
+  return AnalyticalNetwork::topology->getNpuTotalBandwidthPerDim(dim);  // GB/s
+}

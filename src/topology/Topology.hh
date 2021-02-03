@@ -32,6 +32,8 @@ class Topology {
       NpuId dest,
       PayloadSize payloadSize) noexcept = 0;
 
+  virtual Bandwidth getNpuTotalBandwidthPerDim(int dimension) const noexcept;
+
  protected:
   TopologyConfigs& configs; // TopologyConfigs for each dimension
   int npus_count; // NPUs count of the topology

@@ -92,6 +92,8 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
 
   void pass_front_end_report(
       AstraSim::AstraSimDataAPI astraSimDataAPI) override;
+
+  double get_BW_at_dimension(int dim) override;
   /**
    * ===========================================================================================
    */

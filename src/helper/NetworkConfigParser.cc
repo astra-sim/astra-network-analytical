@@ -74,3 +74,7 @@ std::vector<NetworkConfigParser::DimensionType> NetworkConfigParser::
 std::vector<int> NetworkConfigParser::parseLinksCountPerDim() const noexcept {
   return this->get<std::vector<int>>("links-count");
 }
+
+std::vector<NetworkConfigParser::Bandwidth> NetworkConfigParser::parseLinkBandwidthPerDim() const noexcept {
+  return this->get<std::vector<Bandwidth>>("link-bandwidth");
+}

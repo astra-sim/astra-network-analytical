@@ -195,13 +195,15 @@ int main(int argc, char* argv[]) {
     auto topologies_per_dim = network_parser.parseHierarchicalTopologyList();
     auto dimension_types = network_parser.parseHierarchicalDimensionType();
     auto links_count_per_dim = network_parser.parseLinksCountPerDim();
+    auto link_bandwidth_per_dim = network_parser.parseLinkBandwidthPerDim();
     cmd_parser.set_if_defined("links-count", &links_count_per_dim);
 
     auto hierarchy_config = Analytical::HierarchicalTopologyConfig(
         dimensions_count,
         topologies_per_dim,
         dimension_types,
-        links_count_per_dim);
+        links_count_per_dim,
+        link_bandwidth_per_dim);
 
     topology = std::make_shared<Analytical::HierarchicalTopology>(
         topology_configs, hierarchy_config);

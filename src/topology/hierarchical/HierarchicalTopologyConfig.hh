@@ -7,10 +7,12 @@ LICENSE file in the root directory of this source tree.
 #define __HIERARCHICALTOPOLOGYCONFIG_HH__
 
 #include <vector>
+#include "../TopologyConfig.hh"
 
 namespace Analytical {
 struct HierarchicalTopologyConfig {
  public:
+ using Bandwidth = TopologyConfig::Bandwidth;
   enum class TopologyList { Ring, Switch, AllToAll };
   enum class DimensionType {
     T,
@@ -23,7 +25,8 @@ struct HierarchicalTopologyConfig {
       int dimensions_count,
       std::vector<TopologyList> topologies_per_dim,
       std::vector<DimensionType> dimension_types,
-      std::vector<int> links_count_per_dim) noexcept;
+      std::vector<int> links_count_per_dim,
+      std::vector<Bandwidth> link_bandwidth_per_dim) noexcept;
 
   int getDimensionsCount() const noexcept;
 
@@ -33,11 +36,14 @@ struct HierarchicalTopologyConfig {
 
   int getLinksCountForDim(int dimension) const noexcept;
 
+  Bandwidth getLinkBandwidthForDim(int dimension) const noexcept;
+
  private:
   int dimensions_count;
   std::vector<TopologyList> topologies_per_dim;
   std::vector<DimensionType> dimension_types;
   std::vector<int> links_count_per_dim;
+  std::vector<Bandwidth> link_bandwidth_per_dim;
 };
 } // namespace Analytical
 

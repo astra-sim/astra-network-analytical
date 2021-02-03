@@ -8,6 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <vector>
 #include "../topology/hierarchical/HierarchicalTopologyConfig.hh"
+#include "../topology/TopologyConfig.hh"
 #include "json.hh"
 
 namespace Analytical {
@@ -15,6 +16,7 @@ class NetworkConfigParser {
  public:
   using TopologyList = HierarchicalTopologyConfig::TopologyList;
   using DimensionType = HierarchicalTopologyConfig::DimensionType;
+  using Bandwidth = TopologyConfig::Bandwidth;
 
   explicit NetworkConfigParser(
       const std::string& network_configuration) noexcept;
@@ -31,6 +33,8 @@ class NetworkConfigParser {
   std::vector<DimensionType> parseHierarchicalDimensionType() const noexcept;
 
   std::vector<int> parseLinksCountPerDim() const noexcept;
+
+  std::vector<Bandwidth> parseLinkBandwidthPerDim() const noexcept;
 
  private:
   nlohmann::json json_configuration;

@@ -22,6 +22,8 @@ class HierarchicalTopology : public Topology {
 
   ~HierarchicalTopology() noexcept override;
 
+  Bandwidth getNpuTotalBandwidthPerDim(int dimension) const noexcept override;
+
   double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
       override;
 

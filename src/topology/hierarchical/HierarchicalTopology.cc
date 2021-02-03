@@ -309,3 +309,25 @@ HierarchicalTopology::NpuId HierarchicalTopology::npuAddressToId(
 
   return id;
 }
+
+HierarchicalTopology::Bandwidth HierarchicalTopology::getNpuTotalBandwidthPerDim(int dimension) const noexcept {
+  // links_count[dim] * link_BW[dim]
+  auto topology = hierarchy_config.getTopologyForDim(dimension);
+
+  auto topology_size = configs[dimension].getNpusCount();
+  auto adjacent_packages_count = topology_size - 1;
+
+  auto links_count = hierarchy_config.getLinksCountForDim(dimension);
+  auto link_bandwidth = hierarchy_config.getLinkBandwidthForDim(dimension);
+
+  if (topology == TopologyList::Ring) {
+    links_count -= (links_count % 2);  // make even number
+  } else if (topology == TopologyList::AllToAll) {
+    links_count -= (links_count % adjacent_packages_count);  // make multiplier of adjacent_packages_count
+  } else {
+    std::cout << "[HierarchicalTopology, method getNpuTotalBandwidthPerDim] Given topology for dimension " << dimension << " not defined." << std::endl;
+    exit(-1);
+  }
+
+  return links_count * link_bandwidth;  // GB/s
+}

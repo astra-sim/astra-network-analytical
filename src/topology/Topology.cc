@@ -56,6 +56,10 @@ Topology::Latency Topology::routerLatency(int dimension) const noexcept {
   return configs[dimension].getRouterLatency();
 }
 
+Topology::Bandwidth Topology::getNpuTotalBandwidthPerDim(int dimension) const noexcept {
+  return configs[dimension].getLinkBandwidth();
+}
+
 Topology::Latency Topology::hbmLatency(int dimension, PayloadSize payload_size)
     const noexcept {
   auto hbm_latency = configs[dimension].getHbmLatency(); // HBM baseline latency
