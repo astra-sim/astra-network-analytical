@@ -15,6 +15,8 @@ SendRecvTrackingMap AnalyticalNetwork::send_recv_tracking_map;
 
 CostModel* AnalyticalNetwork::cost_model;
 
+std::shared_ptr<PayloadSizeTracker> AnalyticalNetwork::payload_size_tracker;
+
 std::string AnalyticalNetwork::stat_path;
 
 int AnalyticalNetwork::stat_row;
@@ -52,9 +54,10 @@ void AnalyticalNetwork::setCsvConfiguration(
   AnalyticalNetwork::dimensional_info_csv = dimensional_info_csv;
 }
 
-AnalyticalNetwork::AnalyticalNetwork(int rank) noexcept
-    : AstraSim::AstraNetworkAPI(rank),
-    total_message_size(0) {}
+AnalyticalNetwork::AnalyticalNetwork(int rank, int dims_count) noexcept
+    : AstraSim::AstraNetworkAPI(rank) {
+      payload_size_tracker = std::make_shared<PayloadSizeTracker>(dims_count);
+    }
 
 int AnalyticalNetwork::sim_comm_size(AstraSim::sim_comm comm, int* size) {
   return 0;
@@ -102,17 +105,17 @@ int AnalyticalNetwork::sim_send(
   // get source id
   auto src = sim_comm_get_rank();
 
-  // accumulate total message size
-  if (src == 0) {
-    total_message_size += count;
-  }
-
   // compute send latency in ns    // FIXME: if you want to use time_res other
   // than NS
   AstraSim::timespec_t delta;
   delta.time_res = AstraSim::NS;
   auto used_dim = -1;
   std::tie(delta.time_val, used_dim) = topology->send(src, dst, count); // simulate src->dst and get latency
+
+  // accumulate total message size
+  if (src == 0) {
+    payload_size_tracker->addPayloadSize(count, used_dim);
+  }
 
   if (send_recv_tracking_map.has_recv_operation(tag, src, dst, count)) {
     // recv operation already issued.
@@ -196,7 +199,8 @@ void AnalyticalNetwork::pass_front_end_report(
   auto compute_time = std::to_string(astraSimDataAPI.total_compute);
   auto exposed_comm_time = std::to_string(astraSimDataAPI.total_exposed_comm);
   auto total_cost = std::to_string(cost_model->computeTotalCost());
-  auto total_message_size_str = std::to_string(total_message_size / (1024 * 1024));  // in MB
+  auto total_payload_size = AnalyticalNetwork::payload_size_tracker->totalPayloadSize();
+  auto total_payload_size_str = std::to_string(total_payload_size / (1024 * 1024));  // in MB
 
 
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 0, run_name);
@@ -207,7 +211,12 @@ void AnalyticalNetwork::pass_front_end_report(
   AnalyticalNetwork::end_to_end_csv->write_cell(
       stat_row + 1, 4, total_cost);
   AnalyticalNetwork::end_to_end_csv->write_cell(
-  stat_row + 1, 5, total_message_size_str);
+  stat_row + 1, 5, total_payload_size_str);
+
+  for (auto dim = 0; dim < 7; dim++) {
+    auto payload_size_through_dim = payload_size_tracker->payloadSizeThroughDim(dim) / (1024 * 1024);  // in MB
+    AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, (6 + dim), std::to_string(payload_size_through_dim));
+  }
 
   auto chunk_latencies =
       astraSimDataAPI.avg_chunk_latency_per_logical_dimension;

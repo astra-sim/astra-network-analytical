@@ -11,6 +11,7 @@ LICENSE file in the root directory of this source tree.
 #include "../topology/CostModel.hh"
 #include "../topology/Topology.hh"
 #include "SendRecvTrackingMap.hh"
+#include "PayloadSizeTracker.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 #include "astra-sim/system/AstraSimDataAPI.hh"
 #include "astra-sim/workload/CSVWriter.hh"
@@ -53,7 +54,7 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
    * ========================= AstraNetworkAPIs
    * =================================================
    */
-  AnalyticalNetwork(int rank) noexcept;
+  AnalyticalNetwork(int rank, int dims_count) noexcept;
 
   int sim_comm_size(AstraSim::sim_comm comm, int* size) override;
 
@@ -103,14 +104,13 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
   static std::shared_ptr<Topology> topology;
   static SendRecvTrackingMap send_recv_tracking_map;
   static CostModel* cost_model;
+  static std::shared_ptr<PayloadSizeTracker> payload_size_tracker;
 
   static std::string stat_path;
   static int stat_row;
   static int total_stat_rows;
   static std::shared_ptr<AstraSim::CSVWriter> end_to_end_csv;
   static std::shared_ptr<AstraSim::CSVWriter> dimensional_info_csv;
-
-  int total_message_size;  // message size NPU 0 sent out
 };
 } // namespace Analytical
 
