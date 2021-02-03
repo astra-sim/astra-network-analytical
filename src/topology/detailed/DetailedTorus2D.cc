@@ -56,7 +56,7 @@ DetailedTorus2D::DetailedTorus2D(TopologyConfigs& configs) noexcept
 
 DetailedTorus2D::~DetailedTorus2D() noexcept = default;
 
-double DetailedTorus2D::send(
+std::pair<double, int> DetailedTorus2D::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
@@ -66,7 +66,7 @@ double DetailedTorus2D::send(
 
   // Check src and dest differs
   if (src == dest) {
-    return 0;
+    return std::make_pair(0, -1);
   }
 
   // address
@@ -118,7 +118,7 @@ double DetailedTorus2D::send(
   // FIXME: assuming dim0 = dim1, so using dim0 here
   auto hbm_latency = hbmLatency(0, payload_size);
 
-  return criticalLatency(communication_latency, hbm_latency);
+  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
 }
 
 DetailedTorus2D::Direction DetailedTorus2D::computeDirection(

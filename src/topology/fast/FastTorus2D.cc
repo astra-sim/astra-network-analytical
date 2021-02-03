@@ -19,13 +19,18 @@ FastTorus2D::FastTorus2D(TopologyConfigs& configs) noexcept
 
 FastTorus2D::~FastTorus2D() noexcept = default;
 
-double FastTorus2D::send(
+std::pair<double, int> FastTorus2D::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
   // check NPU ID validity
   checkNpuIdBound(src);
   checkNpuIdBound(dest);
+
+  // Check src and dest differs
+  if (src == dest) {
+    return std::make_pair(0, -1);
+  }
 
   // translate into address
   auto src_address = npuIdToAddress(src);
@@ -69,7 +74,7 @@ double FastTorus2D::send(
   auto hbm_latency = hbmLatency(0, payload_size);
 
   // return critical latency
-  return criticalLatency(communication_latency, hbm_latency);
+  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
 }
 
 FastTorus2D::NpuAddress FastTorus2D::npuIdToAddress(

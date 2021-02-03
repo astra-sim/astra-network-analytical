@@ -15,7 +15,7 @@ class DetailedTorus2D : public DetailedTopology {
 
   ~DetailedTorus2D() noexcept override;
 
-  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
       override;
 
  private:

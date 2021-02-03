@@ -18,13 +18,18 @@ FastRing::FastRing(TopologyConfigs& configs) noexcept : FastTopology(configs) {
 
 FastRing::~FastRing() noexcept = default;
 
-double FastRing::send(
+std::pair<double, int> FastRing::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
   // check NPU ID validity
   checkNpuIdBound(src);
   checkNpuIdBound(dest);
+
+  // Check src and dest differs
+  if (src == dest) {
+    return std::make_pair(0, -1);
+  }
 
   // ring topology: compute hops count
   // FIXME: assume bidirectional ring (always takes shortest path)
@@ -44,5 +49,5 @@ double FastRing::send(
   auto hbm_latency = hbmLatency(0, payload_size);
 
   // return critical latency
-  return criticalLatency(communication_latency, hbm_latency);
+  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
 }

@@ -27,7 +27,7 @@ class Topology {
 
   virtual ~Topology() noexcept = 0;
 
-  virtual double send(
+  virtual std::pair<double, int> send(
       NpuId src,
       NpuId dest,
       PayloadSize payloadSize) noexcept = 0;

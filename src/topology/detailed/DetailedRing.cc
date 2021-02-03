@@ -30,7 +30,7 @@ DetailedRing::DetailedRing(TopologyConfigs& configs) noexcept
 
 DetailedRing::~DetailedRing() noexcept = default;
 
-double DetailedRing::send(
+std::pair<double, int> DetailedRing::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
@@ -40,7 +40,7 @@ double DetailedRing::send(
 
   // Check src and dest differs
   if (src == dest) {
-    return 0;
+    return std::make_pair(0, -1);
   }
 
   // check direction
@@ -65,7 +65,7 @@ double DetailedRing::send(
   // hbm
   auto hbm_latency = hbmLatency(0, payload_size);
 
-  return criticalLatency(communication_latency, hbm_latency);
+  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
 }
 
 DetailedRing::Direction DetailedRing::computeDirection(NpuId src, NpuId dest) {

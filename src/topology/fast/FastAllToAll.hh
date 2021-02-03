@@ -16,7 +16,7 @@ class FastAllToAll : public FastTopology {
 
   ~FastAllToAll() noexcept;
 
-  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
       override;
 };
 } // namespace Analytical

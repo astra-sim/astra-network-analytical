@@ -43,13 +43,18 @@ FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(
 
 FastRing_AllToAll_Switch::~FastRing_AllToAll_Switch() noexcept = default;
 
-double FastRing_AllToAll_Switch::send(
+std::pair<double, int> FastRing_AllToAll_Switch::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
   // check NPU ID validity
   checkNpuIdBound(src);
   checkNpuIdBound(dest);
+
+  // Check src and dest differs
+  if (src == dest) {
+    return std::make_pair(0, -1);
+  }
 
   // translate into address
   auto src_address = npuIdToAddress(src);
@@ -69,7 +74,7 @@ double FastRing_AllToAll_Switch::send(
 
     auto hbm_latency = hbmLatency(2, payload_size);
 
-    return criticalLatency(communication_latency, hbm_latency);
+    return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
   }
 
   // scale-up dimension transmission
@@ -100,7 +105,7 @@ double FastRing_AllToAll_Switch::send(
   auto hbm_latency = hbmLatency(0, payload_size);
 
   // return critical latency
-  return criticalLatency(communication_latency, hbm_latency);
+  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
 }
 
 FastRing_AllToAll_Switch::NpuAddress FastRing_AllToAll_Switch::npuIdToAddress(

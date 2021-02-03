@@ -15,7 +15,7 @@ class DetailedAllToAll : public DetailedTopology {
 
   ~DetailedAllToAll() noexcept override;
 
-  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
       override;
 };
 } // namespace Analytical

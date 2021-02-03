@@ -19,12 +19,17 @@ FastSwitch::FastSwitch(TopologyConfigs& configs) noexcept
 
 FastSwitch::~FastSwitch() noexcept = default;
 
-double FastSwitch::send(
+std::pair<double, int> FastSwitch::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
   checkNpuIdBound(src);
   checkNpuIdBound(dest);
+
+  // Check src and dest differs
+  if (src == dest) {
+    return std::make_pair(0, -1);
+  }
 
   // switch topology: hop count is 2
   const auto hops_count = 2;
@@ -40,5 +45,5 @@ double FastSwitch::send(
   auto hbm_latency = hbmLatency(0, payload_size);
 
   // return critical latency
-  return criticalLatency(communication_latency, hbm_latency);
+  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
 }

@@ -111,8 +111,8 @@ int AnalyticalNetwork::sim_send(
   // than NS
   AstraSim::timespec_t delta;
   delta.time_res = AstraSim::NS;
-  delta.time_val =
-      (int)topology->send(src, dst, count); // simulate src->dst and get latency
+  auto used_dim = -1;
+  std::tie(delta.time_val, used_dim) = topology->send(src, dst, count); // simulate src->dst and get latency
 
   if (send_recv_tracking_map.has_recv_operation(tag, src, dst, count)) {
     // recv operation already issued.

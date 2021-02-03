@@ -209,7 +209,7 @@ HierarchicalTopology::Latency HierarchicalTopology::linkLatency(
   return hops_count * configs[dimension].getLinkLatency();
 }
 
-double HierarchicalTopology::send(
+std::pair<double, int> HierarchicalTopology::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
@@ -217,7 +217,7 @@ double HierarchicalTopology::send(
   checkNpuIdBound(dest);
 
   if (src == dest) {
-    return 0;
+    return std::make_pair(0, -1);
   }
 
   // FIXME: assuming only one dimension, from higher, is used at a time
@@ -264,7 +264,7 @@ double HierarchicalTopology::send(
 
   auto hbm_latency = hbmLatency(dim, payload_size);
 
-  return criticalLatency(communication_latency, hbm_latency);
+  return std::make_pair(criticalLatency(communication_latency, hbm_latency), dim);
 }
 
 HierarchicalTopology::NpuAddress HierarchicalTopology::npuIdToAddress(

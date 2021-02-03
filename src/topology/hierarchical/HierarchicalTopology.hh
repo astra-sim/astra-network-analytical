@@ -24,7 +24,7 @@ class HierarchicalTopology : public Topology {
 
   Bandwidth getNpuTotalBandwidthPerDim(int dimension) const noexcept override;
 
-  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
       override;
 
  private:

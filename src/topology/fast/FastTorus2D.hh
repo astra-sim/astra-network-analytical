@@ -16,7 +16,7 @@ class FastTorus2D : public FastTopology {
 
   ~FastTorus2D() noexcept;
 
-  double send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
+  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
       override;
 
  private:

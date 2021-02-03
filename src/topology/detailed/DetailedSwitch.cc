@@ -25,7 +25,7 @@ DetailedSwitch::DetailedSwitch(TopologyConfigs& configs) noexcept
 
 DetailedSwitch::~DetailedSwitch() noexcept = default;
 
-double DetailedSwitch::send(
+std::pair<double, int> DetailedSwitch::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
@@ -35,7 +35,7 @@ double DetailedSwitch::send(
 
   // Check src and dest differs
   if (src == dest) {
-    return 0;
+    return std::make_pair(0, -1);
   }
 
   // send from src to switch
@@ -50,5 +50,5 @@ double DetailedSwitch::send(
   // hbm
   auto hbm_latency = hbmLatency(0, payload_size);
 
-  return criticalLatency(communication_latency, hbm_latency);
+  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
 }
