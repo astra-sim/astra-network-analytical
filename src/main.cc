@@ -175,12 +175,13 @@ int main(int argc, char* argv[]) {
   // topology configuration for each dimension
   auto topology_configs = Analytical::Topology::TopologyConfigs();
   for (int i = 0; i < dimensions_count; i++) {
-    auto link_bandwidth_b_ns = (double)link_bandwidths[i] * (1 << 30) / (1'000'000'000);  // link bandwidth in B/ns
+    auto link_bandwidth_b_ns = (double)link_bandwidths[i] * (1 << 30) /
+        (1'000'000'000); // link bandwidth in B/ns
 
     topology_configs.emplace_back(
         units_counts[i], // NPUs count
         link_latencies[i], // link latency (ns)
-        link_bandwidth_b_ns,  // link bandwidth (B/ns)
+        link_bandwidth_b_ns, // link bandwidth (B/ns)
         nic_latencies[i], // nic latency (ns)
         router_latencies[i], // router latency (ns)
         hbm_latencies[i], // memory latency (ns),
@@ -294,7 +295,8 @@ int main(int argc, char* argv[]) {
   Analytical::AnalyticalNetwork::setCostModel(&cost_model);
 
   for (int i = 0; i < npus_count; i++) {
-    analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i, dimensions_count);
+    analytical_networks[i] =
+        std::make_unique<Analytical::AnalyticalNetwork>(i, dimensions_count);
 
     memories[i] = std::make_unique<AstraSim::SimpleMemory>(
         (AstraSim::AstraNetworkAPI*)(analytical_networks[i].get()),
@@ -330,7 +332,7 @@ int main(int argc, char* argv[]) {
       std::make_shared<AstraSim::CSVWriter>(path, "backend_dim_info.csv");
   if (stat_row == 0) {
     end_to_env_csv->initialize_csv(total_stat_rows + 1, 13);
-    
+
     end_to_env_csv->write_cell(0, 0, "RunName");
     end_to_env_csv->write_cell(0, 1, "CommsTime");
     end_to_env_csv->write_cell(0, 2, "ComputeTime");
@@ -338,7 +340,8 @@ int main(int argc, char* argv[]) {
     end_to_env_csv->write_cell(0, 4, "Cost");
     end_to_env_csv->write_cell(0, 5, "TotalPayloadSize");
     for (auto dim = 0; dim < 7; dim++) {
-      end_to_env_csv->write_cell(0, (6 + dim), "PayloadSize_Dim" + std::to_string(dim));
+      end_to_env_csv->write_cell(
+          0, (6 + dim), "PayloadSize_Dim" + std::to_string(dim));
     }
 
     // fixme: assuming max_dimension is 10

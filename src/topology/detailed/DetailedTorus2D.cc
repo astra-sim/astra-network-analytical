@@ -118,7 +118,8 @@ std::pair<double, int> DetailedTorus2D::send(
   // FIXME: assuming dim0 = dim1, so using dim0 here
   auto hbm_latency = hbmLatency(0, payload_size);
 
-  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
+  return std::make_pair(
+      criticalLatency(communication_latency, hbm_latency), -1);
 }
 
 DetailedTorus2D::Direction DetailedTorus2D::computeDirection(

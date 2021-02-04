@@ -44,5 +44,6 @@ std::pair<double, int> DetailedAllToAll::send(
 
   auto hbm_latency = hbmLatency(0, payload_size);
 
-  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
+  return std::make_pair(
+      criticalLatency(communication_latency, hbm_latency), -1);
 }

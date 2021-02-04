@@ -12,7 +12,7 @@ LICENSE file in the root directory of this source tree.
 namespace Analytical {
 struct HierarchicalTopologyConfig {
  public:
- using Bandwidth = TopologyConfig::Bandwidth;
+  using Bandwidth = TopologyConfig::Bandwidth;
   enum class TopologyList { Ring, Switch, AllToAll };
   enum class DimensionType {
     T,

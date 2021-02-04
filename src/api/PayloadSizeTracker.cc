@@ -8,11 +8,10 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-PayloadSizeTracker::PayloadSizeTracker(int dims_count) noexcept : 
-  dims_count(dims_count) {
+PayloadSizeTracker::PayloadSizeTracker(int dims_count) noexcept
+    : dims_count(dims_count) {
   payload_size_sent_through_dim = std::vector<int>(dims_count, 0);
 }
-
 
 void PayloadSizeTracker::addPayloadSize(int payload_size, int dim) noexcept {
   payload_size_sent_through_dim[dim] += payload_size;

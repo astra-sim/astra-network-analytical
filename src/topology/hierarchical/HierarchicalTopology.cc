@@ -264,7 +264,8 @@ std::pair<double, int> HierarchicalTopology::send(
 
   auto hbm_latency = hbmLatency(dim, payload_size);
 
-  return std::make_pair(criticalLatency(communication_latency, hbm_latency), dim);
+  return std::make_pair(
+      criticalLatency(communication_latency, hbm_latency), dim);
 }
 
 HierarchicalTopology::NpuAddress HierarchicalTopology::npuIdToAddress(
@@ -310,7 +311,8 @@ HierarchicalTopology::NpuId HierarchicalTopology::npuAddressToId(
   return id;
 }
 
-HierarchicalTopology::Bandwidth HierarchicalTopology::getNpuTotalBandwidthPerDim(int dimension) const noexcept {
+HierarchicalTopology::Bandwidth HierarchicalTopology::
+    getNpuTotalBandwidthPerDim(int dimension) const noexcept {
   // links_count[dim] * link_BW[dim]
   auto topology = hierarchy_config.getTopologyForDim(dimension);
 
@@ -321,13 +323,17 @@ HierarchicalTopology::Bandwidth HierarchicalTopology::getNpuTotalBandwidthPerDim
   auto link_bandwidth = hierarchy_config.getLinkBandwidthForDim(dimension);
 
   if (topology == TopologyList::Ring) {
-    links_count -= (links_count % 2);  // make even number
+    links_count -= (links_count % 2); // make even number
   } else if (topology == TopologyList::AllToAll) {
-    links_count -= (links_count % adjacent_packages_count);  // make multiplier of adjacent_packages_count
+    links_count -=
+        (links_count %
+         adjacent_packages_count); // make multiplier of adjacent_packages_count
   } else {
-    std::cout << "[HierarchicalTopology, method getNpuTotalBandwidthPerDim] Given topology for dimension " << dimension << " not defined." << std::endl;
+    std::cout
+        << "[HierarchicalTopology, method getNpuTotalBandwidthPerDim] Given topology for dimension "
+        << dimension << " not defined." << std::endl;
     exit(-1);
   }
 
-  return links_count * link_bandwidth;  // GB/s
+  return links_count * link_bandwidth; // GB/s
 }

@@ -38,6 +38,7 @@ int HierarchicalTopologyConfig::getLinksCountForDim(
   return links_count_per_dim[dimension];
 }
 
-HierarchicalTopologyConfig::Bandwidth HierarchicalTopologyConfig::getLinkBandwidthForDim(int dimension) const noexcept {
+HierarchicalTopologyConfig::Bandwidth HierarchicalTopologyConfig::
+    getLinkBandwidthForDim(int dimension) const noexcept {
   return link_bandwidth_per_dim[dimension];
 }

@@ -74,7 +74,8 @@ std::pair<double, int> FastRing_AllToAll_Switch::send(
 
     auto hbm_latency = hbmLatency(2, payload_size);
 
-    return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
+    return std::make_pair(
+        criticalLatency(communication_latency, hbm_latency), -1);
   }
 
   // scale-up dimension transmission
@@ -105,7 +106,8 @@ std::pair<double, int> FastRing_AllToAll_Switch::send(
   auto hbm_latency = hbmLatency(0, payload_size);
 
   // return critical latency
-  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
+  return std::make_pair(
+      criticalLatency(communication_latency, hbm_latency), -1);
 }
 
 FastRing_AllToAll_Switch::NpuAddress FastRing_AllToAll_Switch::npuIdToAddress(

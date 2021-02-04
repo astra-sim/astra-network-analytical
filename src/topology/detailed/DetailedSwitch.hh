@@ -15,8 +15,10 @@ class DetailedSwitch : public DetailedTopology {
 
   ~DetailedSwitch() noexcept override;
 
-  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
-      override;
+  std::pair<double, int> send(
+      NpuId src,
+      NpuId dest,
+      PayloadSize payload_size) noexcept override;
 
  private:
   NpuId switch_id;

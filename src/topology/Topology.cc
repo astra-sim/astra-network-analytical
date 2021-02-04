@@ -56,7 +56,8 @@ Topology::Latency Topology::routerLatency(int dimension) const noexcept {
   return configs[dimension].getRouterLatency();
 }
 
-Topology::Bandwidth Topology::getNpuTotalBandwidthPerDim(int dimension) const noexcept {
+Topology::Bandwidth Topology::getNpuTotalBandwidthPerDim(
+    int dimension) const noexcept {
   return configs[dimension].getLinkBandwidth();
 }
 

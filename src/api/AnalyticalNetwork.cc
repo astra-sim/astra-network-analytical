@@ -55,10 +55,9 @@ void AnalyticalNetwork::setCsvConfiguration(
 }
 
 AnalyticalNetwork::AnalyticalNetwork(int rank, int dims_count) noexcept
-    : AstraSim::AstraNetworkAPI(rank),
-dims_count(dims_count) {
-      payload_size_tracker = std::make_shared<PayloadSizeTracker>(dims_count);
-    }
+    : AstraSim::AstraNetworkAPI(rank), dims_count(dims_count) {
+  payload_size_tracker = std::make_shared<PayloadSizeTracker>(dims_count);
+}
 
 int AnalyticalNetwork::sim_comm_size(AstraSim::sim_comm comm, int* size) {
   return 0;
@@ -111,7 +110,8 @@ int AnalyticalNetwork::sim_send(
   AstraSim::timespec_t delta;
   delta.time_res = AstraSim::NS;
   auto used_dim = -1;
-  std::tie(delta.time_val, used_dim) = topology->send(src, dst, count); // simulate src->dst and get latency
+  std::tie(delta.time_val, used_dim) =
+      topology->send(src, dst, count); // simulate src->dst and get latency
 
   // accumulate total message size
   if (src == 0) {
@@ -200,26 +200,30 @@ void AnalyticalNetwork::pass_front_end_report(
   auto compute_time = std::to_string(astraSimDataAPI.total_compute);
   auto exposed_comm_time = std::to_string(astraSimDataAPI.total_exposed_comm);
   auto total_cost = std::to_string(cost_model->computeTotalCost());
-  auto total_payload_size = AnalyticalNetwork::payload_size_tracker->totalPayloadSize();
-  auto total_payload_size_str = std::to_string((double)total_payload_size / (1024 * 1024));  // in MB
-
+  auto total_payload_size =
+      AnalyticalNetwork::payload_size_tracker->totalPayloadSize();
+  auto total_payload_size_str =
+      std::to_string((double)total_payload_size / (1024 * 1024)); // in MB
 
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 0, run_name);
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 1, running_time);
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 2, compute_time);
   AnalyticalNetwork::end_to_end_csv->write_cell(
       stat_row + 1, 3, exposed_comm_time);
+  AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 4, total_cost);
   AnalyticalNetwork::end_to_end_csv->write_cell(
-      stat_row + 1, 4, total_cost);
-  AnalyticalNetwork::end_to_end_csv->write_cell(
-  stat_row + 1, 5, total_payload_size_str);
+      stat_row + 1, 5, total_payload_size_str);
 
   for (auto dim = 0; dim < dims_count; dim++) {
-    auto payload_size_through_dim = (double)payload_size_tracker->payloadSizeThroughDim(dim) / (1024 * 1024);  // in MB
-    AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, (6 + dim), std::to_string(payload_size_through_dim));
+    auto payload_size_through_dim =
+        (double)payload_size_tracker->payloadSizeThroughDim(dim) /
+        (1024 * 1024); // in MB
+    AnalyticalNetwork::end_to_end_csv->write_cell(
+        stat_row + 1, (6 + dim), std::to_string(payload_size_through_dim));
   }
   for (auto dim = dims_count; dim < 7; dim++) {
-    AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, (6 + dim), "-1");
+    AnalyticalNetwork::end_to_end_csv->write_cell(
+        stat_row + 1, (6 + dim), "-1");
   }
 
   auto chunk_latencies =
@@ -242,5 +246,5 @@ void AnalyticalNetwork::pass_front_end_report(
 }
 
 double AnalyticalNetwork::get_BW_at_dimension(int dim) {
-  return AnalyticalNetwork::topology->getNpuTotalBandwidthPerDim(dim);  // GB/s
+  return AnalyticalNetwork::topology->getNpuTotalBandwidthPerDim(dim); // GB/s
 }

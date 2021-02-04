@@ -65,7 +65,8 @@ std::pair<double, int> DetailedRing::send(
   // hbm
   auto hbm_latency = hbmLatency(0, payload_size);
 
-  return std::make_pair(criticalLatency(communication_latency, hbm_latency), -1);
+  return std::make_pair(
+      criticalLatency(communication_latency, hbm_latency), -1);
 }
 
 DetailedRing::Direction DetailedRing::computeDirection(NpuId src, NpuId dest) {

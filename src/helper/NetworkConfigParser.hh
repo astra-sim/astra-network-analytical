@@ -7,8 +7,8 @@ LICENSE file in the root directory of this source tree.
 #define __NETWORKCONFIGPARSER_HH__
 
 #include <vector>
-#include "../topology/hierarchical/HierarchicalTopologyConfig.hh"
 #include "../topology/TopologyConfig.hh"
+#include "../topology/hierarchical/HierarchicalTopologyConfig.hh"
 #include "json.hh"
 
 namespace Analytical {

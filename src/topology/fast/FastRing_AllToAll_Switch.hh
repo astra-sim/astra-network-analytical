@@ -16,8 +16,10 @@ class FastRing_AllToAll_Switch : public FastTopology {
 
   ~FastRing_AllToAll_Switch() noexcept;
 
-  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
-      override;
+  std::pair<double, int> send(
+      NpuId src,
+      NpuId dest,
+      PayloadSize payload_size) noexcept override;
 
  private:
   NpuAddress npuIdToAddress(NpuId npu_id) const noexcept override;

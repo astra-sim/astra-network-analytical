@@ -16,8 +16,10 @@ class FastSwitch : public FastTopology {
 
   ~FastSwitch() noexcept;
 
-  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
-      override;
+  std::pair<double, int> send(
+      NpuId src,
+      NpuId dest,
+      PayloadSize payload_size) noexcept override;
 };
 } // namespace Analytical
 

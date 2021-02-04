@@ -16,8 +16,10 @@ class FastRing : public FastTopology {
 
   ~FastRing() noexcept;
 
-  std::pair<double, int> send(NpuId src, NpuId dest, PayloadSize payload_size) noexcept
-      override;
+  std::pair<double, int> send(
+      NpuId src,
+      NpuId dest,
+      PayloadSize payload_size) noexcept override;
 };
 } // namespace Analytical
 
