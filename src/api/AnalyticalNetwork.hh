@@ -111,6 +111,8 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
   static int total_stat_rows;
   static std::shared_ptr<AstraSim::CSVWriter> end_to_end_csv;
   static std::shared_ptr<AstraSim::CSVWriter> dimensional_info_csv;
+
+  int dims_count;
 };
 } // namespace Analytical
 

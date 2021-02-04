@@ -55,7 +55,8 @@ void AnalyticalNetwork::setCsvConfiguration(
 }
 
 AnalyticalNetwork::AnalyticalNetwork(int rank, int dims_count) noexcept
-    : AstraSim::AstraNetworkAPI(rank) {
+    : AstraSim::AstraNetworkAPI(rank),
+dims_count(dims_count) {
       payload_size_tracker = std::make_shared<PayloadSizeTracker>(dims_count);
     }
 
@@ -200,7 +201,7 @@ void AnalyticalNetwork::pass_front_end_report(
   auto exposed_comm_time = std::to_string(astraSimDataAPI.total_exposed_comm);
   auto total_cost = std::to_string(cost_model->computeTotalCost());
   auto total_payload_size = AnalyticalNetwork::payload_size_tracker->totalPayloadSize();
-  auto total_payload_size_str = std::to_string(total_payload_size / (1024 * 1024));  // in MB
+  auto total_payload_size_str = std::to_string((double)total_payload_size / (1024 * 1024));  // in MB
 
 
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 0, run_name);
@@ -213,9 +214,12 @@ void AnalyticalNetwork::pass_front_end_report(
   AnalyticalNetwork::end_to_end_csv->write_cell(
   stat_row + 1, 5, total_payload_size_str);
 
-  for (auto dim = 0; dim < 7; dim++) {
-    auto payload_size_through_dim = payload_size_tracker->payloadSizeThroughDim(dim) / (1024 * 1024);  // in MB
+  for (auto dim = 0; dim < dims_count; dim++) {
+    auto payload_size_through_dim = (double)payload_size_tracker->payloadSizeThroughDim(dim) / (1024 * 1024);  // in MB
     AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, (6 + dim), std::to_string(payload_size_through_dim));
+  }
+  for (auto dim = dims_count; dim < 7; dim++) {
+    AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, (6 + dim), "-1");
   }
 
   auto chunk_latencies =

@@ -288,6 +288,11 @@ int main(int argc, char* argv[]) {
   // Instantiate required network, memory, and system layers
   auto queues_per_dim = std::vector<int>(dimensions_count, num_queues_per_dim);
 
+  // link event queue and topology
+  Analytical::AnalyticalNetwork::setEventQueue(event_queue);
+  Analytical::AnalyticalNetwork::setTopology(topology);
+  Analytical::AnalyticalNetwork::setCostModel(&cost_model);
+
   for (int i = 0; i < npus_count; i++) {
     analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i, dimensions_count);
 
@@ -317,11 +322,6 @@ int main(int argc, char* argv[]) {
         rendezvous_protocol // randezvous protocol
     );
   }
-
-  // link event queue and topology
-  Analytical::AnalyticalNetwork::setEventQueue(event_queue);
-  Analytical::AnalyticalNetwork::setTopology(topology);
-  Analytical::AnalyticalNetwork::setCostModel(&cost_model);
 
   // link csv
   auto end_to_env_csv =
