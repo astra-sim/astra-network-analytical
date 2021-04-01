@@ -49,7 +49,7 @@ class CostModel {
   std::map<ResourceType, int> resources_cost_table;
 
   int nvSwitchRadix;
-  double nv_link_bandwidth = 300;  // 300 GB/s
+  double nv_link_bandwidth = 150;  // 300 GB/s
 };
 } // namespace Analytical
 
