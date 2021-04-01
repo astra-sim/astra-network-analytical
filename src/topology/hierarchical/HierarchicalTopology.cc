@@ -19,6 +19,7 @@ HierarchicalTopology::HierarchicalTopology(
   for (int dim = 0; dim < hierarchy_config.getDimensionsCount(); dim++) {
     auto topology = hierarchy_config.getTopologyForDim(dim);
     auto links_count = hierarchy_config.getLinksCountForDim(dim);
+    auto link_bandwidth = hierarchy_config.getLinkBandwidthForDim(dim);
     auto topology_size = configs[dim].getNpusCount();
     auto adjacent_packages_count = topology_size - 1;
 
@@ -80,13 +81,13 @@ HierarchicalTopology::HierarchicalTopology(
 
       if (dimension_type == DimensionType::T) {
         cost_model.addResource(
-            CostModel::Resource::TileToTileLink, total_ring_links_count);
+            CostModel::ResourceType::TileToTileLink, total_ring_links_count, -1);
       } else if (dimension_type == DimensionType::N) {
         cost_model.addResource(
-            CostModel::Resource::NVLink, total_ring_links_count);
+            CostModel::ResourceType::NVLink, total_ring_links_count, link_bandwidth);
       } else if (dimension_type == DimensionType::P) {
         cost_model.addResource(
-            CostModel::Resource::NVLink, total_ring_links_count);
+            CostModel::ResourceType::NVLink, total_ring_links_count, link_bandwidth);
       } else if (dimension_type == DimensionType::PP) {
         if (nic_latency > 0) {
           // 1 Link and 2 NICs
@@ -95,13 +96,13 @@ HierarchicalTopology::HierarchicalTopology(
 
           // fixme: pod-to-pod dimension may use other than NVLink
           cost_model.addResource(
-              CostModel::Resource::NVLink, package_links_count);
+              CostModel::ResourceType::NVLink, package_links_count, link_bandwidth);
           cost_model.addResource(
-              CostModel::Resource::InfiniBandNic, package_nics_count);
+              CostModel::ResourceType::InfiniBandNic, package_nics_count, -1);
         } else {
           // fixme: pod-to-pod dimension may use other than NVLink
           cost_model.addResource(
-              CostModel::Resource::NVLink, total_ring_links_count);
+              CostModel::ResourceType::NVLink, total_ring_links_count, link_bandwidth);
         }
       } else {
         std::cout
@@ -117,13 +118,13 @@ HierarchicalTopology::HierarchicalTopology(
 
       if (dimension_type == DimensionType::T) {
         cost_model.addResource(
-            CostModel::Resource::TileToTileLink, total_a2a_links_count);
+            CostModel::ResourceType::TileToTileLink, total_a2a_links_count, -1);
       } else if (dimension_type == DimensionType::N) {
         cost_model.addResource(
-            CostModel::Resource::NVLink, total_a2a_links_count);
+            CostModel::ResourceType::NVLink, total_a2a_links_count, link_bandwidth);
       } else if (dimension_type == DimensionType::P) {
         cost_model.addResource(
-            CostModel::Resource::NVLink, total_a2a_links_count);
+            CostModel::ResourceType::NVLink, total_a2a_links_count, link_bandwidth);
       } else if (dimension_type == DimensionType::PP) {
         if (nic_latency > 0) {
           // 1 Link and 2 NICs
@@ -132,13 +133,13 @@ HierarchicalTopology::HierarchicalTopology(
 
           // fixme: pod-to-pod dimension may use other than NVLink
           cost_model.addResource(
-              CostModel::Resource::NVLink, package_links_count);
+              CostModel::ResourceType::NVLink, package_links_count, link_bandwidth);
           cost_model.addResource(
-              CostModel::Resource::InfiniBandNic, package_nics_count);
+              CostModel::ResourceType::InfiniBandNic, package_nics_count, -1);
         } else {
           // fixme: pod-to-pod dimension may use other than NVLink
           cost_model.addResource(
-              CostModel::Resource::NVLink, total_a2a_links_count);
+              CostModel::ResourceType::NVLink, total_a2a_links_count, link_bandwidth);
         }
       } else {
         std::cout
@@ -155,14 +156,14 @@ HierarchicalTopology::HierarchicalTopology(
         // fixme: Switch in tile-to-tile level (if possible) may not use
         // NVSwitch
         cost_model.addResource(
-            CostModel::Resource::TileToTileLink, switch_links_count);
-        cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+            CostModel::ResourceType::TileToTileLink, switch_links_count, -1);
+        cost_model.addResource(CostModel::ResourceType::NVSwitch, switches_count, -1);
       } else if (dimension_type == DimensionType::N) {
-        cost_model.addResource(CostModel::Resource::NVLink, switch_links_count);
-        cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+        cost_model.addResource(CostModel::ResourceType::NVLink, switch_links_count, link_bandwidth);
+        cost_model.addResource(CostModel::ResourceType::NVSwitch, switches_count, -1);
       } else if (dimension_type == DimensionType::P) {
-        cost_model.addResource(CostModel::Resource::NVLink, switch_links_count);
-        cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+        cost_model.addResource(CostModel::ResourceType::NVLink, switch_links_count, link_bandwidth);
+        cost_model.addResource(CostModel::ResourceType::NVSwitch, switches_count, -1);
       } else if (dimension_type == DimensionType::PP) {
         if (nic_latency > 0) {
           // 1 Link and 1 NICs
@@ -173,16 +174,16 @@ HierarchicalTopology::HierarchicalTopology(
 
           // fixme: pod-to-pod dimension may use other than NVLink
           cost_model.addResource(
-              CostModel::Resource::NVLink, package_links_count);
+              CostModel::ResourceType::NVLink, package_links_count, link_bandwidth);
           cost_model.addResource(
-              CostModel::Resource::InfiniBandNic, package_nics_count);
+              CostModel::ResourceType::InfiniBandNic, package_nics_count, -1);
           cost_model.addResource(
-              CostModel::Resource::NVSwitch, package_switches_count);
+              CostModel::ResourceType::NVSwitch, package_switches_count, -1);
         } else {
           // fixme: pod-to-pod dimension may use other than NVLink
           cost_model.addResource(
-              CostModel::Resource::NVLink, switch_links_count);
-          cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+              CostModel::ResourceType::NVLink, switch_links_count, link_bandwidth);
+          cost_model.addResource(CostModel::ResourceType::NVSwitch, switches_count, -1);
         }
       } else {
         std::cout
@@ -198,7 +199,7 @@ HierarchicalTopology::HierarchicalTopology(
   }
 
   // add NPUs
-  cost_model.addResource(CostModel::Resource::Npu, npus_count);
+  cost_model.addResource(CostModel::ResourceType::Npu, npus_count, -1);
 }
 
 HierarchicalTopology::~HierarchicalTopology() noexcept = default;

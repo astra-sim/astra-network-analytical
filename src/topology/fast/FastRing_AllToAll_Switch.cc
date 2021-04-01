@@ -29,16 +29,16 @@ FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(
   auto switches_count = cost_model.getNVSwitchesCount(switch_links_count);
 
   // Cost
-  cost_model.addResource(CostModel::Resource::Npu, npus_count);
+  // cost_model.addResource(CostModel::ResourceType::Npu, npus_count);
 
-  cost_model.addResource(CostModel::Resource::NVLink, total_ring_links_count);
-  cost_model.addResource(CostModel::Resource::NVLink, total_a2a_links_count);
-  cost_model.addResource(CostModel::Resource::NVLink, switch_links_count);
+  // cost_model.addResource(CostModel::ResourceType::NVLink, total_ring_links_count);
+  // cost_model.addResource(CostModel::ResourceType::NVLink, total_a2a_links_count);
+  // cost_model.addResource(CostModel::ResourceType::NVLink, switch_links_count);
 
-  cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+  // cost_model.addResource(CostModel::ResourceType::NVSwitch, switches_count);
 
-  cost_model.addResource(
-      CostModel::Resource::InfiniBandNic, switch_links_count);
+  // cost_model.addResource(
+  //    CostModel::ResourceType::InfiniBandNic, switch_links_count);
 }
 
 FastRing_AllToAll_Switch::~FastRing_AllToAll_Switch() noexcept = default;

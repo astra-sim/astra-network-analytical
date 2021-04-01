@@ -12,9 +12,9 @@ FastSwitch::FastSwitch(TopologyConfigs& configs) noexcept
   auto links_count = npus_count;
   auto switches_count = cost_model.getNVSwitchesCount(npus_count);
 
-  cost_model.addResource(CostModel::Resource::Npu, npus_count);
-  cost_model.addResource(CostModel::Resource::NVLink, links_count);
-  cost_model.addResource(CostModel::Resource::NVSwitch, switches_count);
+  // cost_model.addResource(CostModel::ResourceType::Npu, npus_count);
+  // cost_model.addResource(CostModel::ResourceType::NVLink, links_count);
+  // cost_model.addResource(CostModel::ResourceType::NVSwitch, switches_count);
 }
 
 FastSwitch::~FastSwitch() noexcept = default;

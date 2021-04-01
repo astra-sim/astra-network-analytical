@@ -11,34 +11,34 @@ using namespace Analytical;
 
 CostModel::CostModel() noexcept {
   // Initialize table
-  resources_usage_table[Resource::NVLink] = 0;
-  resources_usage_table[Resource::NVSwitch] = 0;
-  resources_usage_table[Resource::InfiniBandNic] = 0;
-  resources_usage_table[Resource::Npu] = 0;
-  resources_usage_table[Resource::TileToTileLink] = 0;
+  resources_usage_table[ResourceType::NVLink] = std::make_pair(0, 0);
+  resources_usage_table[ResourceType::NVSwitch] = std::make_pair(0, 0);
+  resources_usage_table[ResourceType::InfiniBandNic] = std::make_pair(0, 0);
+  resources_usage_table[ResourceType::Npu] = std::make_pair(0, 0);
+  resources_usage_table[ResourceType::TileToTileLink] = std::make_pair(0, 0);
 
   // Define cost here
-  resources_cost_table[Resource::NVLink] = 100; // from TeraRack paper
-  resources_cost_table[Resource::NVSwitch] = 5'200; // from TeraRack paper
-  resources_cost_table[Resource::InfiniBandNic] = 1'200;
-  resources_cost_table[Resource::Npu] = 0; // todo: currently disregarded
-  resources_cost_table[Resource::TileToTileLink] =
+  resources_cost_table[ResourceType::NVLink] = 100; // from TeraRack paper
+  resources_cost_table[ResourceType::NVSwitch] = 5'200; // from TeraRack paper
+  resources_cost_table[ResourceType::InfiniBandNic] = 1'200;
+  resources_cost_table[ResourceType::Npu] = 0; // todo: currently disregarded
+  resources_cost_table[ResourceType::TileToTileLink] =
       0; // todo: currently disregarded
 }
 
 CostModel::~CostModel() = default;
 
-void CostModel::addResource(Resource resource, int count) noexcept {
+void CostModel::addResource(ResourceType resource, int count, double additional_info) noexcept {
   // Print log
-  if (resource == Resource::Npu) {
+  if (resource == ResourceType::Npu) {
     std::cout << "[CostModel] Added NPU: " << count << std::endl;
-  } else if (resource == Resource::TileToTileLink) {
+  } else if (resource == ResourceType::TileToTileLink) {
     std::cout << "[CostModel] Added TileToTileLink: " << count << std::endl;
-  } else if (resource == Resource::NVLink) {
+  } else if (resource == ResourceType::NVLink) {
     std::cout << "[CostModel] Added NVLink: " << count << std::endl;
-  } else if (resource == Resource::NVSwitch) {
+  } else if (resource == ResourceType::NVSwitch) {
     std::cout << "[CostModel] Added NVSwitch: " << count << std::endl;
-  } else if (resource == Resource::InfiniBandNic) {
+  } else if (resource == ResourceType::InfiniBandNic) {
     std::cout << "[CostModel] AddInfiniBandNic: " << count << std::endl;
   } else {
     std::cout << "[CostModel] Error, Resource undefined!!! " << count
@@ -46,26 +46,26 @@ void CostModel::addResource(Resource resource, int count) noexcept {
     exit(-1);
   }
 
-  resources_usage_table[resource] += count;
+  auto cost = 0.0;
+  if (resource == ResourceType::NVLink) {
+    // scale by bandwidth
+    cost = (additional_info / nv_link_bandwidth) * resources_cost_table[resource] * count;
+  } else {
+    cost = resources_cost_table[resource] * count;
+  }
+
+  std::get<0>(resources_usage_table[resource]) += count;
+  std::get<1>(resources_usage_table[resource]) += cost;
 }
 
 double CostModel::computeTotalCost() const noexcept {
   auto total_cost = 0.0;
 
-  total_cost += resources_usage_table.find(Resource::Npu)->second *
-      resources_cost_table.find(Resource::Npu)->second;
-
-  total_cost += resources_usage_table.find(Resource::TileToTileLink)->second *
-      resources_cost_table.find(Resource::TileToTileLink)->second;
-
-  total_cost += resources_usage_table.find(Resource::NVLink)->second *
-      resources_cost_table.find(Resource::NVLink)->second;
-
-  total_cost += resources_usage_table.find(Resource::NVSwitch)->second *
-      resources_cost_table.find(Resource::NVSwitch)->second;
-
-  total_cost += resources_usage_table.find(Resource::InfiniBandNic)->second *
-      resources_cost_table.find(Resource::InfiniBandNic)->second;
+  total_cost += std::get<1>(resources_usage_table.at(ResourceType::Npu));
+  total_cost += std::get<1>(resources_usage_table.at(ResourceType::TileToTileLink));
+  total_cost += std::get<1>(resources_usage_table.at(ResourceType::NVLink));
+  total_cost += std::get<1>(resources_usage_table.at(ResourceType::NVSwitch));
+  total_cost += std::get<1>(resources_usage_table.at(ResourceType::InfiniBandNic));
 
   return total_cost;
 }

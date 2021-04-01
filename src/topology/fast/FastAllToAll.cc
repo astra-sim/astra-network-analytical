@@ -11,9 +11,10 @@ FastAllToAll::FastAllToAll(TopologyConfigs& configs) noexcept
     : FastTopology(configs) {
   // fixme: assuming 1 link per (src, dest) pair
   auto links_count = npus_count * (npus_count - 1) / 2;
+  auto link_bandwidth = configs[0].getLinkBandwidth();
 
-  cost_model.addResource(CostModel::Resource::Npu, npus_count);
-  cost_model.addResource(CostModel::Resource::NVLink, links_count);
+  // cost_model.addResource(CostModel::ResourceType::Npu, npus_count, -1);
+  // cost_model.addResource(CostModel::ResourceType::NVLink, links_count, link_bandwidth);
 }
 
 FastAllToAll::~FastAllToAll() noexcept = default;

@@ -7,6 +7,7 @@ LICENSE file in the root directory of this source tree.
 #define __COSTMODEL_HH__
 
 #include <map>
+#include <tuple>
 #include "TopologyConfig.hh"
 
 namespace Analytical {
@@ -22,7 +23,7 @@ class CostModel {
    *          add cost to total_cost
    */
   // Resources definition
-  enum class Resource {
+  enum class ResourceType {
     // fixme: Update this accordingly when required
     Npu, // todo: must be refined or removed
     TileToTileLink, // todo: must be refined or removed
@@ -31,21 +32,24 @@ class CostModel {
     InfiniBandNic, // todo: change name
   };
 
+  using ResourceInfo = std::pair<int, double>;  // (count, total_cost)
+
   CostModel() noexcept;
 
   ~CostModel();
 
-  void addResource(Resource resource, int count) noexcept;
+  void addResource(ResourceType resource, int count, double additional_info) noexcept;
 
   double computeTotalCost() const noexcept;
 
   int getNVSwitchesCount(int radix) const noexcept;
 
  private:
-  std::map<Resource, int> resources_usage_table;
-  std::map<Resource, int> resources_cost_table;
+  std::map<ResourceType, ResourceInfo> resources_usage_table;
+  std::map<ResourceType, int> resources_cost_table;
 
   int nvSwitchRadix;
+  double nv_link_bandwidth = 300;  // 300 GB/s
 };
 } // namespace Analytical
 

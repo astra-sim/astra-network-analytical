@@ -12,8 +12,8 @@ FastRing::FastRing(TopologyConfigs& configs) noexcept : FastTopology(configs) {
   auto links_count = npus_count;
 
   // fixme: assuming 2 links per node
-  cost_model.addResource(CostModel::Resource::Npu, npus_count);
-  cost_model.addResource(CostModel::Resource::NVLink, links_count);
+  // cost_model.addResource(CostModel::ResourceType::Npu, npus_count);
+  // cost_model.addResource(CostModel::ResourceType::NVLink, links_count);
 }
 
 FastRing::~FastRing() noexcept = default;

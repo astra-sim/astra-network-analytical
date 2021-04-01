@@ -13,8 +13,8 @@ FastTorus2D::FastTorus2D(TopologyConfigs& configs) noexcept
   // fixme: assuming 1 link per each (src, dest) pair
   auto links_count = 2 * npus_count;
 
-  cost_model.addResource(CostModel::Resource::Npu, npus_count);
-  cost_model.addResource(CostModel::Resource::NVLink, links_count);
+  // cost_model.addResource(CostModel::ResourceType::Npu, npus_count);
+  // cost_model.addResource(CostModel::ResourceType::NVLink, links_count);
 }
 
 FastTorus2D::~FastTorus2D() noexcept = default;
