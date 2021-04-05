@@ -71,6 +71,10 @@ int main(int argc, char* argv[]) {
       "units-count", "Units count per each dimension");
   cmd_parser.add_command_line_multitoken_option<std::vector<int>>(
       "links-count", "Links count per each dimension");
+  cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
+      "link-bandwidth", "Link bandwidth per each dimension");
+  cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
+      "link-latency", "Link latency per each dimension");
 
   // Parse command line arguments
   try {
@@ -138,8 +142,10 @@ int main(int argc, char* argv[]) {
   auto units_counts = network_parser.get<std::vector<int>>("units-count");
   cmd_parser.set_if_defined("units-count", &units_counts);
   auto link_latencies = network_parser.get<std::vector<double>>("link-latency");
+  cmd_parser.set_if_defined("link-latency", &link_latencies);
   auto link_bandwidths =
       network_parser.get<std::vector<double>>("link-bandwidth");
+  cmd_parser.set_if_defined("link-bandwidth", &link_bandwidths);
   auto nic_latencies = network_parser.get<std::vector<double>>("nic-latency");
   auto router_latencies =
       network_parser.get<std::vector<double>>("router-latency");
@@ -196,7 +202,6 @@ int main(int argc, char* argv[]) {
     auto topologies_per_dim = network_parser.parseHierarchicalTopologyList();
     auto dimension_types = network_parser.parseHierarchicalDimensionType();
     auto links_count_per_dim = network_parser.parseLinksCountPerDim();
-    auto link_bandwidth_per_dim = network_parser.parseLinkBandwidthPerDim();
     cmd_parser.set_if_defined("links-count", &links_count_per_dim);
 
     auto hierarchy_config = Analytical::HierarchicalTopologyConfig(
@@ -204,7 +209,7 @@ int main(int argc, char* argv[]) {
         topologies_per_dim,
         dimension_types,
         links_count_per_dim,
-        link_bandwidth_per_dim);
+        link_bandwidths);
 
     topology = std::make_shared<Analytical::HierarchicalTopology>(
         topology_configs, hierarchy_config);
