@@ -23,7 +23,7 @@ CostModel::CostModel() noexcept {
   resources_cost_table[ResourceType::InfiniBandNic] = 1'200;
   resources_cost_table[ResourceType::Npu] = 0; // todo: currently disregarded
   resources_cost_table[ResourceType::TileToTileLink] =
-      0; // todo: currently disregarded
+      100; // fixme: currently assuming nvlink cost
 }
 
 CostModel::~CostModel() = default;
@@ -49,6 +49,9 @@ void CostModel::addResource(ResourceType resource, int count, double additional_
   auto cost = 0.0;
   if (resource == ResourceType::NVLink) {
     // scale by bandwidth
+    cost = (additional_info / nv_link_bandwidth) * resources_cost_table[resource] * count;
+  } else if (resource == ResourceType::TileToTileLink) {
+    // same metric for NVLink
     cost = (additional_info / nv_link_bandwidth) * resources_cost_table[resource] * count;
   } else {
     cost = resources_cost_table[resource] * count;
