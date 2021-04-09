@@ -15,13 +15,13 @@ class PayloadSizeTracker {
 
   void addPayloadSize(int payload_size, int dim) noexcept;
 
-  int payloadSizeThroughDim(int dim) const noexcept;
+  double payloadSizeThroughDim(int dim) const noexcept;
 
-  int totalPayloadSize() const noexcept;
+  double totalPayloadSize() const noexcept;
 
  private:
   int dims_count;
-  std::vector<int> payload_size_sent_through_dim;
+  std::vector<double> payload_size_sent_through_dim;
 };
 } // namespace Analytical
 
