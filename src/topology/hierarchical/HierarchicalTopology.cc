@@ -329,6 +329,8 @@ HierarchicalTopology::Bandwidth HierarchicalTopology::
     links_count -=
         (links_count %
          adjacent_packages_count); // make multiplier of adjacent_packages_count
+  } else if (topology == TopologyList::Switch) {
+    // pass
   } else {
     std::cout
         << "[HierarchicalTopology, method getNpuTotalBandwidthPerDim] Given topology for dimension "
