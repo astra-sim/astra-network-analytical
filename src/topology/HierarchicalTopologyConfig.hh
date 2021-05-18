@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 #define __HIERARCHICALTOPOLOGYCONFIG_HH__
 
 #include <vector>
-#include "../TopologyConfig.hh"
+#include "TopologyConfig.hh"
 
 namespace Analytical {
 struct HierarchicalTopologyConfig {

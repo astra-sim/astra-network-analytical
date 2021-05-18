@@ -14,23 +14,14 @@ LICENSE file in the root directory of this source tree.
 #include "astra-sim/workload/CSVWriter.hh"
 #include "event-queue/EventQueue.hh"
 #include "event-queue/EventQueueEntry.hh"
+#include "extern/network_backend/analytical/src/topology/HierarchicalTopology.hh"
+#include "extern/network_backend/analytical/src/topology/HierarchicalTopologyConfig.hh"
 #include "helper/CommandLineParser.hh"
 #include "helper/NetworkConfigParser.hh"
 #include "helper/json.hh"
 #include "topology/CostModel.hh"
 #include "topology/Topology.hh"
 #include "topology/TopologyConfig.hh"
-#include "topology/detailed/DetailedAllToAll.hh"
-#include "topology/detailed/DetailedRing.hh"
-#include "topology/detailed/DetailedSwitch.hh"
-#include "topology/detailed/DetailedTorus2D.hh"
-#include "topology/fast/FastAllToAll.hh"
-#include "topology/fast/FastRing.hh"
-#include "topology/fast/FastRing_AllToAll_Switch.hh"
-#include "topology/fast/FastSwitch.hh"
-#include "topology/fast/FastTorus2D.hh"
-#include "topology/hierarchical/HierarchicalTopology.hh"
-#include "topology/hierarchical/HierarchicalTopologyConfig.hh"
 
 namespace po = boost::program_options;
 
@@ -216,72 +207,6 @@ int main(int argc, char* argv[]) {
     for (int dim = 0; dim < dimensions_count; dim++) {
       physical_dims.emplace_back(units_counts[dim]);
     }
-  } else if (topology_name == "Switch") {
-    assert(
-        dimensions_count == 1 &&
-        "[Analytical, main] Switch is the given topology but dimension != 1");
-
-    if (network_parser.useFastVersion()) {
-      topology = std::make_shared<Analytical::FastSwitch>(topology_configs);
-    } else {
-      topology = std::make_shared<Analytical::DetailedSwitch>(topology_configs);
-    }
-    physical_dims.emplace_back(npus_count);
-  } else if (topology_name == "AllToAll") {
-    assert(
-        dimensions_count == 1 &&
-        "[Analytical, main] AllToAll is the given topology but dimension != 1");
-
-    if (network_parser.useFastVersion()) {
-      topology = std::make_shared<Analytical::FastAllToAll>(topology_configs);
-    } else {
-      topology =
-          std::make_shared<Analytical::DetailedAllToAll>(topology_configs);
-    }
-    physical_dims.emplace_back(npus_count);
-  } else if (topology_name == "Torus2D") {
-    assert(
-        dimensions_count == 2 &&
-        "[Analytical, main] Torus2D is the given topology but dimension != 2");
-
-    if (network_parser.useFastVersion()) {
-      topology = std::make_shared<Analytical::FastTorus2D>(topology_configs);
-    } else {
-      topology =
-          std::make_shared<Analytical::DetailedTorus2D>(topology_configs);
-    }
-
-    physical_dims.emplace_back(units_counts[0]);
-    physical_dims.emplace_back(units_counts[1]);
-  } else if (topology_name == "Ring") {
-    assert(
-        dimensions_count == 1 &&
-        "[Analytical, main] Ring is the given topology but dimension != 1");
-
-    if (network_parser.useFastVersion()) {
-      topology = std::make_shared<Analytical::FastRing>(topology_configs);
-    } else {
-      topology = std::make_shared<Analytical::DetailedRing>(topology_configs);
-    }
-    physical_dims.emplace_back(npus_count);
-  } else if (topology_name == "Ring_AllToAll_Switch") {
-    assert(
-        dimensions_count == 3 &&
-        "[Analytical, main] Ring_AllToAll_Switch is the given topology but dimension != 3");
-
-    if (network_parser.useFastVersion()) {
-      topology = std::make_shared<Analytical::FastRing_AllToAll_Switch>(
-          topology_configs);
-    } else {
-      // non-fast version
-      // TODO: implement this
-      std::cout << "[Analytical, main] Detailed version not implemented yet"
-                << std::endl;
-      exit(-1);
-    }
-    physical_dims.emplace_back(units_counts[0]);
-    physical_dims.emplace_back(units_counts[1]);
-    physical_dims.emplace_back(units_counts[2]);
   } else {
     std::cout << "[Analytical, main] Topology not defined: " << topology_name
               << std::endl;

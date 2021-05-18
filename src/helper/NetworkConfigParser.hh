@@ -8,7 +8,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <vector>
 #include "../topology/TopologyConfig.hh"
-#include "../topology/hierarchical/HierarchicalTopologyConfig.hh"
+#include "extern/network_backend/analytical/src/topology/HierarchicalTopologyConfig.hh"
 #include "json.hh"
 
 namespace Analytical {
