@@ -13,7 +13,7 @@ namespace Analytical {
 struct HierarchicalTopologyConfig {
  public:
   using Bandwidth = TopologyConfig::Bandwidth;
-  enum class TopologyList { Ring, Switch, AllToAll };
+  enum class TopologyList { Ring, Switch, FullyConnected };
   enum class DimensionType {
     T,
     N,

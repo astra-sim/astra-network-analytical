@@ -34,8 +34,8 @@ std::vector<NetworkConfigParser::TopologyList> NetworkConfigParser::
   for (const auto& topology : json_configuration["topologies-per-dim"]) {
     if (topology == "Ring") {
       topologies_per_dim.emplace_back(TopologyList::Ring);
-    } else if (topology == "AllToAll") {
-      topologies_per_dim.emplace_back(TopologyList::AllToAll);
+    } else if (topology == "FullyConnected") {
+      topologies_per_dim.emplace_back(TopologyList::FullyConnected);
     } else if (topology == "Switch") {
       topologies_per_dim.emplace_back(TopologyList::Switch);
     } else {

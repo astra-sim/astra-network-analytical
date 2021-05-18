@@ -36,11 +36,11 @@ HierarchicalTopology::HierarchicalTopology(
       } else {
         bandwidth_scalar = links_count;
       }
-    } else if (topology == TopologyList::AllToAll) {
+    } else if (topology == TopologyList::FullyConnected) {
       if (links_count % adjacent_packages_count != 0) {
         std::cout
             << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
-            << dim << " (AllToAll) has " << links_count
+            << dim << " (FullyConnected) has " << links_count
             << " links (not a multiple of " << adjacent_packages_count << ")."
             << std::endl;
       }
@@ -112,7 +112,7 @@ HierarchicalTopology::HierarchicalTopology(
             << std::endl;
         exit(-1);
       }
-    } else if (topology == TopologyList::AllToAll) {
+    } else if (topology == TopologyList::FullyConnected) {
       auto links_count_per_node = links_count / adjacent_packages_count;
       auto a2a_links_count =
           (topology_size * (topology_size - 1) / 2) * links_count_per_node;
@@ -128,7 +128,7 @@ HierarchicalTopology::HierarchicalTopology(
         cost_model.addResource(
             CostModel::ResourceType::NVLink, total_a2a_links_count, link_bandwidth);
       } else if (dimension_type == DimensionType::PP) {
-        std::cout << "AllToAll topology used for Inter-Pod dimension. Currently only Switch topology is supported." << std::endl;
+        std::cout << "FullyConnected topology used for Inter-Pod dimension. Currently only Switch topology is supported." << std::endl;
         exit(-1);
 //        if (nic_latency > 0) {
 //          // 1 Link and 2 NICs
@@ -261,7 +261,7 @@ std::pair<double, int> HierarchicalTopology::send(
     communication_latency = linkLatency(dim, hops_count);
     communication_latency += serializationLatency(dim, payload_size);
     communication_latency += 2 * nicLatency(dim);
-  } else if (topology == TopologyList::AllToAll) {
+  } else if (topology == TopologyList::FullyConnected) {
     const auto hops_count = 1;
     communication_latency = linkLatency(dim, hops_count);
     communication_latency += serializationLatency(dim, payload_size);
@@ -336,7 +336,7 @@ HierarchicalTopology::Bandwidth HierarchicalTopology::
 
   if (topology == TopologyList::Ring) {
     links_count -= (links_count % 2); // make even number
-  } else if (topology == TopologyList::AllToAll) {
+  } else if (topology == TopologyList::FullyConnected) {
     links_count -=
         (links_count %
          adjacent_packages_count); // make multiplier of adjacent_packages_count
