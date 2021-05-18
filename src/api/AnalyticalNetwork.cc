@@ -95,7 +95,7 @@ void AnalyticalNetwork::sim_schedule(
 
 int AnalyticalNetwork::sim_send(
     void* buffer,
-    int count,
+    uint64_t count,
     int type,
     int dst,
     int tag,
@@ -149,7 +149,7 @@ int AnalyticalNetwork::sim_send(
 
 int AnalyticalNetwork::sim_recv(
     void* buffer,
-    int count,
+    uint64_t count,
     int type,
     int src,
     int tag,

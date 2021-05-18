@@ -73,7 +73,7 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
 
   int sim_send(
       void* buffer,
-      int count,
+      uint64_t count,
       int type,
       int dst,
       int tag,
@@ -83,7 +83,7 @@ class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {
 
   int sim_recv(
       void* buffer,
-      int count,
+      uint64_t count,
       int type,
       int src,
       int tag,

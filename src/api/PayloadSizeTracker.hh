@@ -7,21 +7,24 @@ LICENSE file in the root directory of this source tree.
 #define __PAYLOADSIZETRACKER_HH__
 
 #include <vector>
+#include "../topology/TopologyConfig.hh"
 
 namespace Analytical {
 class PayloadSizeTracker {
  public:
+  using PayloadSize = TopologyConfig::PayloadSize; // Byte
+
   PayloadSizeTracker(int dims_count) noexcept;
 
-  void addPayloadSize(int payload_size, int dim) noexcept;
+  void addPayloadSize(PayloadSize payload_size, int dim) noexcept;
 
-  double payloadSizeThroughDim(int dim) const noexcept;
+  PayloadSize payloadSizeThroughDim(int dim) const noexcept;
 
-  double totalPayloadSize() const noexcept;
+  PayloadSize totalPayloadSize() const noexcept;
 
  private:
   int dims_count;
-  std::vector<double> payload_size_sent_through_dim;
+  std::vector<PayloadSize> payload_size_sent_through_dim;
 };
 } // namespace Analytical
 

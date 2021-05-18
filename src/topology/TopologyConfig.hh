@@ -14,7 +14,7 @@ struct TopologyConfig {
   using NpuId = int; // each NPU's id
   using NpuAddress =
       std::vector<int>; // NPU's address (integer id for each dimension)
-  using PayloadSize = int; // Byte
+  using PayloadSize = uint64_t; // Byte
   using Latency = double; // ns
   using Bandwidth = double; // GB/s (B/ns)
 
