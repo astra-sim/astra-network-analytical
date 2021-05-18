@@ -26,7 +26,7 @@ FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(
 
   // Switch
   auto switch_links_count = npus_count;
-  auto switches_count = cost_model.getNVSwitchesCount(switch_links_count);
+  auto switches_count = cost_model.getMellanoxSwitchesCount(switch_links_count);
 
   // Cost
   // cost_model.addResource(CostModel::ResourceType::Npu, npus_count);
@@ -35,7 +35,7 @@ FastRing_AllToAll_Switch::FastRing_AllToAll_Switch(
   // cost_model.addResource(CostModel::ResourceType::NVLink, total_a2a_links_count);
   // cost_model.addResource(CostModel::ResourceType::NVLink, switch_links_count);
 
-  // cost_model.addResource(CostModel::ResourceType::NVSwitch, switches_count);
+  // cost_model.addResource(CostModel::ResourceType::MellanoxSwitch, switches_count);
 
   // cost_model.addResource(
   //    CostModel::ResourceType::InfiniBandNic, switch_links_count);

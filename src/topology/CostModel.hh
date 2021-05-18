@@ -28,7 +28,7 @@ class CostModel {
     Npu, // todo: must be refined or removed
     TileToTileLink, // todo: must be refined or removed
     NVLink,
-    NVSwitch,
+    MellanoxSwitch,
     InfiniBandNic, // todo: change name
   };
 
@@ -42,14 +42,14 @@ class CostModel {
 
   double computeTotalCost() const noexcept;
 
-  int getNVSwitchesCount(int radix) const noexcept;
+  int getMellanoxSwitchesCount(int radix) const noexcept;
 
  private:
   std::map<ResourceType, ResourceInfo> resources_usage_table;
   std::map<ResourceType, int> resources_cost_table;
 
   int nvSwitchRadix;
-  double nv_link_bandwidth = 150;  // 300 GB/s
+  double nv_link_bandwidth = 50;  // 50 GB/s
 };
 } // namespace Analytical
 

@@ -12,18 +12,18 @@ using namespace Analytical;
 CostModel::CostModel() noexcept {
   // Initialize table
   resources_usage_table[ResourceType::NVLink] = std::make_pair(0, 0);
-  resources_usage_table[ResourceType::NVSwitch] = std::make_pair(0, 0);
+  resources_usage_table[ResourceType::MellanoxSwitch] = std::make_pair(0, 0);
   resources_usage_table[ResourceType::InfiniBandNic] = std::make_pair(0, 0);
   resources_usage_table[ResourceType::Npu] = std::make_pair(0, 0);
   resources_usage_table[ResourceType::TileToTileLink] = std::make_pair(0, 0);
 
   // Define cost here
   resources_cost_table[ResourceType::NVLink] = 100; // from TeraRack paper
-  resources_cost_table[ResourceType::NVSwitch] = 5'200; // from TeraRack paper
+  resources_cost_table[ResourceType::MellanoxSwitch] = 23'698; // QM8790 InfiniBand Switch
   resources_cost_table[ResourceType::InfiniBandNic] = 1'200;
   resources_cost_table[ResourceType::Npu] = 0; // todo: currently disregarded
   resources_cost_table[ResourceType::TileToTileLink] =
-      100; // fixme: currently assuming nvlink cost
+      0.5 * resources_cost_table[ResourceType::NVLink]; // fixme: currently assuming 0.5(NVLink) as tile-to-tile link.
 }
 
 CostModel::~CostModel() = default;
@@ -36,7 +36,7 @@ void CostModel::addResource(ResourceType resource, int count, double additional_
     std::cout << "[CostModel] Added TileToTileLink: " << count << std::endl;
   } else if (resource == ResourceType::NVLink) {
     std::cout << "[CostModel] Added NVLink: " << count << std::endl;
-  } else if (resource == ResourceType::NVSwitch) {
+  } else if (resource == ResourceType::MellanoxSwitch) {
     std::cout << "[CostModel] Added NVSwitch: " << count << std::endl;
   } else if (resource == ResourceType::InfiniBandNic) {
     std::cout << "[CostModel] AddInfiniBandNic: " << count << std::endl;
@@ -50,11 +50,14 @@ void CostModel::addResource(ResourceType resource, int count, double additional_
   if (resource == ResourceType::NVLink) {
     // scale by bandwidth
     cost = (additional_info / nv_link_bandwidth) * resources_cost_table[resource] * count;
+    std::cout << "(NVLink) Added cost: " << cost << " (BW: " << additional_info << ", count: " << count << ", unit_cost: " << resources_cost_table[resource] << ")" << std::endl;
   } else if (resource == ResourceType::TileToTileLink) {
     // same metric for NVLink
     cost = (additional_info / nv_link_bandwidth) * resources_cost_table[resource] * count;
+    std::cout << "(T-T Link) Added cost: " << cost << " (BW: " << additional_info << ", count: " << count << ", unit_cost: " << resources_cost_table[resource] << ")" << std::endl;
   } else {
     cost = resources_cost_table[resource] * count;
+    std::cout << "(Resource) Added cost: " << cost << " (count: " << count << ", unit_cost: " << resources_cost_table[resource] << ")" << std::endl;
   }
 
   std::get<0>(resources_usage_table[resource]) += count;
@@ -67,13 +70,13 @@ double CostModel::computeTotalCost() const noexcept {
   total_cost += std::get<1>(resources_usage_table.at(ResourceType::Npu));
   total_cost += std::get<1>(resources_usage_table.at(ResourceType::TileToTileLink));
   total_cost += std::get<1>(resources_usage_table.at(ResourceType::NVLink));
-  total_cost += std::get<1>(resources_usage_table.at(ResourceType::NVSwitch));
+  total_cost += std::get<1>(resources_usage_table.at(ResourceType::MellanoxSwitch));
   total_cost += std::get<1>(resources_usage_table.at(ResourceType::InfiniBandNic));
 
   return total_cost;
 }
 
-int CostModel::getNVSwitchesCount(int radix) const noexcept {
-  const auto switch_radix = 128;
+int CostModel::getMellanoxSwitchesCount(int radix) const noexcept {
+  const auto switch_radix = 40;
   return std::ceil((double)radix / switch_radix);
 }
