@@ -81,7 +81,7 @@ HierarchicalTopology::HierarchicalTopology(
 
       if (dimension_type == DimensionType::T) {
         cost_model.addResource(
-            CostModel::ResourceType::TileToTileLink, total_ring_links_count, -1);
+            CostModel::ResourceType::TileToTileLink, total_ring_links_count, link_bandwidth);
       } else if (dimension_type == DimensionType::N) {
         cost_model.addResource(
             CostModel::ResourceType::NVLink, total_ring_links_count, link_bandwidth);
