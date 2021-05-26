@@ -33,6 +33,9 @@ class CostModel {
   };
 
   using ResourceInfo = std::pair<int, double>;  // (count, total_cost)
+  using Bandwidth = TopologyConfig::Bandwidth;
+
+  static Bandwidth nv_link_bandwidth;
 
   CostModel() noexcept;
 
@@ -42,6 +45,8 @@ class CostModel {
 
   double computeTotalCost() const noexcept;
 
+  int getRequiredNicsCount(Bandwidth bandwidth) const noexcept;
+
   int getMellanoxSwitchesCount(int radix) const noexcept;
 
  private:
@@ -49,7 +54,6 @@ class CostModel {
   std::map<ResourceType, int> resources_cost_table;
 
   int nvSwitchRadix;
-  double nv_link_bandwidth = 50;  // 50 GB/s
 };
 } // namespace Analytical
 

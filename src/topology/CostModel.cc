@@ -9,6 +9,8 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
+CostModel::Bandwidth CostModel::nv_link_bandwidth = 50;  // GB/s
+
 CostModel::CostModel() noexcept {
   // Initialize table
   resources_usage_table[ResourceType::NVLink] = std::make_pair(0, 0);
@@ -49,11 +51,11 @@ void CostModel::addResource(ResourceType resource, int count, double additional_
   auto cost = 0.0;
   if (resource == ResourceType::NVLink) {
     // scale by bandwidth
-    cost = (additional_info / nv_link_bandwidth) * resources_cost_table[resource] * count;
+    cost = (additional_info / CostModel::nv_link_bandwidth) * resources_cost_table[resource] * count;
     std::cout << "(NVLink) Added cost: " << cost << " (BW: " << additional_info << ", count: " << count << ", unit_cost: " << resources_cost_table[resource] << ")" << std::endl;
   } else if (resource == ResourceType::TileToTileLink) {
     // same metric for NVLink
-    cost = (additional_info / nv_link_bandwidth) * resources_cost_table[resource] * count;
+    cost = (additional_info / CostModel::nv_link_bandwidth) * resources_cost_table[resource] * count;
     std::cout << "(T-T Link) Added cost: " << cost << " (BW: " << additional_info << ", count: " << count << ", unit_cost: " << resources_cost_table[resource] << ")" << std::endl;
   } else {
     cost = resources_cost_table[resource] * count;
@@ -74,6 +76,11 @@ double CostModel::computeTotalCost() const noexcept {
   total_cost += std::get<1>(resources_usage_table.at(ResourceType::InfiniBandNic));
 
   return total_cost;
+}
+
+int CostModel::getRequiredNicsCount(Bandwidth bandwidth) const noexcept {
+  const auto nic_bandwidth = 50.0;
+  return std::ceil((double)bandwidth / nic_bandwidth);
 }
 
 int CostModel::getMellanoxSwitchesCount(int radix) const noexcept {
