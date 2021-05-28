@@ -6,6 +6,7 @@ LICENSE file in the root directory of this source tree.
 #ifndef __TOPOLOGYCONFIG_HH__
 #define __TOPOLOGYCONFIG_HH__
 
+#include <cstdint>
 #include <vector>
 
 namespace Analytical {
