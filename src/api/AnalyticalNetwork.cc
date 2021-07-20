@@ -198,32 +198,38 @@ void AnalyticalNetwork::pass_front_end_report(
   auto run_name = astraSimDataAPI.run_name;
   auto running_time = std::to_string(astraSimDataAPI.workload_finished_time);
   auto compute_time = std::to_string(astraSimDataAPI.total_compute);
-  auto exposed_comm_time = std::to_string(astraSimDataAPI.total_exposed_comm);
+
   auto total_cost = std::to_string(cost_model->computeTotalCost());
   auto total_payload_size =
       AnalyticalNetwork::payload_size_tracker->totalPayloadSize();
   auto total_payload_size_str =
       std::to_string((double)total_payload_size / (1024 * 1024)); // in MB
 
+  auto exposed_comm_time = astraSimDataAPI.total_exposed_comm;
+  auto dp_comm_time = astraSimDataAPI.layers_stats.front().total_waiting_for_wg_comm;
+  auto mp_comm_time = exposed_comm_time - dp_comm_time;
+
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 0, run_name);
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 1, running_time);
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 2, compute_time);
   AnalyticalNetwork::end_to_end_csv->write_cell(
-      stat_row + 1, 3, exposed_comm_time);
+      stat_row + 1, 3, std::to_string(exposed_comm_time));
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 4, total_cost);
   AnalyticalNetwork::end_to_end_csv->write_cell(
       stat_row + 1, 5, total_payload_size_str);
+  AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 6, std::to_string(dp_comm_time));
+  AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 7, std::to_string(mp_comm_time));
 
   for (auto dim = 0; dim < dims_count; dim++) {
     auto payload_size_through_dim =
         (double)payload_size_tracker->payloadSizeThroughDim(dim) /
         (1024 * 1024); // in MB
     AnalyticalNetwork::end_to_end_csv->write_cell(
-        stat_row + 1, (6 + dim), std::to_string(payload_size_through_dim));
+        stat_row + 1, (8 + dim), std::to_string(payload_size_through_dim));
   }
   for (auto dim = dims_count; dim < 7; dim++) {
     AnalyticalNetwork::end_to_end_csv->write_cell(
-        stat_row + 1, (6 + dim), "-1");
+        stat_row + 1, (8 + dim), "-1");
   }
 
   auto chunk_latencies =

@@ -261,7 +261,7 @@ int main(int argc, char* argv[]) {
   auto dimensional_info_csv =
       std::make_shared<AstraSim::CSVWriter>(path, "backend_dim_info.csv");
   if (stat_row == 0) {
-    end_to_env_csv->initialize_csv(total_stat_rows + 1, 13);
+    end_to_env_csv->initialize_csv(total_stat_rows + 1, 15);
 
     end_to_env_csv->write_cell(0, 0, "RunName");
     end_to_env_csv->write_cell(0, 1, "CommsTime");
@@ -269,9 +269,11 @@ int main(int argc, char* argv[]) {
     end_to_env_csv->write_cell(0, 3, "ExposedCommsTime");
     end_to_env_csv->write_cell(0, 4, "Cost");
     end_to_env_csv->write_cell(0, 5, "TotalPayloadSize");
+    end_to_env_csv->write_cell(0, 6, "DPCommsTime");
+    end_to_env_csv->write_cell(0, 7, "MPCommsTime");
     for (auto dim = 0; dim < 7; dim++) {
       end_to_env_csv->write_cell(
-          0, (6 + dim), "PayloadSize_Dim" + std::to_string(dim));
+          0, (8 + dim), "PayloadSize_Dim" + std::to_string(dim));
     }
 
     // fixme: assuming max_dimension is 10
