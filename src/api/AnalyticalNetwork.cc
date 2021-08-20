@@ -206,7 +206,8 @@ void AnalyticalNetwork::pass_front_end_report(
       std::to_string((double)total_payload_size / (1024 * 1024)); // in MB
 
   auto exposed_comm_time = astraSimDataAPI.total_exposed_comm;
-  auto dp_comm_time = astraSimDataAPI.layers_stats.front().total_waiting_for_wg_comm;
+  auto dp_comm_time =
+      astraSimDataAPI.layers_stats.front().total_waiting_for_wg_comm;
   auto mp_comm_time = exposed_comm_time - dp_comm_time;
 
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 0, run_name);
@@ -217,8 +218,10 @@ void AnalyticalNetwork::pass_front_end_report(
   AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 4, total_cost);
   AnalyticalNetwork::end_to_end_csv->write_cell(
       stat_row + 1, 5, total_payload_size_str);
-  AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 6, std::to_string(dp_comm_time));
-  AnalyticalNetwork::end_to_end_csv->write_cell(stat_row + 1, 7, std::to_string(mp_comm_time));
+  AnalyticalNetwork::end_to_end_csv->write_cell(
+      stat_row + 1, 6, std::to_string(dp_comm_time));
+  AnalyticalNetwork::end_to_end_csv->write_cell(
+      stat_row + 1, 7, std::to_string(mp_comm_time));
 
   for (auto dim = 0; dim < dims_count; dim++) {
     auto payload_size_through_dim =

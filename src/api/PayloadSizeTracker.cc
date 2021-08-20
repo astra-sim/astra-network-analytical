@@ -13,15 +13,19 @@ PayloadSizeTracker::PayloadSizeTracker(int dims_count) noexcept
   payload_size_sent_through_dim = std::vector<PayloadSize>(dims_count, 0);
 }
 
-void PayloadSizeTracker::addPayloadSize(PayloadSize payload_size, int dim) noexcept {
+void PayloadSizeTracker::addPayloadSize(
+    PayloadSize payload_size,
+    int dim) noexcept {
   payload_size_sent_through_dim[dim] += payload_size;
 }
 
-PayloadSizeTracker::PayloadSize PayloadSizeTracker::payloadSizeThroughDim(int dim) const noexcept {
+PayloadSizeTracker::PayloadSize PayloadSizeTracker::payloadSizeThroughDim(
+    int dim) const noexcept {
   return payload_size_sent_through_dim[dim];
 }
 
-PayloadSizeTracker::PayloadSize PayloadSizeTracker::totalPayloadSize() const noexcept {
+PayloadSizeTracker::PayloadSize PayloadSizeTracker::totalPayloadSize()
+    const noexcept {
   PayloadSize total_payload = 0;
   for (const auto payload : payload_size_sent_through_dim) {
     total_payload += payload;

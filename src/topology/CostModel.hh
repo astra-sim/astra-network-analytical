@@ -32,7 +32,7 @@ class CostModel {
     InfiniBandNic, // todo: change name
   };
 
-  using ResourceInfo = std::pair<int, double>;  // (count, total_cost)
+  using ResourceInfo = std::pair<int, double>; // (count, total_cost)
   using Bandwidth = TopologyConfig::Bandwidth;
 
   static Bandwidth nv_link_bandwidth;
@@ -41,7 +41,10 @@ class CostModel {
 
   ~CostModel();
 
-  void addResource(ResourceType resource, int count, double additional_info) noexcept;
+  void addResource(
+      ResourceType resource,
+      int count,
+      double additional_info) noexcept;
 
   double computeTotalCost() const noexcept;
 
