@@ -15,9 +15,12 @@ Below are the configurations the analytical network supports.
 - If you pass both `.json` file and command-line arguments, configurations set in `.json` get overridden by command line settings.
 
 ## Available configurations
-- `topology-name`: Name of topology you want to instantiate.
-- `dims-count`: The number of dimensions of that topology.
-- `nodes-per-dim`: The number of packages per each dimension. Total NPUs will be the multiplication of these numbers.
+- `topology-name`: Set to `Hierarchical`.
+- `dimensions-count`: The number of dimensions of that topology.
+- `topologies-per-dim`: The list of topologies of each dimension. Options can be: `Ring`, `FullyConnected`, or `Switch`.
+- `dimension-type`: The type of dimensions. This information is used in the cost model.
+- `units-count`: The number of packages per each dimension. Total NPUs will be the multiplication of these numbers.
+- `links-count`: The number of links per NPU, listed per each dimension.
 - `link-latency`: List of link's latency (in ns) per each dimension.
 - `link-bandwidth`: List of link's bandwidth (in GB/s) per each dimension.
 - `nic-latency`: List of link's NIC latency (in ns) per each dimension. If the dimension is scale-up and there's no NIC, set it to 0.
@@ -29,32 +32,20 @@ Below are the configurations the analytical network supports.
 ## Sample configuration `.json` file
 ```json
 {
-  "topology-name": "Torus2D_AllToAll",
-  "dims-count": 2,
-  "nodes-per-dim": [9, 4],
-  "link-latency": [500, 1000],
-  "link-bandwidth": [25, 50],
-  "nic-latency": [0, 100],
-  "router-latency": [0, 0],
-  "hbm-latency": [10, 10],
-  "hbm-bandwidth": [2000, 2000],
-  "hbm-scale": [1.5, 1.5]
+  "topology-name": "Hierarchical",
+  "topologies-per-dim": ["Ring", "FullyConnected", "Switch"],
+  "dimension-type": ["N", "N", "P"],
+  "dimensions-count": 3,
+  "units-count": [2, 8, 2],
+  "links-count": [2, 7, 1],
+  "link-latency": [500, 500, 500],
+  "link-bandwidth": [250, 25, 12.5],
+  "nic-latency": [0, 0, 0],
+  "router-latency": [0, 0, 0],
+  "hbm-latency": [500, 500, 500],
+  "hbm-bandwidth": [370, 370, 370],
+  "hbm-scale": [0, 0, 0]
 }
-```
-
-## Sample command-line argument
-```bash
---topology-name="Torus2D_AllToAll" \
---dims-count=2 \
---nodes-per-dim="9 4" \
---link-latency="500 1000" \
---link-bandwidth="25 50" \
---nic-latency="0 100" \
---router-latency="0 0" \
---router-latency="0 0" \
---hbm-latency="10 10" \
---hbm-bandwidth="2000 2000" \
---hbm-scale="1.5 1.5"
 ```
 
 ## Contact
