@@ -11,7 +11,7 @@ bool Analytical::SendRecvTrackingMap::has_send_operation(
     int tag,
     int src,
     int dest,
-    int count) const noexcept {
+    PayloadSize count) const noexcept {
   auto search_result =
       send_recv_tracking_map.find(std::make_tuple(tag, src, dest, count));
 
@@ -28,7 +28,7 @@ bool Analytical::SendRecvTrackingMap::has_recv_operation(
     int tag,
     int src,
     int dest,
-    int count) const noexcept {
+    PayloadSize count) const noexcept {
   auto search_result =
       send_recv_tracking_map.find(std::make_tuple(tag, src, dest, count));
 
@@ -45,7 +45,7 @@ AstraSim::timespec_t Analytical::SendRecvTrackingMap::pop_send_finish_time(
     int tag,
     int src,
     int dest,
-    int count) noexcept {
+    PayloadSize count) noexcept {
   assert(
       has_send_operation(tag, src, dest, count) &&
       "<SendRecvTrackingMap::pop_send_finish_time> no matching entry");
@@ -67,7 +67,7 @@ Analytical::Event Analytical::SendRecvTrackingMap::pop_recv_event_handler(
     int tag,
     int src,
     int dest,
-    int count) noexcept {
+    PayloadSize count) noexcept {
   assert(
       has_recv_operation(tag, src, dest, count) &&
       "<SendRecvTrackingMap::pop_recv_event_handler> no matching entry");
@@ -89,7 +89,7 @@ void Analytical::SendRecvTrackingMap::insert_send(
     int tag,
     int src,
     int dest,
-    int count,
+    PayloadSize count,
     AstraSim::timespec_t send_finish_time) noexcept {
   // Check whether entry with the same key exists
   assert(
@@ -106,7 +106,7 @@ void Analytical::SendRecvTrackingMap::insert_recv(
     int tag,
     int src,
     int dest,
-    int count,
+    PayloadSize count,
     void (*fun_ptr)(void*),
     void* fun_arg) noexcept {
   assert(

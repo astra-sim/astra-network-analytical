@@ -3,46 +3,52 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#ifndef __TOPOLOGYCONFIGURATION_HH__
-#define __TOPOLOGYCONFIGURATION_HH__
+#ifndef __TOPOLOGYCONFIG_HH__
+#define __TOPOLOGYCONFIG_HH__
 
+#include <cstdint>
 #include <vector>
 
 namespace Analytical {
-struct TopologyConfiguration {
+struct TopologyConfig {
  public:
-  using Latency = double; // latency in ns
-  using Bandwidth = double; // bandwidth in GB/s (= B/ns)
-  using PayloadSize = int; // payload size in bytes
-  using TopologyConfigurations =
-      std::vector<TopologyConfiguration>; // Topology configurations for each
-                                          // dimension
+  using NpuId = int; // each NPU's id
+  using NpuAddress =
+      std::vector<int>; // NPU's address (integer id for each dimension)
+  using PayloadSize = uint64_t; // Byte
+  using Latency = double; // ns
+  using Bandwidth = double; // GB/s (B/ns)
 
-  TopologyConfiguration(
+  TopologyConfig(
+      int npus_count,
       Latency link_latency,
       Bandwidth link_bandwidth,
       Latency nic_latency,
       Latency router_latency,
       Latency hbm_latency,
       Bandwidth hbm_bandwidth,
-      double hbm_scalar) noexcept;
+      double hbm_scale) noexcept;
 
+  int getNpusCount() const noexcept;
   Latency getLinkLatency() const noexcept;
   Bandwidth getLinkBandwidth() const noexcept;
   Latency getNicLatency() const noexcept;
   Latency getRouterLatency() const noexcept;
   Latency getHbmLatency() const noexcept;
   Bandwidth getHbmBandwidth() const noexcept;
-  double getHbmScalar() const noexcept;
+  double getHbmScale() const noexcept;
+
+  void multiplyLinkBandwidth(double scalar) noexcept;
 
  private:
+  int npus_count; // number of npus
   Latency link_latency;
   Bandwidth link_bandwidth;
   Latency nic_latency;
   Latency router_latency;
   Latency hbm_latency;
   Bandwidth hbm_bandwidth;
-  double hbm_scalar;
+  double hbm_scale;
 };
 } // namespace Analytical
 

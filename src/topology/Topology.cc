@@ -8,80 +8,72 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
-void Topology::connect(NpuId src_id, NpuId dest_id, int dimension) noexcept {
-  assert(
-      (dimension < configurations.size()) &&
-      "[Topology, method connect] dimension out of bound");
-  assert(src_id >= 0 && "[Topology, method connect] srcId is negative");
-  assert(src_id >= 0 && "[Topology, method connect] destId is negative");
+Topology::Topology(TopologyConfigs& configs) noexcept : configs(configs) {
+  // create cost model
+  cost_model = CostModel();
 
-  auto configuration = configurations[dimension];
-
-  auto link_latency = configuration.getLinkLatency();
-
-  links[src_id][dest_id] = Link(link_latency);
+  // get total npus_count by multiplying npus_count of each dimension
+  npus_count = 1;
+  for (const auto& config : configs) {
+    npus_count *= config.getNpusCount();
+  }
 }
 
-Topology::Latency Topology::route(
-    NpuId src_id,
-    NpuId dest_id,
-    PayloadSize payload_size) noexcept {
-  assert(
-      (links.find(src_id) != links.end()) &&
-      "[Topology, method route] src doesn't have any outgoing link");
-  assert(
-      (links[src_id].find(dest_id) != links[src_id].end()) &&
-      "[Topology, method route] link src->dest doesn't exist");
-  return links[src_id][dest_id].send(payload_size);
+Topology::~Topology() noexcept = default;
+
+CostModel& Topology::getCostModel() noexcept {
+  return cost_model;
 }
 
-Topology::Latency Topology::serialize(PayloadSize payload_size, int dimension)
-    const noexcept {
+void Topology::checkNpuIdBound(NpuId npu_id) const noexcept {
   assert(
-      (dimension < configurations.size()) &&
-      "[Topology, method serialize] dimension out of bound");
-  return payload_size / configurations[dimension].getLinkBandwidth();
+      npu_id < npus_count &&
+      "[Topology, method checkNpuIdBound] NPU ID out of bounds");
 }
 
-Topology::Latency Topology::routerLatency(int dimension) const noexcept {
-  assert(
-      (dimension < configurations.size()) &&
-      "[Topology, method routerLatency] dimension out of bound");
-  return configurations[dimension].getRouterLatency();
+Topology::NpuAddress Topology::npuIdToAddress(NpuId npu_id) const noexcept {
+  // Baseline implementation: assume 1d topology
+  return NpuAddress(1, npu_id);
+}
+
+Topology::NpuId Topology::npuAddressToId(
+    NpuAddress npu_address) const noexcept {
+  // Baseline implementation: assume 1d topology
+  return npu_address[0];
+}
+
+Topology::Latency Topology::serializationLatency(
+    int dimension,
+    PayloadSize payload_size) const noexcept {
+  return payload_size / configs[dimension].getLinkBandwidth();
 }
 
 Topology::Latency Topology::nicLatency(int dimension) const noexcept {
-  assert(
-      (dimension < configurations.size()) &&
-      "[Topology, method nicLatency] dimension out of bound");
-  return configurations[dimension].getNicLatency();
+  return configs[dimension].getNicLatency();
 }
 
-Topology::Latency Topology::hbmLatency(PayloadSize payload_size, int dimension)
+Topology::Latency Topology::routerLatency(int dimension) const noexcept {
+  return configs[dimension].getRouterLatency();
+}
+
+Topology::Bandwidth Topology::getNpuTotalBandwidthPerDim(
+    int dimension) const noexcept {
+  return configs[dimension].getLinkBandwidth();
+}
+
+Topology::Latency Topology::hbmLatency(int dimension, PayloadSize payload_size)
     const noexcept {
-  assert(
-      (dimension < configurations.size()) &&
-      "[Topology, method hbmLatency] dimension out of bound");
-  auto configuration = configurations[dimension];
-
-  auto hbm_latency = configuration.getHbmLatency();
-  auto hbm_bandwidth = configuration.getHbmBandwidth();
-  auto hbm_scalar = configuration.getHbmScalar();
-
-  auto latency = hbm_latency + (payload_size / hbm_bandwidth);
-  return hbm_scalar * latency;
+  auto hbm_latency = configs[dimension].getHbmLatency(); // HBM baseline latency
+  hbm_latency += payload_size /
+      configs[dimension].getHbmBandwidth(); // HBM serialization latency
+  return hbm_latency *
+      configs[dimension].getHbmScale(); // return scaled HBM latency
 }
 
 Topology::Latency Topology::criticalLatency(
-    Latency link_latency,
-    Latency hbm_latency) noexcept {
-  if (link_latency >= hbm_latency) {
-    // communication bound
-    communication_bounds_count++;
-    return link_latency;
-  }
-
-  // hbm bound
-  hbm_bounds_count++;
-  return hbm_latency;
+    Latency communication_latency,
+    Latency hbm_latency) const noexcept {
+  // return larger latency
+  return (communication_latency > hbm_latency) ? communication_latency
+                                               : hbm_latency;
 }

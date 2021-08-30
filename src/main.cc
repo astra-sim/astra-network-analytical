@@ -6,22 +6,22 @@ LICENSE file in the root directory of this source tree.
 #include <array>
 #include <cassert>
 #include <cmath>
-#include <fstream>
 #include <iostream>
 #include <memory>
 #include "api/AnalyticalNetwork.hh"
 #include "astra-sim/system/Sys.hh"
 #include "astra-sim/system/memory/SimpleMemory.hh"
+#include "astra-sim/workload/CSVWriter.hh"
 #include "event-queue/EventQueue.hh"
 #include "event-queue/EventQueueEntry.hh"
+#include "extern/network_backend/analytical/src/topology/HierarchicalTopology.hh"
+#include "extern/network_backend/analytical/src/topology/HierarchicalTopologyConfig.hh"
 #include "helper/CommandLineParser.hh"
+#include "helper/NetworkConfigParser.hh"
 #include "helper/json.hh"
-#include "topology/AllToAll.hh"
-#include "topology/Ring.hh"
-#include "topology/Switch.hh"
+#include "topology/CostModel.hh"
 #include "topology/Topology.hh"
-#include "topology/TopologyConfiguration.hh"
-#include "topology/Torus2D.hh"
+#include "topology/TopologyConfig.hh"
 
 namespace po = boost::program_options;
 
@@ -32,7 +32,8 @@ int main(int argc, char* argv[]) {
   auto cmd_parser = Analytical::CommandLineParser();
 
   // Define command line arguments here
-  // 1. Network-agnostic configs
+  cmd_parser.add_command_line_option<std::string>(
+      "network-configuration", "Network configuration file");
   cmd_parser.add_command_line_option<std::string>(
       "system-configuration", "System configuration file");
   cmd_parser.add_command_line_option<std::string>(
@@ -56,33 +57,23 @@ int main(int argc, char* argv[]) {
   cmd_parser.add_command_line_option<bool>(
       "rendezvous-protocol", "Whether to enable rendezvous protocol");
 
-  // 2. Network configs
-  cmd_parser.add_command_line_option<std::string>(
-      "network-configuration", "Network configuration file");
-  cmd_parser.add_command_line_option<std::string>(
-      "topology-name", "Topology name");
-  cmd_parser.add_command_line_option<int>("dims-count", "Number of dimension");
+  // Define network-related command line arguments here
   cmd_parser.add_command_line_multitoken_option<std::vector<int>>(
-      "nodes-per-dim", "Number of nodes per each dimension");
+      "units-count", "Units count per each dimension");
+  cmd_parser.add_command_line_multitoken_option<std::vector<int>>(
+      "links-count", "Links count per each dimension");
   cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
-      "link-bandwidth", "Link bandwidth in GB/s (B/ns)");
+      "link-bandwidth", "Link bandwidth per each dimension");
   cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
-      "link-latency", "Link latency in ns");
-  cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
-      "nic-latency", "NIC latency in ns");
-  cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
-      "router-latency", "Switch latency in ns");
-  cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
-      "hbm-bandwidth", "HBM bandwidth in GB/s (B/ns)");
-  cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
-      "hbm-latency", "HBM latency in ns");
-  cmd_parser.add_command_line_multitoken_option<std::vector<double>>(
-      "hbm-scale", "HBM scale");
+      "link-latency", "Link latency per each dimension");
 
   // Parse command line arguments
   try {
     cmd_parser.parse(argc, argv);
   } catch (const Analytical::CommandLineParser::ParsingError& e) {
+    std::cout
+        << "[Analytical, main] Command line argument parsing error caputured. Error message: "
+        << std::endl;
     std::cout << e.what() << std::endl;
     exit(-1);
   }
@@ -127,75 +118,32 @@ int main(int argc, char* argv[]) {
   cmd_parser.set_if_defined("rendezvous-protocol", &rendezvous_protocol);
 
   // 2. Retrieve network configs
-  std::string network_configuration =
-      "../../../configuration.json"; // default configuration.json
+  std::string network_configuration = "";
   cmd_parser.set_if_defined("network-configuration", &network_configuration);
-
-  // parse configuration.json file
-  auto json_file = std::ifstream(network_configuration, std::ifstream::in);
-  if (!json_file) {
-    std::cout << "[Analytical] Failed to open network configuration file at: "
-              << network_configuration << std::endl;
+  if (network_configuration.empty()) {
+    std::cout << "[Analytical, main] Network configuration file path not given!"
+              << std::endl;
     exit(-1);
   }
 
-  nlohmann::json json_configuration;
-  json_file >> json_configuration;
-  json_file.close();
-
-  std::string topology_name = json_configuration["topology-name"];
-  cmd_parser.set_if_defined("topology-name", &topology_name);
-
-  int dims_count = json_configuration["dims-count"];
-  cmd_parser.set_if_defined("dims-count", &dims_count);
-
-  std::vector<int> nodes_per_dim;
-  for (int node_per_dim : json_configuration["nodes-per-dim"]) {
-    nodes_per_dim.emplace_back(node_per_dim);
-  }
-  cmd_parser.set_if_defined("nodes-per-dim", &nodes_per_dim);
-
-  std::vector<double> link_bandwidths;
-  for (double link_bandwidth : json_configuration["link-bandwidth"]) {
-    link_bandwidths.emplace_back(link_bandwidth);
-  }
-  cmd_parser.set_if_defined("link-bandwidth", &link_bandwidths);
-
-  std::vector<double> link_latencies;
-  for (double link_latency : json_configuration["link-latency"]) {
-    link_latencies.emplace_back(link_latency);
-  }
+  // parse configuration.json file
+  auto network_parser = Analytical::NetworkConfigParser(network_configuration);
+  auto topology_name = network_parser.get<std::string>("topology-name");
+  auto dimensions_count = network_parser.get<int>("dimensions-count");
+  auto units_counts = network_parser.get<std::vector<int>>("units-count");
+  cmd_parser.set_if_defined("units-count", &units_counts);
+  auto link_latencies = network_parser.get<std::vector<double>>("link-latency");
   cmd_parser.set_if_defined("link-latency", &link_latencies);
-
-  std::vector<double> nic_latencies;
-  for (double nic_latency : json_configuration["nic-latency"]) {
-    nic_latencies.emplace_back(nic_latency);
-  }
-  cmd_parser.set_if_defined("nic-latency", &nic_latencies);
-
-  std::vector<double> router_latencies;
-  for (double router_latency : json_configuration["router-latency"]) {
-    router_latencies.emplace_back(router_latency);
-  }
-  cmd_parser.set_if_defined("router-latency", &router_latencies);
-
-  std::vector<double> hbm_bandwidths;
-  for (double hbm_bandwidth : json_configuration["hbm-bandwidth"]) {
-    hbm_bandwidths.emplace_back(hbm_bandwidth);
-  }
-  cmd_parser.set_if_defined("hbm-bandwidth", &hbm_bandwidths);
-
-  std::vector<double> hbm_latencies;
-  for (double hbm_latency : json_configuration["hbm-latency"]) {
-    hbm_latencies.emplace_back(hbm_latency);
-  }
-  cmd_parser.set_if_defined("hbm-latency", &hbm_latencies);
-
-  std::vector<double> hbm_scales;
-  for (double hbm_scale : json_configuration["hbm-scale"]) {
-    hbm_scales.emplace_back(hbm_scale);
-  }
-  cmd_parser.set_if_defined("hbm-scale", &hbm_scales);
+  auto link_bandwidths =
+      network_parser.get<std::vector<double>>("link-bandwidth");
+  cmd_parser.set_if_defined("link-bandwidth", &link_bandwidths);
+  auto nic_latencies = network_parser.get<std::vector<double>>("nic-latency");
+  auto router_latencies =
+      network_parser.get<std::vector<double>>("router-latency");
+  auto hbm_latencies = network_parser.get<std::vector<double>>("hbm-latency");
+  auto hbm_bandwidths =
+      network_parser.get<std::vector<double>>("hbm-bandwidth");
+  auto hbm_scales = network_parser.get<std::vector<double>>("hbm-scale");
 
   /**
    * Instantitiation: Event Queue, System, Memory, Topology, etc.
@@ -205,15 +153,12 @@ int main(int argc, char* argv[]) {
 
   // compute total number of npus by multiplying counts of each dimension
   auto npus_count = 1;
-  for (auto node_per_dim : nodes_per_dim) {
-    npus_count *= node_per_dim;
+  for (auto units_count : units_counts) {
+    npus_count *= units_count;
   }
 
   // number of nodes for each system layer dimension
-  auto nodes_count_for_system = std::array<int, 5>();
-  for (int i = 0; i < 4; i++) {
-    nodes_count_for_system[i] = 1;
-  }
+  auto physical_dims = std::vector<int>();
 
   // Network and System layer initialization
   std::unique_ptr<Analytical::AnalyticalNetwork>
@@ -225,12 +170,15 @@ int main(int argc, char* argv[]) {
   std::shared_ptr<Analytical::Topology> topology;
 
   // topology configuration for each dimension
-  auto topology_configurations =
-      std::vector<Analytical::TopologyConfiguration>();
-  for (int i = 0; i < dims_count; i++) {
-    topology_configurations.emplace_back(
+  auto topology_configs = Analytical::Topology::TopologyConfigs();
+  for (int i = 0; i < dimensions_count; i++) {
+    auto link_bandwidth_b_ns = (double)link_bandwidths[i] * (1 << 30) /
+        (1'000'000'000); // link bandwidth in B/ns
+
+    topology_configs.emplace_back(
+        units_counts[i], // NPUs count
         link_latencies[i], // link latency (ns)
-        link_bandwidths[i], // link bandwidth (GB/s) = (B/ns)
+        link_bandwidth_b_ns, // link bandwidth (B/ns)
         nic_latencies[i], // nic latency (ns)
         router_latencies[i], // router latency (ns)
         hbm_latencies[i], // memory latency (ns),
@@ -240,46 +188,50 @@ int main(int argc, char* argv[]) {
   }
 
   // Instantiate topology
-  if (topology_name == "Switch") {
-    topology = std::make_shared<Analytical::Switch>(
-        topology_configurations, // topology configuration
-        npus_count // number of connected nodes
-    );
-    nodes_count_for_system[2] = npus_count;
-  } else if (topology_name == "AllToAll") {
-    topology = std::make_shared<Analytical::AllToAll>(
-        topology_configurations, // topology configuration
-        npus_count // number of connected nodes
-    );
-    nodes_count_for_system[2] = npus_count;
-  } else if (topology_name == "Torus2D") {
-    topology = std::make_shared<Analytical::Torus2D>(
-        topology_configurations, // topology configuration
-        npus_count // number of connected nodes
-    );
-    auto torus_width = (int)std::sqrt(npus_count);
-    nodes_count_for_system[1] = torus_width;
-    nodes_count_for_system[2] = torus_width;
-  } else if (topology_name == "Ring") {
-    topology = std::make_shared<Analytical::Ring>(
-        topology_configurations, // topology configuration
-        npus_count, // number of connected nodes,
-        true // is the ring bidirectional
-    );
-    nodes_count_for_system[2] = npus_count;
+  if (topology_name == "Hierarchical") {
+    // Parse networks per each dimension
+    auto topologies_per_dim = network_parser.parseHierarchicalTopologyList();
+    auto dimension_types = network_parser.parseHierarchicalDimensionType();
+    auto links_count_per_dim = network_parser.parseLinksCountPerDim();
+    cmd_parser.set_if_defined("links-count", &links_count_per_dim);
+
+    auto hierarchy_config = Analytical::HierarchicalTopologyConfig(
+        dimensions_count,
+        topologies_per_dim,
+        dimension_types,
+        links_count_per_dim,
+        link_bandwidths);
+
+    topology = std::make_shared<Analytical::HierarchicalTopology>(
+        topology_configs, hierarchy_config);
+    for (int dim = 0; dim < dimensions_count; dim++) {
+      physical_dims.emplace_back(units_counts[dim]);
+    }
   } else {
-    std::cout << "[Main] Topology not defined: " << topology_name << std::endl;
+    std::cout << "[Analytical, main] Topology not defined: " << topology_name
+              << std::endl;
     exit(-1);
   }
 
+  // Retrieve cost_model
+  auto& cost_model = topology->getCostModel();
+
   // Instantiate required network, memory, and system layers
+  auto queues_per_dim = std::vector<int>(dimensions_count, num_queues_per_dim);
+
+  // link event queue and topology
+  Analytical::AnalyticalNetwork::setEventQueue(event_queue);
+  Analytical::AnalyticalNetwork::setTopology(topology);
+  Analytical::AnalyticalNetwork::setCostModel(&cost_model);
+
   for (int i = 0; i < npus_count; i++) {
-    analytical_networks[i] = std::make_unique<Analytical::AnalyticalNetwork>(i);
+    analytical_networks[i] =
+        std::make_unique<Analytical::AnalyticalNetwork>(i, dimensions_count);
 
     memories[i] = std::make_unique<AstraSim::SimpleMemory>(
         (AstraSim::AstraNetworkAPI*)(analytical_networks[i].get()),
-        500,
-        270,
+        1,
+        500000,
         12.5);
 
     systems[i] = new AstraSim::Sys(
@@ -287,16 +239,8 @@ int main(int argc, char* argv[]) {
         memories[i].get(), // AstraMemoryAPI
         i, // id
         num_passes, // num_passes
-        nodes_count_for_system[0],
-        nodes_count_for_system[1],
-        nodes_count_for_system[2],
-        nodes_count_for_system[3],
-        nodes_count_for_system[4], // dimensions
-        num_queues_per_dim,
-        num_queues_per_dim,
-        num_queues_per_dim,
-        num_queues_per_dim,
-        num_queues_per_dim, // queues per corresponding dimension
+        physical_dims, // dimensions
+        queues_per_dim, // queues per corresponding dimension
         system_configuration, // system configuration
         workload_configuration, // workload configuration
         comm_scale,
@@ -311,9 +255,37 @@ int main(int argc, char* argv[]) {
     );
   }
 
-  // link event queue and topology
-  Analytical::AnalyticalNetwork::set_event_queue(event_queue);
-  Analytical::AnalyticalNetwork::set_topology(topology);
+  // link csv
+  auto end_to_env_csv =
+      std::make_shared<AstraSim::CSVWriter>(path, "backend_end_to_end.csv");
+  auto dimensional_info_csv =
+      std::make_shared<AstraSim::CSVWriter>(path, "backend_dim_info.csv");
+  if (stat_row == 0) {
+    end_to_env_csv->initialize_csv(total_stat_rows + 1, 15);
+
+    end_to_env_csv->write_cell(0, 0, "RunName");
+    end_to_env_csv->write_cell(0, 1, "CommsTime");
+    end_to_env_csv->write_cell(0, 2, "ComputeTime");
+    end_to_env_csv->write_cell(0, 3, "ExposedCommsTime");
+    end_to_env_csv->write_cell(0, 4, "Cost");
+    end_to_env_csv->write_cell(0, 5, "TotalPayloadSize");
+    end_to_env_csv->write_cell(0, 6, "DPCommsTime");
+    end_to_env_csv->write_cell(0, 7, "MPCommsTime");
+    for (auto dim = 0; dim < 7; dim++) {
+      end_to_env_csv->write_cell(
+          0, (8 + dim), "PayloadSize_Dim" + std::to_string(dim));
+    }
+
+    // fixme: assuming max_dimension is 10
+    // fixme: dimensions_count for every topology differs
+    auto dimension_csv_rows_count = (total_stat_rows * 10) + 1;
+    dimensional_info_csv->initialize_csv(dimension_csv_rows_count, 3);
+    dimensional_info_csv->write_cell(0, 0, "RunName");
+    dimensional_info_csv->write_cell(0, 1, "DimensionIndex");
+    dimensional_info_csv->write_cell(0, 2, "AverageChunkLatency");
+  }
+  Analytical::AnalyticalNetwork::setCsvConfiguration(
+      path, stat_row, total_stat_rows, end_to_env_csv, dimensional_info_csv);
 
   /**
    * Run Analytical Model
@@ -327,6 +299,13 @@ int main(int argc, char* argv[]) {
   while (!event_queue->empty()) {
     event_queue->proceed();
   }
+
+  /**
+   * Print results
+   */
+  auto topology_cost = cost_model.computeTotalCost();
+  std::cout << "\n[Analytical, main] Total Cost: $" << topology_cost
+            << std::endl;
 
   /**
    * Cleanup

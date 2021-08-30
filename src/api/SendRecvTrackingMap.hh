@@ -8,12 +8,15 @@ LICENSE file in the root directory of this source tree.
 
 #include <map>
 #include <tuple>
+#include "../topology/TopologyConfig.hh"
 #include "SendRecvTrackingMapValue.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 
 namespace Analytical {
 class SendRecvTrackingMap {
  public:
+  using PayloadSize = TopologyConfig::PayloadSize;
+
   /**
    * Check whether send operation with given key entry exists.
    * @param tag
@@ -22,7 +25,8 @@ class SendRecvTrackingMap {
    * @param count
    * @return true if send operation exists, false if not
    */
-  bool has_send_operation(int tag, int src, int dest, int count) const noexcept;
+  bool has_send_operation(int tag, int src, int dest, PayloadSize count)
+      const noexcept;
 
   /**
    * Check whether recv operation with given key entry exists.
@@ -32,7 +36,8 @@ class SendRecvTrackingMap {
    * @param count
    * @return true if recv operation exists, false if not
    */
-  bool has_recv_operation(int tag, int src, int dest, int count) const noexcept;
+  bool has_recv_operation(int tag, int src, int dest, PayloadSize count)
+      const noexcept;
 
   /**
    * Remove the send operation entry with given key, and return send_finish_time
@@ -47,7 +52,7 @@ class SendRecvTrackingMap {
       int tag,
       int src,
       int dest,
-      int count) noexcept;
+      PayloadSize count) noexcept;
 
   /**
    * Remove the recv operation entry with given key, and return
@@ -59,7 +64,11 @@ class SendRecvTrackingMap {
    * @param count
    * @return recv_event_handler
    */
-  Event pop_recv_event_handler(int tag, int src, int dest, int count) noexcept;
+  Event pop_recv_event_handler(
+      int tag,
+      int src,
+      int dest,
+      PayloadSize count) noexcept;
 
   /**
    * Insert a new send operation with given key.
@@ -74,7 +83,7 @@ class SendRecvTrackingMap {
       int tag,
       int src,
       int dest,
-      int count,
+      PayloadSize count,
       AstraSim::timespec_t send_finish_time) noexcept;
 
   /**
@@ -91,7 +100,7 @@ class SendRecvTrackingMap {
       int tag,
       int src,
       int dest,
-      int count,
+      PayloadSize count,
       void (*fun_ptr)(void*),
       void* fun_arg) noexcept;
 
@@ -104,7 +113,7 @@ class SendRecvTrackingMap {
   /**
    * tag, src, dest, count
    */
-  typedef std::tuple<int, int, int, int> Key;
+  typedef std::tuple<int, int, int, PayloadSize> Key;
 
   /**
    * Send and recv tracking map
