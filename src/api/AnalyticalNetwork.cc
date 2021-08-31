@@ -199,7 +199,7 @@ void AnalyticalNetwork::pass_front_end_report(
   auto running_time = std::to_string(astraSimDataAPI.workload_finished_time);
   auto compute_time = std::to_string(astraSimDataAPI.total_compute);
 
-  auto total_cost = std::to_string(cost_model->computeTotalCost());
+  auto total_cost = std::to_string(cost_model->get_network_cost());
   auto total_payload_size =
       AnalyticalNetwork::payload_size_tracker->totalPayloadSize();
   auto total_payload_size_str =

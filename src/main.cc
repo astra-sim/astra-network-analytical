@@ -303,7 +303,7 @@ int main(int argc, char* argv[]) {
   /**
    * Print results
    */
-  auto topology_cost = cost_model.computeTotalCost();
+  auto topology_cost = cost_model.get_network_cost();
   std::cout << "\n[Analytical, main] Total Cost: $" << topology_cost
             << std::endl;
 
