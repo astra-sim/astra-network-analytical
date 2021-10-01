@@ -53,18 +53,17 @@ std::vector<NetworkConfigParser::DimensionType> NetworkConfigParser::
   auto dimension_types = std::vector<DimensionType>();
 
   for (const auto& type : json_configuration["dimension-type"]) {
-    if (type == "T") {
-      dimension_types.emplace_back(DimensionType::T);
-    } else if (type == "N") {
-      dimension_types.emplace_back(DimensionType::N);
-    } else if (type == "P") {
-      dimension_types.emplace_back(DimensionType::P);
-    } else if (type == "PP") {
-      dimension_types.emplace_back(DimensionType::PP);
+    if (type == "Tile") {
+      dimension_types.emplace_back(DimensionType::Tile);
+    } else if (type == "Package") {
+      dimension_types.emplace_back(DimensionType::Package);
+    } else if (type == "Node") {
+      dimension_types.emplace_back(DimensionType::Node);
+    } else if (type == "Pod") {
+      dimension_types.emplace_back(DimensionType::Pod);
     } else {
-      std::cout << "[NetworkConfigParser] Given Dimension type " << type
-                << " is not supported." << std::endl;
-      exit(-1);
+      // default is Node for legacy compatability
+      dimension_types.emplace_back(DimensionType::Node);
     }
   }
 

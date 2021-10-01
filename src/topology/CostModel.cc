@@ -13,52 +13,60 @@ CostModel::CostModel() noexcept {
   // Define cost here
   network_total_cost = 0;
 
-  resources_cost_table[ResourceType::Link] = 2;
-  resources_cost_table[ResourceType::Nic] = 48;
-  resources_cost_table[ResourceType::Switch] = 24;
-  resources_cost_table[ResourceType::Npu] = 0;
+  resources_cost_table[DimensionType::Tile][ResourceType::Link] = 1.0;
+  resources_cost_table[DimensionType::Tile][ResourceType::Switch] = -1;
+  resources_cost_table[DimensionType::Tile][ResourceType::Nic] = -1;
+
+  resources_cost_table[DimensionType::Package][ResourceType::Link] = 2.0;
+  resources_cost_table[DimensionType::Package][ResourceType::Switch] = 6.5;
+  resources_cost_table[DimensionType::Package][ResourceType::Nic] = 0;
+
+  resources_cost_table[DimensionType::Node][ResourceType::Link] = 2.0;
+  resources_cost_table[DimensionType::Node][ResourceType::Switch] = 6.5;
+  resources_cost_table[DimensionType::Node][ResourceType::Nic] = 0;
+
+  resources_cost_table[DimensionType::Pod][ResourceType::Link] = 7.4;
+  resources_cost_table[DimensionType::Pod][ResourceType::Switch] = 23.7;
+  resources_cost_table[DimensionType::Pod][ResourceType::Nic] = 47.8;
+}
+
+std::string CostModel::resourceTypeToStr(ResourceType resource_type) noexcept {
+  switch (resource_type) {
+    case ResourceType::Link:
+      return "Link";
+    case ResourceType::Switch:
+      return "Switch";
+    case ResourceType::Nic:
+      return "Nic";
+  }
+
+  return "";
 }
 
 CostModel::~CostModel() = default;
 
 void CostModel::addResource(
+    DimensionType dimension_type,
     ResourceType resource,
     int count,
     double bandwidth,
-    int radix) noexcept {
-  if (resource == ResourceType::Npu) {
-    auto added_cost = resources_cost_table[resource] * count;
-    network_total_cost += added_cost;
-
-    std::cout << "[CostModel] Added NPU: " << count << ", cost: " << added_cost
-              << std::endl;
-  } else if (resource == ResourceType::Link) {
-    auto added_cost = resources_cost_table[resource] * count * bandwidth;
-    network_total_cost += added_cost;
-
-    std::cout
-        << "[CostModel] Added Link: " << count << ", cost: " << added_cost
-        << std::endl;
-  } else if (resource == ResourceType::Nic) {
-    auto added_cost = resources_cost_table[resource] * count * bandwidth;
-    network_total_cost += added_cost;
-
-    std::cout
-        << "[CostModel] Added Nid: " << count << ", cost: " << added_cost
-        << std::endl;
-  } else if (resource == ResourceType::Switch) {
-    auto added_cost =
-        resources_cost_table[resource] * count * bandwidth * radix;
-    network_total_cost += added_cost;
-
-    std::cout
-        << "[CostModel] Switch: " << count << ", cost: " << added_cost
-        << std::endl;
-  } else {
-    std::cout << "[CostModel] Error, Resource undefined!!! " << count
-              << std::endl;
+    int switch_radix) noexcept {
+  if (resources_cost_table[dimension_type][resource] < 0) {
+    std::cout << CostModel::resourceTypeToStr(resource) << " on "
+              << HierarchicalTopologyConfig::dimensionTypeToStr(dimension_type)
+              << " is not supported!" << std::endl;
     exit(-1);
   }
+  auto added_cost = resources_cost_table[dimension_type][resource] * count *
+      bandwidth * switch_radix;
+  network_total_cost += added_cost;
+
+  std::cout << "[CostModel] Adding (inter-"
+            << HierarchicalTopologyConfig::dimensionTypeToStr(dimension_type)
+            << ", " << CostModel::resourceTypeToStr(resource)
+            << ") bandwidth: " << bandwidth << ", radix: " << switch_radix
+            << ", count: " << count << " (added cost: $" << added_cost << ")"
+            << std::endl;
 }
 
 double CostModel::get_network_cost() const noexcept {

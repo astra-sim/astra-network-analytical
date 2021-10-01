@@ -6,6 +6,7 @@ LICENSE file in the root directory of this source tree.
 #ifndef __HIERARCHICALTOPOLOGYCONFIG_HH__
 #define __HIERARCHICALTOPOLOGYCONFIG_HH__
 
+#include <string>
 #include <vector>
 #include "TopologyConfig.hh"
 
@@ -15,11 +16,13 @@ struct HierarchicalTopologyConfig {
   using Bandwidth = TopologyConfig::Bandwidth;
   enum class TopologyList { Ring, Switch, FullyConnected };
   enum class DimensionType {
-    T,
-    N,
-    P,
-    PP
+    Tile,
+    Package,
+    Node,
+    Pod
   }; // tile-to-tile, within node, within pod, pod-to-pod
+
+  static std::string dimensionTypeToStr(DimensionType dimension_type) noexcept;
 
   HierarchicalTopologyConfig(
       int dimensions_count,

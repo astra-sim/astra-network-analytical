@@ -19,6 +19,22 @@ HierarchicalTopologyConfig::HierarchicalTopologyConfig(
       links_count_per_dim(links_count_per_dim),
       link_bandwidth_per_dim(link_bandwidth_per_dim) {}
 
+std::string HierarchicalTopologyConfig::dimensionTypeToStr(
+    DimensionType dimension_type) noexcept {
+  switch (dimension_type) {
+    case DimensionType::Tile:
+      return "Tile";
+    case DimensionType::Package:
+      return "Package";
+    case DimensionType::Node:
+      return "Node";
+    case DimensionType::Pod:
+      return "Pod";
+  }
+
+  return "";
+}
+
 int HierarchicalTopologyConfig::getDimensionsCount() const noexcept {
   return dimensions_count;
 }

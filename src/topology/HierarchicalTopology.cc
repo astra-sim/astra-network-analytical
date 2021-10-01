@@ -14,7 +14,6 @@ HierarchicalTopology::HierarchicalTopology(
     : Topology(configs), hierarchy_config(hierarchy_config) {
   // Update bandwidth as required
   auto topology_size_up_to = 1;
-  auto package_size = 1;
 
   for (int dim = 0; dim < hierarchy_config.getDimensionsCount(); dim++) {
     auto topology = hierarchy_config.getTopologyForDim(dim);
@@ -66,12 +65,6 @@ HierarchicalTopology::HierarchicalTopology(
     auto dimension_type = hierarchy_config.getDimensionType(dim);
 
     topology_size_up_to *= topology_size;
-    if (dimension_type == DimensionType::T) {
-      // package size is defined by Tile-to-tile dimension
-      package_size *= topology_size;
-    }
-
-    auto nic_latency = configs[dim].getNicLatency();
     auto topologies_count = npus_count / topology_size;
 
     if (topology == TopologyList::Ring) {
@@ -80,16 +73,10 @@ HierarchicalTopology::HierarchicalTopology(
       auto total_ring_links_count = topologies_count * ring_links_count;
 
       cost_model.addResource(
+          dimension_type,
           CostModel::ResourceType::Link,
           total_ring_links_count,
-          link_bandwidth,
-          -1);
-//      if (dimension_type == DimensionType::T) {
-//      } else if (dimension_type == DimensionType::N) {
-//      } else if (dimension_type == DimensionType::P) {
-//      } else if (dimension_type == DimensionType::PP) {
-//      } else {
-//      }
+          link_bandwidth);
     } else if (topology == TopologyList::FullyConnected) {
       auto links_count_per_node = links_count / adjacent_packages_count;
       auto a2a_links_count =
@@ -97,50 +84,36 @@ HierarchicalTopology::HierarchicalTopology(
       auto total_a2a_links_count = topologies_count * a2a_links_count;
 
       cost_model.addResource(
+          dimension_type,
           CostModel::ResourceType::Link,
           total_a2a_links_count,
-          link_bandwidth,
-          -1);
-
-//      if (dimension_type == DimensionType::T) {
-//      } else if (dimension_type == DimensionType::N) {
-//      } else if (dimension_type == DimensionType::P) {
-//      } else if (dimension_type == DimensionType::PP) {
-//      } else {
-//      }
+          link_bandwidth);
     } else if (topology == TopologyList::Switch) {
-      auto total_links_count = topology_size_up_to * links_count;
+      auto switches_count = npus_count / topology_size_up_to;
+      auto switch_radix = topology_size_up_to * links_count;
+      auto total_links_count = switch_radix * switches_count;
       cost_model.addResource(
+          dimension_type,
           CostModel::ResourceType::Link,
           total_links_count,
-          link_bandwidth,
-          -1);
+          link_bandwidth);
       cost_model.addResource(
+          dimension_type,
+          CostModel::ResourceType::Switch,
+          switches_count,
+          link_bandwidth,
+          switch_radix);
+      cost_model.addResource(
+          dimension_type,
           CostModel::ResourceType::Nic,
           total_links_count,
-          link_bandwidth,
-          -1);
-      cost_model.addResource(
-          CostModel::ResourceType::Switch,
-          1,
-          link_bandwidth,
-          total_links_count);
-//
-//      if (dimension_type == DimensionType::T) {
-//      } else if (dimension_type == DimensionType::N) {
-//      } else if (dimension_type == DimensionType::P) {
-//      } else if (dimension_type == DimensionType::PP) {
-//      } else {
-//      }
+          link_bandwidth);
     } else {
       std::cout << "[HierarchicalTopology, constructor] Topology at dimension "
                 << dim << " not defined" << std::endl;
       exit(-1);
     }
   }
-
-  // add NPUs
-  cost_model.addResource(CostModel::ResourceType::Npu, npus_count, -1, -1);
 }
 
 HierarchicalTopology::~HierarchicalTopology() noexcept = default;
