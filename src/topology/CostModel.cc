@@ -17,12 +17,12 @@ CostModel::CostModel() noexcept {
   resources_cost_table[DimensionType::Tile][ResourceType::Switch] = -1;
   resources_cost_table[DimensionType::Tile][ResourceType::Nic] = -1;
 
-  resources_cost_table[DimensionType::Package][ResourceType::Link] = 2.0;
-  resources_cost_table[DimensionType::Package][ResourceType::Switch] = 6.5;
+  resources_cost_table[DimensionType::Package][ResourceType::Link] = 4.0;
+  resources_cost_table[DimensionType::Package][ResourceType::Switch] = 13.0;
   resources_cost_table[DimensionType::Package][ResourceType::Nic] = 0;
 
-  resources_cost_table[DimensionType::Node][ResourceType::Link] = 2.0;
-  resources_cost_table[DimensionType::Node][ResourceType::Switch] = 6.5;
+  resources_cost_table[DimensionType::Node][ResourceType::Link] = 4.0;
+  resources_cost_table[DimensionType::Node][ResourceType::Switch] = 13.0;
   resources_cost_table[DimensionType::Node][ResourceType::Nic] = 0;
 
   resources_cost_table[DimensionType::Pod][ResourceType::Link] = 7.4;
