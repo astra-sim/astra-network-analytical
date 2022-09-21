@@ -27,6 +27,8 @@ std::shared_ptr<AstraSim::CSVWriter> AnalyticalNetwork::end_to_end_csv;
 
 std::shared_ptr<AstraSim::CSVWriter> AnalyticalNetwork::dimensional_info_csv;
 
+std::shared_ptr<AstraSim::CSVWriter> AnalyticalNetwork::tutorial_csv;
+
 void AnalyticalNetwork::setEventQueue(
     const std::shared_ptr<EventQueue>& event_queue_ptr) noexcept {
   AnalyticalNetwork::event_queue = event_queue_ptr;
@@ -46,12 +48,14 @@ void AnalyticalNetwork::setCsvConfiguration(
     int stat_row,
     int total_stat_rows,
     std::shared_ptr<AstraSim::CSVWriter> end_to_end_csv,
-    std::shared_ptr<AstraSim::CSVWriter> dimensional_info_csv) noexcept {
+    std::shared_ptr<AstraSim::CSVWriter> dimensional_info_csv,
+    std::shared_ptr<AstraSim::CSVWriter> tutorial_csv) noexcept {
   AnalyticalNetwork::stat_path = stat_path;
   AnalyticalNetwork::stat_row = stat_row;
   AnalyticalNetwork::total_stat_rows = total_stat_rows;
   AnalyticalNetwork::end_to_end_csv = end_to_end_csv;
   AnalyticalNetwork::dimensional_info_csv = dimensional_info_csv;
+  AnalyticalNetwork::tutorial_csv = tutorial_csv;
 }
 
 AnalyticalNetwork::AnalyticalNetwork(int rank, int dims_count) noexcept
@@ -252,6 +256,14 @@ void AnalyticalNetwork::pass_front_end_report(
     AnalyticalNetwork::dimensional_info_csv->write_cell(
         row_to_write, 2, chunk_latency);
   }
+
+  // tutorial csv
+  AnalyticalNetwork::tutorial_csv->write_cell(stat_row + 1, 0, run_name);
+  AnalyticalNetwork::tutorial_csv->write_cell(stat_row + 1, 1, running_time);
+  AnalyticalNetwork::tutorial_csv->write_cell(stat_row + 1, 2, compute_time);
+  AnalyticalNetwork::tutorial_csv->write_cell(
+      stat_row + 1, 3, std::to_string(exposed_comm_time));
+  AnalyticalNetwork::tutorial_csv->write_cell(stat_row + 1, 4, total_payload_size_str);
 }
 
 double AnalyticalNetwork::get_BW_at_dimension(int dim) {

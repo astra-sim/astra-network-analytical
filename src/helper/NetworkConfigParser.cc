@@ -52,6 +52,13 @@ std::vector<NetworkConfigParser::DimensionType> NetworkConfigParser::
     parseHierarchicalDimensionType() const noexcept {
   auto dimension_types = std::vector<DimensionType>();
 
+  if (!json_configuration.contains("dimension-type")) {
+    for (int i = 0; i < 10; i++) {
+      dimension_types.emplace_back(DimensionType::Node);
+    }
+    return dimension_types;
+  }
+
   for (const auto& type : json_configuration["dimension-type"]) {
     if (type == "Tile") {
       dimension_types.emplace_back(DimensionType::Tile);

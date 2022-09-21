@@ -128,8 +128,12 @@ int main(int argc, char* argv[]) {
 
   // parse configuration.json file
   auto network_parser = Analytical::NetworkConfigParser(network_configuration);
-  auto topology_name = network_parser.get<std::string>("topology-name");
-  auto dimensions_count = network_parser.get<int>("dimensions-count");
+  auto dimensions_count = network_parser.get<int>("dimensions-count", 1);
+  std::vector<double> zeros = std::vector<double>(dimensions_count, 0);
+  std::vector<double> ones = std::vector<double>(dimensions_count, 1);
+
+  auto topology_name = network_parser.get<std::string>("topology-name", "Hierarchical");
+  
   auto units_counts = network_parser.get<std::vector<int>>("units-count");
   cmd_parser.set_if_defined("units-count", &units_counts);
   auto link_latencies = network_parser.get<std::vector<double>>("link-latency");
@@ -137,13 +141,13 @@ int main(int argc, char* argv[]) {
   auto link_bandwidths =
       network_parser.get<std::vector<double>>("link-bandwidth");
   cmd_parser.set_if_defined("link-bandwidth", &link_bandwidths);
-  auto nic_latencies = network_parser.get<std::vector<double>>("nic-latency");
+  auto nic_latencies = network_parser.get<std::vector<double>>("nic-latency", zeros);
   auto router_latencies =
-      network_parser.get<std::vector<double>>("router-latency");
-  auto hbm_latencies = network_parser.get<std::vector<double>>("hbm-latency");
+      network_parser.get<std::vector<double>>("router-latency", zeros);
+  auto hbm_latencies = network_parser.get<std::vector<double>>("hbm-latency", zeros);
   auto hbm_bandwidths =
-      network_parser.get<std::vector<double>>("hbm-bandwidth");
-  auto hbm_scales = network_parser.get<std::vector<double>>("hbm-scale");
+      network_parser.get<std::vector<double>>("hbm-bandwidth", ones);
+  auto hbm_scales = network_parser.get<std::vector<double>>("hbm-scale", zeros);
 
   /**
    * Instantitiation: Event Queue, System, Memory, Topology, etc.
@@ -260,6 +264,8 @@ int main(int argc, char* argv[]) {
       std::make_shared<AstraSim::CSVWriter>(path, "backend_end_to_end.csv");
   auto dimensional_info_csv =
       std::make_shared<AstraSim::CSVWriter>(path, "backend_dim_info.csv");
+  auto tutorial_csv =
+      std::make_shared<AstraSim::CSVWriter>(path, "tutorial_result.csv");
   if (stat_row == 0) {
     end_to_env_csv->initialize_csv(total_stat_rows + 1, 15);
 
@@ -283,9 +289,18 @@ int main(int argc, char* argv[]) {
     dimensional_info_csv->write_cell(0, 0, "RunName");
     dimensional_info_csv->write_cell(0, 1, "DimensionIndex");
     dimensional_info_csv->write_cell(0, 2, "AverageChunkLatency");
+
+    // tutorial
+    tutorial_csv->initialize_csv(total_stat_rows + 1, 5);
+    tutorial_csv->write_cell(0, 0, "Name");
+    tutorial_csv->write_cell(0, 1, "TotalTime(us)");
+    tutorial_csv->write_cell(0, 2, "ComputeTime(us)");
+    tutorial_csv->write_cell(0, 3, "ExposedCommunicationTime(us)");
+    tutorial_csv->write_cell(0, 4, "TotalMessageSize(MB)");
   }
+
   Analytical::AnalyticalNetwork::setCsvConfiguration(
-      path, stat_row, total_stat_rows, end_to_env_csv, dimensional_info_csv);
+      path, stat_row, total_stat_rows, end_to_env_csv, dimensional_info_csv, tutorial_csv);
 
   /**
    * Run Analytical Model
@@ -303,9 +318,9 @@ int main(int argc, char* argv[]) {
   /**
    * Print results
    */
-  auto topology_cost = cost_model.get_network_cost();
-  std::cout << "\n[Analytical, main] Total Cost: $" << topology_cost
-            << std::endl;
+//   auto topology_cost = cost_model.get_network_cost();
+//   std::cout << "\n[Analytical, main] Total Cost: $" << topology_cost
+//             << std::endl;
 
   /**
    * Cleanup

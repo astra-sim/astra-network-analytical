@@ -28,6 +28,14 @@ class NetworkConfigParser {
     return json_configuration[arg_name];
   }
 
+  template <typename T>
+  T get (const char* arg_name, T default_value) const noexcept {
+    if (json_configuration.contains(arg_name)) {
+      return json_configuration[arg_name];
+    }
+    return default_value;
+  }
+
   std::vector<TopologyList> parseHierarchicalTopologyList() const noexcept;
 
   std::vector<DimensionType> parseHierarchicalDimensionType() const noexcept;
