@@ -7,46 +7,26 @@ LICENSE file in the root directory of this source tree.
 #define __EVENT_HH__
 
 namespace Analytical {
-struct Event {
+class Event {
  public:
-  typedef void (*FunPtr)(void*);
+  typedef void (*CallbackOneArg)(void*);
+  typedef void (*CallbackTwoArgs)(void*, void*);
 
-  /**
-   * Construct new event.
-   * @param fun_ptr pointer to event handler
-   * @param fun_arg pointer to event handler argument
-   */
-  Event(void (*fun_ptr)(void*), void* fun_arg) noexcept
-      : fun_ptr(fun_ptr), fun_arg(fun_arg){};
+  Event(CallbackOneArg callback, void* arg1) noexcept;
+  Event(CallbackTwoArgs callback, void* arg1, void* arg2) noexcept;
+  ~Event() noexcept = default;
 
-  /**
-   * Run the event handler.
-   */
-  void run() const noexcept;
-
-  /**
-   * fun_ptr getter
-   * @return fun_ptr
-   */
-  FunPtr get_fun_ptr() const noexcept;
-
-  /**
-   * fun_arg getter
-   * @return fun_arg
-   */
+  CallbackOneArg get_fun_ptr() const noexcept;
   void* get_fun_arg() const noexcept;
 
- private:
-  /**
-   * function pointer directing the event handler
-   */
-  FunPtr fun_ptr;
+  void invoke_callback() noexcept;
 
-  /**
-   * pointer to the event handler argument.
-   */
-  void* fun_arg;
+ private:
+  CallbackOneArg callback_one_arg;
+  CallbackTwoArgs callback_two_args;
+  void* arg1;
+  void* arg2;
 };
 } // namespace Analytical
 
-#endif
+#endif /* __EVENT_HH__ */

@@ -3,11 +3,10 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#ifndef __SENDRECVTRACKINGMAPVALUE_HH__
-#define __SENDRECVTRACKINGMAPVALUE_HH__
+#ifndef __SEND_RECV_TRACKING_MAP_VALUE_HH__
+#define __SEND_RECV_TRACKING_MAP_VALUE_HH__
 
-#include "../event-queue/Event.hh"
-#include "../event-queue/EventQueueEntry.hh"
+#include "event-queue/Event.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 
 namespace Analytical {
@@ -88,4 +87,4 @@ class SendRecvTrackingMapValue {
 };
 } // namespace Analytical
 
-#endif // ANALYTICALBACKEND_SENDRECVTRACKINGMAPVALUE_H
+#endif /* __SEND_RECV_TRACKING_MAP_VALUE_HH__ */

@@ -8,7 +8,8 @@ LICENSE file in the root directory of this source tree.
 
 #include <string>
 #include <vector>
-#include "TopologyConfig.hh"
+
+#include "topology/TopologyConfig.hh"
 
 namespace Analytical {
 struct HierarchicalTopologyConfig {

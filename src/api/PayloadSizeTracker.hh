@@ -3,11 +3,12 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#ifndef __PAYLOADSIZETRACKER_HH__
-#define __PAYLOADSIZETRACKER_HH__
+#ifndef __PAYLOAD_SIZE_TRACKER_HH__
+#define __PAYLOAD_SIZE_TRACKER_HH__
 
 #include <vector>
-#include "../topology/TopologyConfig.hh"
+
+#include "topology/TopologyConfig.hh"
 
 namespace Analytical {
 class PayloadSizeTracker {
@@ -28,4 +29,4 @@ class PayloadSizeTracker {
 };
 } // namespace Analytical
 
-#endif
+#endif /* __PAYLOAD_SIZE_TRACKER_HH__ */

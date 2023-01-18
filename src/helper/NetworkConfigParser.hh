@@ -3,13 +3,14 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#ifndef __NETWORKCONFIGPARSER_HH__
-#define __NETWORKCONFIGPARSER_HH__
+#ifndef __NETWORK_CONFIG_PARSER_HH__
+#define __NETWORK_CONFIG_PARSER_HH__
 
 #include <vector>
-#include "../topology/TopologyConfig.hh"
-#include "extern/network_backend/analytical/src/topology/HierarchicalTopologyConfig.hh"
-#include "json.hh"
+
+#include "helper/json.hh"
+#include "topology/TopologyConfig.hh"
+#include "topology/HierarchicalTopologyConfig.hh"
 
 namespace Analytical {
 class NetworkConfigParser {
@@ -18,10 +19,7 @@ class NetworkConfigParser {
   using DimensionType = HierarchicalTopologyConfig::DimensionType;
   using Bandwidth = TopologyConfig::Bandwidth;
 
-  explicit NetworkConfigParser(
-      const std::string& network_configuration) noexcept;
-
-  bool useFastVersion() const noexcept;
+  explicit NetworkConfigParser(const std::string& network_configuration) noexcept;
 
   template <typename T>
   T get(const char* arg_name) const noexcept {
@@ -41,4 +39,4 @@ class NetworkConfigParser {
 };
 } // namespace Analytical
 
-#endif
+#endif /* __NETWORK_CONFIG_PARSER_HH__ */
