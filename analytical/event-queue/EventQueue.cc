@@ -3,37 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "event-queue/EventQueue.hh"
+#include "EventQueue.hh"
 
-#include <iostream>
-
-using namespace std;
-using namespace Analytical;
-
-void EventQueue::insert(Event event, AstraSim::timespec_t event_time) noexcept {
-  for (auto it = event_queue.begin(); it != event_queue.end(); it++) {
-    auto timestamp = it->get_time_stamp();
-    if (timestamp.time_val == event_time.time_val) {
-      // insert here
-      it->insert(std::move(event));
-      return;
-    } else if (timestamp.time_val > event_time.time_val) {
-      // should insert here
-      auto new_entry = event_queue.emplace(it, event_time);
-      new_entry->insert(std::move(event));
-      return;
-    }
-  }
-
-  // reaching here:
-  //  (1) no entry at all
-  //  (2) all entries smaller than given
-  // either way, insert new entry at the end
-  auto& new_entry = event_queue.emplace_back(event_time);
-  new_entry.insert(std::move(event));
-}
-
-void EventQueue::add_event(
+void Analytical::EventQueue::add_event(
     AstraSim::timespec_t time_stamp,
     void (*fun_ptr)(void*),
     void* fun_arg) noexcept {
@@ -45,7 +17,7 @@ void EventQueue::add_event(
   //            -> insert new event queue element
 
   // should assign event that happens later than current_time
-  assert(EventQueueEntry::compare_time_stamp(current_time, time_stamp) <= 0);
+  assert(EventQueueEntry::compare_time_stamp(current_time, time_stamp) < 0);
 
   for (auto it = event_queue.begin(); it != event_queue.end(); it++) {
     auto time_stamp_compare_result =
@@ -72,7 +44,11 @@ void EventQueue::add_event(
   event_queue.back().add_event(fun_ptr, fun_arg);
 }
 
-void EventQueue::proceed() noexcept {
+AstraSim::timespec_t Analytical::EventQueue::get_current_time() const noexcept {
+  return current_time;
+}
+
+void Analytical::EventQueue::proceed() noexcept {
   auto& event_queue_entry = event_queue.front();
 
   // proceed current time
@@ -85,20 +61,16 @@ void EventQueue::proceed() noexcept {
   event_queue.pop_front();
 }
 
-AstraSim::timespec_t EventQueue::get_current_time() const noexcept {
-  return current_time;
-}
-
-bool EventQueue::empty() const noexcept {
+bool Analytical::EventQueue::empty() const noexcept {
   return event_queue.empty();
 }
 
-void EventQueue::print() const noexcept {
-  cout << "===== event-queue =====" << endl;
-  cout << "CurrentTime: " << current_time.time_val << endl
-            << endl;
+void Analytical::EventQueue::print() const noexcept {
+  std::cout << "===== event-queue =====" << std::endl;
+  std::cout << "CurrentTime: " << current_time.time_val << std::endl
+            << std::endl;
   for (const auto& event_queue_entry : event_queue) {
     event_queue_entry.print();
   }
-  cout << "======================" << endl << endl;
+  std::cout << "======================" << std::endl << std::endl;
 }

@@ -3,8 +3,8 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#ifndef __TOPOLOGY_CONFIG_HH__
-#define __TOPOLOGY_CONFIG_HH__
+#ifndef __TOPOLOGYCONFIG_HH__
+#define __TOPOLOGYCONFIG_HH__
 
 #include <cstdint>
 #include <vector>
@@ -13,18 +13,11 @@ namespace Analytical {
 struct TopologyConfig {
  public:
   using NpuId = int; // each NPU's id
-  using NpuAddress = std::vector<int>; // NPU's address (integer id for each dimension)
+  using NpuAddress =
+      std::vector<int>; // NPU's address (integer id for each dimension)
   using PayloadSize = uint64_t; // Byte
   using Latency = double; // ns
   using Bandwidth = double; // GB/s (B/ns)
-
-  TopologyConfig(
-      int npus_count,
-      int mem_count,
-      Latency link_latency,
-      Bandwidth link_bandwidth,
-      Latency nic_latency,
-      Latency router_latency) noexcept;
 
   TopologyConfig(
       int npus_count,
@@ -47,8 +40,8 @@ struct TopologyConfig {
 
   void multiplyLinkBandwidth(double scalar) noexcept;
 
-  int npus_count;
-  int mem_count;
+ private:
+  int npus_count; // number of npus
   Latency link_latency;
   Bandwidth link_bandwidth;
   Latency nic_latency;
@@ -59,4 +52,4 @@ struct TopologyConfig {
 };
 } // namespace Analytical
 
-#endif /* __TOPOLOGY_CONFIG_HH__ */
+#endif

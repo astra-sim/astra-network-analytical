@@ -7,9 +7,8 @@ LICENSE file in the root directory of this source tree.
 #define __TOPOLOGY_HH__
 
 #include <vector>
-
-#include "topology/CostModel.hh"
-#include "topology/TopologyConfig.hh"
+#include "CostModel.hh"
+#include "TopologyConfig.hh"
 
 namespace Analytical {
 class Topology {
@@ -24,6 +23,8 @@ class Topology {
 
   Topology(TopologyConfigs& configs) noexcept;
 
+  CostModel& getCostModel() noexcept;
+
   virtual ~Topology() noexcept = 0;
 
   virtual std::pair<double, int> send(
@@ -33,9 +34,12 @@ class Topology {
 
   virtual Bandwidth getNpuTotalBandwidthPerDim(int dimension) const noexcept;
 
-  CostModel& getCostModel() noexcept;
-
  protected:
+  TopologyConfigs& configs; // TopologyConfigs for each dimension
+  int npus_count; // NPUs count of the topology
+
+  CostModel cost_model;
+
   void checkNpuIdBound(NpuId npu_id) const noexcept;
 
   Latency serializationLatency(int dimension, PayloadSize payload_size)
@@ -48,11 +52,7 @@ class Topology {
 
   virtual NpuAddress npuIdToAddress(NpuId npu_id) const noexcept;
   virtual NpuId npuAddressToId(NpuAddress npu_address) const noexcept;
-
-  TopologyConfigs& configs; // TopologyConfigs for each dimension
-  int npus_count; // NPUs count of the topology
-  CostModel cost_model;
 };
 } // namespace Analytical
 
-#endif /* __TOPOLOGY_HH__ */
+#endif

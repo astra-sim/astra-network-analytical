@@ -3,14 +3,13 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#ifndef __NETWORK_CONFIG_PARSER_HH__
-#define __NETWORK_CONFIG_PARSER_HH__
+#ifndef __NETWORKCONFIGPARSER_HH__
+#define __NETWORKCONFIGPARSER_HH__
 
 #include <vector>
-
-#include "helper/json.hh"
-#include "topology/TopologyConfig.hh"
-#include "topology/HierarchicalTopologyConfig.hh"
+#include "../topology/TopologyConfig.hh"
+#include "extern/network_backend/analytical/analytical/topology/HierarchicalTopologyConfig.hh"
+#include "json.hh"
 
 namespace Analytical {
 class NetworkConfigParser {
@@ -19,11 +18,22 @@ class NetworkConfigParser {
   using DimensionType = HierarchicalTopologyConfig::DimensionType;
   using Bandwidth = TopologyConfig::Bandwidth;
 
-  explicit NetworkConfigParser(const std::string& network_configuration) noexcept;
+  explicit NetworkConfigParser(
+      const std::string& network_configuration) noexcept;
+
+  bool useFastVersion() const noexcept;
 
   template <typename T>
   T get(const char* arg_name) const noexcept {
     return json_configuration[arg_name];
+  }
+
+  template <typename T>
+  T get (const char* arg_name, T default_value) const noexcept {
+    if (json_configuration.contains(arg_name)) {
+      return json_configuration[arg_name];
+    }
+    return default_value;
   }
 
   std::vector<TopologyList> parseHierarchicalTopologyList() const noexcept;
@@ -39,4 +49,4 @@ class NetworkConfigParser {
 };
 } // namespace Analytical
 
-#endif /* __NETWORK_CONFIG_PARSER_HH__ */
+#endif

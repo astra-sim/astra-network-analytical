@@ -3,11 +3,12 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#ifndef __HIERARCHICAL_TOPOLOGY_HH__
-#define __HIERARCHICAL_TOPOLOGY_HH__
+#ifndef __HIERARCHICALTOPOLOGY_HH__
+#define __HIERARCHICALTOPOLOGY_HH__
 
-#include "topology/Topology.hh"
-#include "topology/HierarchicalTopologyConfig.hh"
+#include "HierarchicalTopologyConfig.hh"
+#include "Topology.hh"
+#include "TopologyConfig.hh"
 
 namespace Analytical {
 class HierarchicalTopology : public Topology {
@@ -29,12 +30,13 @@ class HierarchicalTopology : public Topology {
       PayloadSize payload_size) noexcept override;
 
  private:
+  HierarchicalTopologyConfig hierarchy_config;
+
   Latency linkLatency(int dimension, int hops_count) const noexcept;
+
   NpuAddress npuIdToAddress(NpuId npu_id) const noexcept override;
   NpuId npuAddressToId(NpuAddress npu_address) const noexcept override;
-
-  HierarchicalTopologyConfig hierarchy_config;
 };
 } // namespace Analytical
 
-#endif /* __HIERARCHICAL_TOPOLOGY_HH__ */
+#endif

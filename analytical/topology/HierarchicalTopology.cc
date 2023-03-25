@@ -3,11 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "topology/HierarchicalTopology.hh"
-
+#include "HierarchicalTopology.hh"
 #include <iostream>
 
-using namespace std;
 using namespace Analytical;
 
 HierarchicalTopology::HierarchicalTopology(
@@ -29,36 +27,36 @@ HierarchicalTopology::HierarchicalTopology(
     // compute bandwidth_scalar
     if (topology == TopologyList::Ring) {
       if (links_count % 2 != 0) {
-        cout
+        std::cout
             << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
             << dim << " (Ring) has " << links_count << " links (not even)."
-            << endl;
+            << std::endl;
         bandwidth_scalar = links_count - 1;
       } else {
         bandwidth_scalar = links_count;
       }
     } else if (topology == TopologyList::FullyConnected) {
       if (links_count % adjacent_packages_count != 0) {
-        cout
+        std::cout
             << "[HierarchicalTopology, constructor] [Warning] Links-count at dimension "
             << dim << " (FullyConnected) has " << links_count
             << " links (not a multiple of " << adjacent_packages_count << ")."
-            << endl;
+            << std::endl;
       }
       bandwidth_scalar = links_count / adjacent_packages_count;
     } else if (topology == TopologyList::Switch) {
       bandwidth_scalar = links_count;
     } else {
-      cout << "[HierarchicalTopology, constructor] Topology at dimension "
-                << dim << " not defined" << endl;
+      std::cout << "[HierarchicalTopology, constructor] Topology at dimension "
+                << dim << " not defined" << std::endl;
       exit(-1);
     }
 
     // update bandwidth
     if (bandwidth_scalar == 0) {
-      cout
+      std::cout
           << "[Hierarchical, constructor] [Error] Bandwidth scalar of dimension "
-          << dim << " is 0." << endl;
+          << dim << " is 0." << std::endl;
       exit(-1);
     }
     configs[dim].multiplyLinkBandwidth(bandwidth_scalar);
@@ -111,8 +109,8 @@ HierarchicalTopology::HierarchicalTopology(
           total_links_count,
           link_bandwidth);
     } else {
-      cout << "[HierarchicalTopology, constructor] Topology at dimension "
-                << dim << " not defined" << endl;
+      std::cout << "[HierarchicalTopology, constructor] Topology at dimension "
+                << dim << " not defined" << std::endl;
       exit(-1);
     }
   }
@@ -120,36 +118,13 @@ HierarchicalTopology::HierarchicalTopology(
 
 HierarchicalTopology::~HierarchicalTopology() noexcept = default;
 
-HierarchicalTopology::Bandwidth
-HierarchicalTopology::getNpuTotalBandwidthPerDim(int dimension) const noexcept {
-  // links_count[dim] * link_BW[dim]
-  auto topology = hierarchy_config.getTopologyForDim(dimension);
-
-  auto topology_size = configs[dimension].getNpusCount();
-  auto adjacent_packages_count = topology_size - 1;
-
-  auto links_count = hierarchy_config.getLinksCountForDim(dimension);
-  auto link_bandwidth = hierarchy_config.getLinkBandwidthForDim(dimension);
-
-  if (topology == TopologyList::Ring) {
-    links_count -= (links_count % 2); // make even number
-  } else if (topology == TopologyList::FullyConnected) {
-    links_count -=
-        (links_count %
-         adjacent_packages_count); // make multiplier of adjacent_packages_count
-  } else if (topology == TopologyList::Switch) {
-    // pass
-  } else {
-    cout
-        << "[HierarchicalTopology, method getNpuTotalBandwidthPerDim] Given topology for dimension "
-        << dimension << " not defined." << endl;
-    exit(-1);
-  }
-
-  return links_count * link_bandwidth; // GB/s
+HierarchicalTopology::Latency HierarchicalTopology::linkLatency(
+    int dimension,
+    int hops_count) const noexcept {
+  return hops_count * configs[dimension].getLinkLatency();
 }
 
-pair<double, int> HierarchicalTopology::send(
+std::pair<double, int> HierarchicalTopology::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
@@ -157,7 +132,7 @@ pair<double, int> HierarchicalTopology::send(
   checkNpuIdBound(dest);
 
   if (src == dest) {
-    return make_pair(0, -1);
+    return std::make_pair(0, -1);
   }
 
   // FIXME: assuming only one dimension, from higher, is used at a time
@@ -178,7 +153,7 @@ pair<double, int> HierarchicalTopology::send(
   auto topology = hierarchy_config.getTopologyForDim(dim);
 
   if (topology == TopologyList::Ring) {
-    auto distanceA = abs(src_address[dim] - dest_address[dim]);
+    auto distanceA = std::abs(src_address[dim] - dest_address[dim]);
     auto distanceB = configs[dim].getNpusCount() - distanceA;
     auto hops_count = (distanceA < distanceB)
         ? distanceA
@@ -204,14 +179,8 @@ pair<double, int> HierarchicalTopology::send(
 
   auto hbm_latency = hbmLatency(dim, payload_size);
 
-  return make_pair(
+  return std::make_pair(
       criticalLatency(communication_latency, hbm_latency), dim);
-}
-
-HierarchicalTopology::Latency HierarchicalTopology::linkLatency(
-    int dimension,
-    int hops_count) const noexcept {
-  return hops_count * configs[dimension].getLinkLatency();
 }
 
 HierarchicalTopology::NpuAddress HierarchicalTopology::npuIdToAddress(
@@ -255,4 +224,33 @@ HierarchicalTopology::NpuId HierarchicalTopology::npuAddressToId(
   }
 
   return id;
+}
+
+HierarchicalTopology::Bandwidth HierarchicalTopology::
+    getNpuTotalBandwidthPerDim(int dimension) const noexcept {
+  // links_count[dim] * link_BW[dim]
+  auto topology = hierarchy_config.getTopologyForDim(dimension);
+
+  auto topology_size = configs[dimension].getNpusCount();
+  auto adjacent_packages_count = topology_size - 1;
+
+  auto links_count = hierarchy_config.getLinksCountForDim(dimension);
+  auto link_bandwidth = hierarchy_config.getLinkBandwidthForDim(dimension);
+
+  if (topology == TopologyList::Ring) {
+    links_count -= (links_count % 2); // make even number
+  } else if (topology == TopologyList::FullyConnected) {
+    links_count -=
+        (links_count %
+         adjacent_packages_count); // make multiplier of adjacent_packages_count
+  } else if (topology == TopologyList::Switch) {
+    // pass
+  } else {
+    std::cout
+        << "[HierarchicalTopology, method getNpuTotalBandwidthPerDim] Given topology for dimension "
+        << dimension << " not defined." << std::endl;
+    exit(-1);
+  }
+
+  return links_count * link_bandwidth; // GB/s
 }

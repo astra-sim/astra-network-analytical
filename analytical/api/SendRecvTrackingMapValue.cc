@@ -3,7 +3,7 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "api/SendRecvTrackingMapValue.hh"
+#include "SendRecvTrackingMapValue.hh"
 
 Analytical::SendRecvTrackingMapValue Analytical::SendRecvTrackingMapValue::
     make_send_value(AstraSim::timespec_t send_finish_time) noexcept {
@@ -23,7 +23,8 @@ bool Analytical::SendRecvTrackingMapValue::is_recv() const noexcept {
   return operation_type == OperationType::recv;
 }
 
-AstraSim::timespec_t Analytical::SendRecvTrackingMapValue::get_send_finish_time() const noexcept {
+AstraSim::timespec_t Analytical::SendRecvTrackingMapValue::
+    get_send_finish_time() const noexcept {
   return send_finish_time;
 }
 

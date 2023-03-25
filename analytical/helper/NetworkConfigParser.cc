@@ -3,20 +3,19 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "helper/NetworkConfigParser.hh"
-
+#include "NetworkConfigParser.hh"
 #include <fstream>
 #include <iostream>
 
-using namespace std;
 using namespace Analytical;
 
-NetworkConfigParser::NetworkConfigParser(const string& network_configuration) noexcept {
-  auto json_file = ifstream(network_configuration, ifstream::in);
+NetworkConfigParser::NetworkConfigParser(
+    const std::string& network_configuration) noexcept {
+  auto json_file = std::ifstream(network_configuration, std::ifstream::in);
   if (!json_file) {
-    cout
+    std::cout
         << "[NetworkConfigParser] Failed to open network configuration file at: "
-        << network_configuration << endl;
+        << network_configuration << std::endl;
     exit(-1);
   }
 
@@ -24,9 +23,13 @@ NetworkConfigParser::NetworkConfigParser(const string& network_configuration) no
   json_file.close();
 }
 
-vector<NetworkConfigParser::TopologyList>
-NetworkConfigParser::parseHierarchicalTopologyList() const noexcept {
-  auto topologies_per_dim = vector<TopologyList>();
+bool NetworkConfigParser::useFastVersion() const noexcept {
+  return this->get<bool>("use-fast-version");
+}
+
+std::vector<NetworkConfigParser::TopologyList> NetworkConfigParser::
+    parseHierarchicalTopologyList() const noexcept {
+  auto topologies_per_dim = std::vector<TopologyList>();
 
   for (const auto& topology : json_configuration["topologies-per-dim"]) {
     if (topology == "Ring") {
@@ -36,8 +39,8 @@ NetworkConfigParser::parseHierarchicalTopologyList() const noexcept {
     } else if (topology == "Switch") {
       topologies_per_dim.emplace_back(TopologyList::Switch);
     } else {
-      cout << "[NetworkConfigParser] Given topology " << topology
-                << " is not supported." << endl;
+      std::cout << "[NetworkConfigParser] Given topology " << topology
+                << " is not supported." << std::endl;
       exit(-1);
     }
   }
@@ -45,9 +48,16 @@ NetworkConfigParser::parseHierarchicalTopologyList() const noexcept {
   return topologies_per_dim;
 }
 
-vector<NetworkConfigParser::DimensionType>
-NetworkConfigParser::parseHierarchicalDimensionType() const noexcept {
-  auto dimension_types = vector<DimensionType>();
+std::vector<NetworkConfigParser::DimensionType> NetworkConfigParser::
+    parseHierarchicalDimensionType() const noexcept {
+  auto dimension_types = std::vector<DimensionType>();
+
+  if (!json_configuration.contains("dimension-type")) {
+    for (int i = 0; i < 10; i++) {
+      dimension_types.emplace_back(DimensionType::Node);
+    }
+    return dimension_types;
+  }
 
   for (const auto& type : json_configuration["dimension-type"]) {
     if (type == "Tile") {
@@ -67,12 +77,11 @@ NetworkConfigParser::parseHierarchicalDimensionType() const noexcept {
   return dimension_types;
 }
 
-vector<int>
-NetworkConfigParser::parseLinksCountPerDim() const noexcept {
-  return this->get<vector<int>>("links-count");
+std::vector<int> NetworkConfigParser::parseLinksCountPerDim() const noexcept {
+  return this->get<std::vector<int>>("links-count");
 }
 
-vector<NetworkConfigParser::Bandwidth>
-NetworkConfigParser::parseLinkBandwidthPerDim() const noexcept {
-  return this->get<vector<Bandwidth>>("link-bandwidth");
+std::vector<NetworkConfigParser::Bandwidth> NetworkConfigParser::
+    parseLinkBandwidthPerDim() const noexcept {
+  return this->get<std::vector<Bandwidth>>("link-bandwidth");
 }

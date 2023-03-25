@@ -3,26 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "topology/TopologyConfig.hh"
+#include "TopologyConfig.hh"
 
 using namespace Analytical;
-
-TopologyConfig::TopologyConfig(
-    int npus_count,
-    int mem_count,
-    Latency link_latency,
-    Bandwidth link_bandwidth,
-    Latency nic_latency,
-    Latency router_latency) noexcept
-    : npus_count(npus_count),
-      mem_count(mem_count),
-      link_latency(link_latency),
-      link_bandwidth(link_bandwidth),
-      nic_latency(nic_latency),
-      router_latency(router_latency),
-      hbm_latency(0),
-      hbm_bandwidth(0),
-      hbm_scale(0) {}
 
 TopologyConfig::TopologyConfig(
     int npus_count,
