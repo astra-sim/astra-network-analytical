@@ -3,9 +3,12 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "SendRecvTrackingMap.hh"
+#include "api/SendRecvTrackingMap.hh"
 
 #include <cassert>
+#include <iostream>
+
+using namespace std;
 
 bool Analytical::SendRecvTrackingMap::has_send_operation(
     int tag,
@@ -13,7 +16,7 @@ bool Analytical::SendRecvTrackingMap::has_send_operation(
     int dest,
     PayloadSize count) const noexcept {
   auto search_result =
-      send_recv_tracking_map.find(std::make_tuple(tag, src, dest, count));
+      send_recv_tracking_map.find(make_tuple(tag, src, dest, count));
 
   if (search_result == send_recv_tracking_map.end()) {
     // no matching entry found
@@ -30,7 +33,7 @@ bool Analytical::SendRecvTrackingMap::has_recv_operation(
     int dest,
     PayloadSize count) const noexcept {
   auto search_result =
-      send_recv_tracking_map.find(std::make_tuple(tag, src, dest, count));
+      send_recv_tracking_map.find(make_tuple(tag, src, dest, count));
 
   if (search_result == send_recv_tracking_map.end()) {
     // no matching entry found
@@ -50,14 +53,18 @@ AstraSim::timespec_t Analytical::SendRecvTrackingMap::pop_send_finish_time(
       has_send_operation(tag, src, dest, count) &&
       "<SendRecvTrackingMap::pop_send_finish_time> no matching entry");
 
-  auto send_entry =
-      send_recv_tracking_map.find(std::make_tuple(tag, src, dest, count));
+  typedef multimap<Key, SendRecvTrackingMapValue>::iterator iterator;
+  Key key = make_tuple(tag, src, dest, count);
+  std::pair<iterator, iterator> iterpair = send_recv_tracking_map.equal_range(key);
 
-  // move sim_finish_time
-  auto sim_finish_time = std::move(send_entry->second.get_send_finish_time());
+  AstraSim::timespec_t sim_finish_time;
 
-  // pop entry
-  send_recv_tracking_map.erase(send_entry);
+  iterator it = iterpair.first;
+  for (; it != iterpair.second; ++it) {
+    sim_finish_time = move(it->second.get_send_finish_time());
+    send_recv_tracking_map.erase(it);
+    break;
+  }
 
   // return saved
   return sim_finish_time;
@@ -73,10 +80,10 @@ Analytical::Event Analytical::SendRecvTrackingMap::pop_recv_event_handler(
       "<SendRecvTrackingMap::pop_recv_event_handler> no matching entry");
 
   auto recv_entry =
-      send_recv_tracking_map.find(std::make_tuple(tag, src, dest, count));
+      send_recv_tracking_map.find(make_tuple(tag, src, dest, count));
 
   // move event handler
-  auto event = std::move(recv_entry->second.get_recv_event());
+  auto event = move(recv_entry->second.get_recv_event());
 
   // pop entry
   send_recv_tracking_map.erase(recv_entry);
@@ -91,14 +98,13 @@ void Analytical::SendRecvTrackingMap::insert_send(
     int dest,
     PayloadSize count,
     AstraSim::timespec_t send_finish_time) noexcept {
-  // Check whether entry with the same key exists
-  assert(
-      (send_recv_tracking_map.find(std::make_tuple(tag, src, dest, count)) ==
-       send_recv_tracking_map.end()) &&
-      "<SendRecvTrackingMap::insert_send> Same key entry already exist.");
+
+  bool duplicate_found = false;
+
+  Key key = make_tuple(tag, src, dest, count);
 
   send_recv_tracking_map.emplace(
-      std::make_tuple(tag, src, dest, count),
+      key,
       SendRecvTrackingMapValue::make_send_value(send_finish_time));
 }
 
@@ -110,16 +116,16 @@ void Analytical::SendRecvTrackingMap::insert_recv(
     void (*fun_ptr)(void*),
     void* fun_arg) noexcept {
   assert(
-      (send_recv_tracking_map.find(std::make_tuple(tag, src, dest, count)) ==
+      (send_recv_tracking_map.find(make_tuple(tag, src, dest, count)) ==
        send_recv_tracking_map.end()) &&
       "<SendRecvTrackingMap::insert_recv> Same key entry already exist.");
 
   send_recv_tracking_map.emplace(
-      std::make_tuple(tag, src, dest, count),
+      make_tuple(tag, src, dest, count),
       SendRecvTrackingMapValue::make_recv_value(fun_ptr, fun_arg));
 }
 
 void Analytical::SendRecvTrackingMap::print() const noexcept {
-  std::cout << "[SendRecvTrackingMap] Entries not processed: "
-            << send_recv_tracking_map.size() << std::endl;
+  cout << "[SendRecvTrackingMap] Entries not processed: "
+            << send_recv_tracking_map.size() << endl;
 }

@@ -20,7 +20,7 @@ copies or substantial portions of the Software.
 
 THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS OR
 IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF  MERCHANTABILITY,
-FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN NO EVENT  SHALL THE
+FITNESS FOR  A PARTICULAR PURPOSE AND  NOcomm_NINFRINGEMENT. IN NO EVENT  SHALL THE
 AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY  CLAIM,  DAMAGES OR  OTHER
 LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
@@ -760,31 +760,31 @@ struct position_t
     #define JSON_HEDLEY_GCC_HAS_DECLSPEC_ATTRIBUTE(attribute,major,minor,patch) JSON_HEDLEY_GCC_VERSION_CHECK(major,minor,patch)
 #endif
 
-#if defined(JSON_HEDLEY_HAS_WARNING)
-    #undef JSON_HEDLEY_HAS_WARNING
+#if defined(JSON_HEDLEY_HAS_WARcomm_NING)
+    #undef JSON_HEDLEY_HAS_WARcomm_NING
 #endif
 #if defined(__has_warning)
-    #define JSON_HEDLEY_HAS_WARNING(warning) __has_warning(warning)
+    #define JSON_HEDLEY_HAS_WARcomm_NING(warning) __has_warning(warning)
 #else
-    #define JSON_HEDLEY_HAS_WARNING(warning) (0)
+    #define JSON_HEDLEY_HAS_WARcomm_NING(warning) (0)
 #endif
 
-#if defined(JSON_HEDLEY_GNUC_HAS_WARNING)
-    #undef JSON_HEDLEY_GNUC_HAS_WARNING
+#if defined(JSON_HEDLEY_GNUC_HAS_WARcomm_NING)
+    #undef JSON_HEDLEY_GNUC_HAS_WARcomm_NING
 #endif
 #if defined(__has_warning)
-    #define JSON_HEDLEY_GNUC_HAS_WARNING(warning,major,minor,patch) __has_warning(warning)
+    #define JSON_HEDLEY_GNUC_HAS_WARcomm_NING(warning,major,minor,patch) __has_warning(warning)
 #else
-    #define JSON_HEDLEY_GNUC_HAS_WARNING(warning,major,minor,patch) JSON_HEDLEY_GNUC_VERSION_CHECK(major,minor,patch)
+    #define JSON_HEDLEY_GNUC_HAS_WARcomm_NING(warning,major,minor,patch) JSON_HEDLEY_GNUC_VERSION_CHECK(major,minor,patch)
 #endif
 
-#if defined(JSON_HEDLEY_GCC_HAS_WARNING)
-    #undef JSON_HEDLEY_GCC_HAS_WARNING
+#if defined(JSON_HEDLEY_GCC_HAS_WARcomm_NING)
+    #undef JSON_HEDLEY_GCC_HAS_WARcomm_NING
 #endif
 #if defined(__has_warning)
-    #define JSON_HEDLEY_GCC_HAS_WARNING(warning,major,minor,patch) __has_warning(warning)
+    #define JSON_HEDLEY_GCC_HAS_WARcomm_NING(warning,major,minor,patch) __has_warning(warning)
 #else
-    #define JSON_HEDLEY_GCC_HAS_WARNING(warning,major,minor,patch) JSON_HEDLEY_GCC_VERSION_CHECK(major,minor,patch)
+    #define JSON_HEDLEY_GCC_HAS_WARcomm_NING(warning,major,minor,patch) JSON_HEDLEY_GCC_VERSION_CHECK(major,minor,patch)
 #endif
 
 /* JSON_HEDLEY_DIAGNOSTIC_DISABLE_CPP98_COMPAT_WRAP_ is for
@@ -793,8 +793,8 @@ struct position_t
     #undef JSON_HEDLEY_DIAGNOSTIC_DISABLE_CPP98_COMPAT_WRAP_
 #endif
 #if defined(__cplusplus)
-#  if JSON_HEDLEY_HAS_WARNING("-Wc++98-compat")
-#    if JSON_HEDLEY_HAS_WARNING("-Wc++17-extensions")
+#  if JSON_HEDLEY_HAS_WARcomm_NING("-Wc++98-compat")
+#    if JSON_HEDLEY_HAS_WARcomm_NING("-Wc++17-extensions")
 #      define JSON_HEDLEY_DIAGNOSTIC_DISABLE_CPP98_COMPAT_WRAP_(xpr) \
     JSON_HEDLEY_DIAGNOSTIC_PUSH \
     _Pragma("clang diagnostic ignored \"-Wc++98-compat\"") \
@@ -820,7 +820,7 @@ struct position_t
 #if defined(__cplusplus)
 #  define JSON_HEDLEY_CONST_CAST(T, expr) (const_cast<T>(expr))
 #elif \
-  JSON_HEDLEY_HAS_WARNING("-Wcast-qual") || \
+  JSON_HEDLEY_HAS_WARcomm_NING("-Wcast-qual") || \
   JSON_HEDLEY_GCC_VERSION_CHECK(4,6,0) || \
   JSON_HEDLEY_INTEL_VERSION_CHECK(13,0,0)
 #  define JSON_HEDLEY_CONST_CAST(T, expr) (__extension__ ({ \
@@ -855,7 +855,7 @@ struct position_t
     #undef JSON_HEDLEY_CPP_CAST
 #endif
 #if defined(__cplusplus)
-#  if JSON_HEDLEY_HAS_WARNING("-Wold-style-cast")
+#  if JSON_HEDLEY_HAS_WARcomm_NING("-Wold-style-cast")
 #    define JSON_HEDLEY_CPP_CAST(T, expr) \
     JSON_HEDLEY_DIAGNOSTIC_PUSH \
     _Pragma("clang diagnostic ignored \"-Wold-style-cast\"") \
@@ -940,7 +940,7 @@ struct position_t
 #if defined(JSON_HEDLEY_DIAGNOSTIC_DISABLE_DEPRECATED)
     #undef JSON_HEDLEY_DIAGNOSTIC_DISABLE_DEPRECATED
 #endif
-#if JSON_HEDLEY_HAS_WARNING("-Wdeprecated-declarations")
+#if JSON_HEDLEY_HAS_WARcomm_NING("-Wdeprecated-declarations")
     #define JSON_HEDLEY_DIAGNOSTIC_DISABLE_DEPRECATED _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 #elif JSON_HEDLEY_INTEL_VERSION_CHECK(13,0,0)
     #define JSON_HEDLEY_DIAGNOSTIC_DISABLE_DEPRECATED _Pragma("warning(disable:1478 1786)")
@@ -978,7 +978,7 @@ struct position_t
 #if defined(JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_PRAGMAS)
     #undef JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_PRAGMAS
 #endif
-#if JSON_HEDLEY_HAS_WARNING("-Wunknown-pragmas")
+#if JSON_HEDLEY_HAS_WARcomm_NING("-Wunknown-pragmas")
     #define JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_PRAGMAS _Pragma("clang diagnostic ignored \"-Wunknown-pragmas\"")
 #elif JSON_HEDLEY_INTEL_VERSION_CHECK(13,0,0)
     #define JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_PRAGMAS _Pragma("warning(disable:161)")
@@ -1005,7 +1005,7 @@ struct position_t
 #if defined(JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_CPP_ATTRIBUTES)
     #undef JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_CPP_ATTRIBUTES
 #endif
-#if JSON_HEDLEY_HAS_WARNING("-Wunknown-attributes")
+#if JSON_HEDLEY_HAS_WARcomm_NING("-Wunknown-attributes")
     #define JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_CPP_ATTRIBUTES _Pragma("clang diagnostic ignored \"-Wunknown-attributes\"")
 #elif JSON_HEDLEY_GCC_VERSION_CHECK(4,6,0)
     #define JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_CPP_ATTRIBUTES _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
@@ -1031,7 +1031,7 @@ struct position_t
 #if defined(JSON_HEDLEY_DIAGNOSTIC_DISABLE_CAST_QUAL)
     #undef JSON_HEDLEY_DIAGNOSTIC_DISABLE_CAST_QUAL
 #endif
-#if JSON_HEDLEY_HAS_WARNING("-Wcast-qual")
+#if JSON_HEDLEY_HAS_WARcomm_NING("-Wcast-qual")
     #define JSON_HEDLEY_DIAGNOSTIC_DISABLE_CAST_QUAL _Pragma("clang diagnostic ignored \"-Wcast-qual\"")
 #elif JSON_HEDLEY_INTEL_VERSION_CHECK(13,0,0)
     #define JSON_HEDLEY_DIAGNOSTIC_DISABLE_CAST_QUAL _Pragma("warning(disable:2203 2331)")
@@ -1270,13 +1270,13 @@ struct position_t
 #endif
 
 JSON_HEDLEY_DIAGNOSTIC_PUSH
-#if JSON_HEDLEY_HAS_WARNING("-Wpedantic")
+#if JSON_HEDLEY_HAS_WARcomm_NING("-Wpedantic")
     #pragma clang diagnostic ignored "-Wpedantic"
 #endif
-#if JSON_HEDLEY_HAS_WARNING("-Wc++98-compat-pedantic") && defined(__cplusplus)
+#if JSON_HEDLEY_HAS_WARcomm_NING("-Wc++98-compat-pedantic") && defined(__cplusplus)
     #pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
 #endif
-#if JSON_HEDLEY_GCC_HAS_WARNING("-Wvariadic-macros",4,0,0)
+#if JSON_HEDLEY_GCC_HAS_WARcomm_NING("-Wvariadic-macros",4,0,0)
     #if defined(__clang__)
         #pragma clang diagnostic ignored "-Wvariadic-macros"
     #elif defined(JSON_HEDLEY_GCC_VERSION)
@@ -1874,7 +1874,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
 #if defined(JSON_HEDLEY_MESSAGE)
     #undef JSON_HEDLEY_MESSAGE
 #endif
-#if JSON_HEDLEY_HAS_WARNING("-Wunknown-pragmas")
+#if JSON_HEDLEY_HAS_WARcomm_NING("-Wunknown-pragmas")
 #  define JSON_HEDLEY_MESSAGE(msg) \
     JSON_HEDLEY_DIAGNOSTIC_PUSH \
     JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_PRAGMAS \
@@ -1894,11 +1894,11 @@ JSON_HEDLEY_DIAGNOSTIC_POP
 #  define JSON_HEDLEY_MESSAGE(msg)
 #endif
 
-#if defined(JSON_HEDLEY_WARNING)
-    #undef JSON_HEDLEY_WARNING
+#if defined(JSON_HEDLEY_WARcomm_NING)
+    #undef JSON_HEDLEY_WARcomm_NING
 #endif
-#if JSON_HEDLEY_HAS_WARNING("-Wunknown-pragmas")
-#  define JSON_HEDLEY_WARNING(msg) \
+#if JSON_HEDLEY_HAS_WARcomm_NING("-Wunknown-pragmas")
+#  define JSON_HEDLEY_WARcomm_NING(msg) \
     JSON_HEDLEY_DIAGNOSTIC_PUSH \
     JSON_HEDLEY_DIAGNOSTIC_DISABLE_UNKNOWN_PRAGMAS \
     JSON_HEDLEY_PRAGMA(clang warning msg) \
@@ -1907,11 +1907,11 @@ JSON_HEDLEY_DIAGNOSTIC_POP
   JSON_HEDLEY_GCC_VERSION_CHECK(4,8,0) || \
   JSON_HEDLEY_PGI_VERSION_CHECK(18,4,0) || \
   JSON_HEDLEY_INTEL_VERSION_CHECK(13,0,0)
-#  define JSON_HEDLEY_WARNING(msg) JSON_HEDLEY_PRAGMA(GCC warning msg)
+#  define JSON_HEDLEY_WARcomm_NING(msg) JSON_HEDLEY_PRAGMA(GCC warning msg)
 #elif JSON_HEDLEY_MSVC_VERSION_CHECK(15,0,0)
-#  define JSON_HEDLEY_WARNING(msg) JSON_HEDLEY_PRAGMA(message(msg))
+#  define JSON_HEDLEY_WARcomm_NING(msg) JSON_HEDLEY_PRAGMA(message(msg))
 #else
-#  define JSON_HEDLEY_WARNING(msg) JSON_HEDLEY_MESSAGE(msg)
+#  define JSON_HEDLEY_WARcomm_NING(msg) JSON_HEDLEY_MESSAGE(msg)
 #endif
 
 #if defined(JSON_HEDLEY_REQUIRE)
@@ -1921,7 +1921,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
     #undef JSON_HEDLEY_REQUIRE_MSG
 #endif
 #if JSON_HEDLEY_HAS_ATTRIBUTE(diagnose_if)
-#  if JSON_HEDLEY_HAS_WARNING("-Wgcc-compat")
+#  if JSON_HEDLEY_HAS_WARcomm_NING("-Wgcc-compat")
 #    define JSON_HEDLEY_REQUIRE(expr) \
     JSON_HEDLEY_DIAGNOSTIC_PUSH \
     _Pragma("clang diagnostic ignored \"-Wgcc-compat\"") \
@@ -2012,10 +2012,10 @@ JSON_HEDLEY_DIAGNOSTIC_POP
 #endif
 #define JSON_HEDLEY_CLANG_HAS_DECLSPEC_ATTRIBUTE(attribute) JSON_HEDLEY_HAS_DECLSPEC_ATTRIBUTE(attribute)
 
-#if defined(JSON_HEDLEY_CLANG_HAS_WARNING)
-    #undef JSON_HEDLEY_CLANG_HAS_WARNING
+#if defined(JSON_HEDLEY_CLANG_HAS_WARcomm_NING)
+    #undef JSON_HEDLEY_CLANG_HAS_WARcomm_NING
 #endif
-#define JSON_HEDLEY_CLANG_HAS_WARNING(warning) JSON_HEDLEY_HAS_WARNING(warning)
+#define JSON_HEDLEY_CLANG_HAS_WARcomm_NING(warning) JSON_HEDLEY_HAS_WARcomm_NING(warning)
 
 #endif /* !defined(JSON_HEDLEY_VERSION) || (JSON_HEDLEY_VERSION < X) */
 
@@ -25310,7 +25310,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_HEDLEY_CLANG_HAS_DECLSPEC_DECLSPEC_ATTRIBUTE
 #undef JSON_HEDLEY_CLANG_HAS_EXTENSION
 #undef JSON_HEDLEY_CLANG_HAS_FEATURE
-#undef JSON_HEDLEY_CLANG_HAS_WARNING
+#undef JSON_HEDLEY_CLANG_HAS_WARcomm_NING
 #undef JSON_HEDLEY_COMPCERT_VERSION
 #undef JSON_HEDLEY_COMPCERT_VERSION_CHECK
 #undef JSON_HEDLEY_CONCAT
@@ -25347,7 +25347,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_HEDLEY_GCC_HAS_DECLSPEC_ATTRIBUTE
 #undef JSON_HEDLEY_GCC_HAS_EXTENSION
 #undef JSON_HEDLEY_GCC_HAS_FEATURE
-#undef JSON_HEDLEY_GCC_HAS_WARNING
+#undef JSON_HEDLEY_GCC_HAS_WARcomm_NING
 #undef JSON_HEDLEY_GCC_NOT_CLANG_VERSION_CHECK
 #undef JSON_HEDLEY_GCC_VERSION
 #undef JSON_HEDLEY_GCC_VERSION_CHECK
@@ -25357,7 +25357,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_HEDLEY_GNUC_HAS_DECLSPEC_ATTRIBUTE
 #undef JSON_HEDLEY_GNUC_HAS_EXTENSION
 #undef JSON_HEDLEY_GNUC_HAS_FEATURE
-#undef JSON_HEDLEY_GNUC_HAS_WARNING
+#undef JSON_HEDLEY_GNUC_HAS_WARcomm_NING
 #undef JSON_HEDLEY_GNUC_VERSION
 #undef JSON_HEDLEY_GNUC_VERSION_CHECK
 #undef JSON_HEDLEY_HAS_ATTRIBUTE
@@ -25367,7 +25367,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_HEDLEY_HAS_DECLSPEC_ATTRIBUTE
 #undef JSON_HEDLEY_HAS_EXTENSION
 #undef JSON_HEDLEY_HAS_FEATURE
-#undef JSON_HEDLEY_HAS_WARNING
+#undef JSON_HEDLEY_HAS_WARcomm_NING
 #undef JSON_HEDLEY_IAR_VERSION
 #undef JSON_HEDLEY_IAR_VERSION_CHECK
 #undef JSON_HEDLEY_IBM_VERSION
@@ -25437,7 +25437,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_HEDLEY_VERSION_DECODE_MINOR
 #undef JSON_HEDLEY_VERSION_DECODE_REVISION
 #undef JSON_HEDLEY_VERSION_ENCODE
-#undef JSON_HEDLEY_WARNING
+#undef JSON_HEDLEY_WARcomm_NING
 #undef JSON_HEDLEY_WARN_UNUSED_RESULT
 #undef JSON_HEDLEY_WARN_UNUSED_RESULT_MSG
 #undef JSON_HEDLEY_FALL_THROUGH

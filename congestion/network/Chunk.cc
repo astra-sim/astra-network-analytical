@@ -4,6 +4,7 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "network/Chunk.hh"
+#include <cassert>
 #include "network/Link.hh"
 #include "network/Node.hh"
 

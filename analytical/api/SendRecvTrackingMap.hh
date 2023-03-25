@@ -3,13 +3,14 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#ifndef __SENDRECVTRACKINGMAP_HH__
-#define __SENDRECVTRACKINGMAP_HH__
+#ifndef __SEND_RECV_TRACKING_MAP_HH__
+#define __SEND_RECV_TRACKING_MAP_HH__
 
 #include <map>
 #include <tuple>
-#include "../topology/TopologyConfig.hh"
-#include "SendRecvTrackingMapValue.hh"
+
+#include "api/SendRecvTrackingMapValue.hh"
+#include "topology/TopologyConfig.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 
 namespace Analytical {
@@ -119,8 +120,8 @@ class SendRecvTrackingMap {
    * Send and recv tracking map
    * (tag, src, dest, count) -> Value
    */
-  std::map<Key, SendRecvTrackingMapValue> send_recv_tracking_map;
+  std::multimap<Key, SendRecvTrackingMapValue> send_recv_tracking_map;
 };
 } // namespace Analytical
 
-#endif
+#endif /* __SEND_RECV_TRACKING_MAP_HH__ */

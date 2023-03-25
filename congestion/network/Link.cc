@@ -4,6 +4,7 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "network/Link.hh"
+#include <cassert>
 #include "network/Chunk.hh"
 #include "network/Node.hh"
 
@@ -31,7 +32,7 @@ void Link::link_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept {
 }
 
 Link::Link(Bandwidth bandwidth, Latency latency) noexcept
-    : bandwidth(bandwidth), latency(latency) {}
+    : bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {}
 
 Link::~Link() noexcept = default;
 

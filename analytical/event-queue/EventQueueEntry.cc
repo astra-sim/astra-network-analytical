@@ -3,9 +3,14 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "EventQueueEntry.hh"
+#include "event-queue/EventQueueEntry.hh"
 
-int Analytical::EventQueueEntry::compare_time_stamp(
+#include <iostream>
+
+using namespace std;
+using namespace Analytical;
+
+int EventQueueEntry::compare_time_stamp(
     AstraSim::timespec_t time_stamp_a,
     AstraSim::timespec_t time_stamp_b) noexcept {
   // assumption: time_res is always NS
@@ -22,27 +27,31 @@ int Analytical::EventQueueEntry::compare_time_stamp(
   return 0;
 }
 
-AstraSim::timespec_t Analytical::EventQueueEntry::get_time_stamp()
+AstraSim::timespec_t EventQueueEntry::get_time_stamp()
     const noexcept {
   return time_stamp;
 }
 
-void Analytical::EventQueueEntry::add_event(
+void EventQueueEntry::add_event(
     void (*fun_ptr)(void*),
     void* fun_arg) noexcept {
   events.emplace_back(fun_ptr, fun_arg);
 }
 
-void Analytical::EventQueueEntry::run_events() noexcept {
+void EventQueueEntry::insert(Event event) noexcept {
+  events.push_back(std::move(event));
+}
+
+void EventQueueEntry::run_events() noexcept {
   while (!events.empty()) {
-    auto event = events.front();
-    event.run();
+    auto& event = events.front();
+    event.invoke_callback();
     events.pop_front();
   }
 }
 
-void Analytical::EventQueueEntry::print() const noexcept {
-  std::cout << "EventQueueEntry:" << std::endl;
-  std::cout << "\t- TimeStamp: " << (int)time_stamp.time_val << std::endl;
-  std::cout << "\t- #Events: " << events.size() << std::endl << std::endl;
+void EventQueueEntry::print() const noexcept {
+  cout << "EventQueueEntry:" << endl;
+  cout << "\t- TimeStamp: " << (int)time_stamp.time_val << endl;
+  cout << "\t- #Events: " << events.size() << endl << endl;
 }

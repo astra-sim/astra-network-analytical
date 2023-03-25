@@ -6,6 +6,7 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <yaml-cpp/yaml.h>
+#include <cassert>
 #include "type/Type.hh"
 
 namespace Congestion {

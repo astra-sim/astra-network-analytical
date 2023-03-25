@@ -5,6 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
+#include <cassert>
 #include <memory>
 #include <vector>
 #include "event-queue/EventQueue.hh"

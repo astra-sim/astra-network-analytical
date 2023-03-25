@@ -6,6 +6,7 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <boost/program_options.hpp>
+#include <cassert>
 #include <optional>
 #include <string>
 #include "type/Type.hh"
