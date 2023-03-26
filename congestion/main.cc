@@ -163,6 +163,11 @@ int main(int argc, char* argv[]) {
     latency = latency_opt.value();
   }
 
+  /// Update BW from GB/s to B/ns
+  for (auto i = 0; i < bandwidth.size(); i++) {
+      bandwidth[i] = bandwidth[i] * (2 << 30) / 1'000'000'000;
+  }
+
   /// Instantiate shared resources
   auto event_queue = std::make_shared<EventQueue>();
 
