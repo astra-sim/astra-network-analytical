@@ -7,6 +7,7 @@ LICENSE file in the root directory of this source tree.
 #include "api/AstraCongestionApi.hh"
 #include "astra-sim/system/Sys.hh"
 #include "astra-sim/system/memory/SimpleMemory.hh"
+#include "astra-sim/workload/CSVWriter.hh"
 #include "event-queue/EventQueue.hh"
 #include "helper/CommandLineOptParser.hh"
 #include "helper/NetworkConfigParser.hh"
@@ -165,8 +166,22 @@ int main(int argc, char* argv[]) {
 
   /// Update BW from GB/s to B/ns
   for (auto i = 0; i < bandwidth.size(); i++) {
-      bandwidth[i] = bandwidth[i] * (2 << 30) / 1'000'000'000;
+    std::cout << bandwidth[i] << std::endl;
+    bandwidth[i] = bandwidth[i] * 1.073741824;
+    std::cout << bandwidth[i] << std::endl;
   }
+
+  /// Set tutorial csv
+  auto tutorial_csv =
+      std::make_shared<AstraSim::CSVWriter>(path, "tutorial_result.csv");
+  // tutorial_csv->initialize_csv(total_stat_rows + 1, 5);
+  tutorial_csv->write_cell(0, 0, "Name");
+  tutorial_csv->write_cell(0, 1, "TotalTime(us)");
+  tutorial_csv->write_cell(0, 2, "ComputeTime(us)");
+  tutorial_csv->write_cell(0, 3, "ExposedCommunicationTime(us)");
+  tutorial_csv->write_cell(0, 4, "TotalMessageSize(MB)");
+  AstraCongestionApi::setCsvConfiguration(
+      stat_row, total_stat_rows, tutorial_csv);
 
   /// Instantiate shared resources
   auto event_queue = std::make_shared<EventQueue>();

@@ -8,6 +8,7 @@ LICENSE file in the root directory of this source tree.
 #include "ChunkIdGenerator.hh"
 #include "EventHandlerTracker.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
+#include "astra-sim/workload/CSVWriter.hh"
 #include "event-queue/EventQueue.hh"
 #include "network/Chunk.hh"
 #include "network/Link.hh"
@@ -23,6 +24,11 @@ class AstraCongestionApi : public AstraSim::AstraNetworkAPI {
   static void link_topology(std::shared_ptr<Topology> topology) noexcept;
 
   static void process_chunk_arrival(void* args) noexcept;
+
+  static void setCsvConfiguration(
+      int stat_row,
+      int total_stat_rows,
+      std::shared_ptr<AstraSim::CSVWriter> tutorial_csv) noexcept;
 
   static EventHandlerTracker& get_event_handler_tracker() noexcept;
 
@@ -73,6 +79,10 @@ class AstraCongestionApi : public AstraSim::AstraNetworkAPI {
  private:
   static std::shared_ptr<EventQueue> event_queue;
   static std::shared_ptr<Topology> topology;
+
+  static int stat_row;
+  static int total_stat_rows;
+  static std::shared_ptr<AstraSim::CSVWriter> tutorial_csv;
 
   static ChunkIdGenerator chunk_id_generator;
   static EventHandlerTracker event_handler_tracker;

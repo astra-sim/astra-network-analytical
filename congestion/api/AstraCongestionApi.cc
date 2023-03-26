@@ -13,6 +13,21 @@ std::shared_ptr<EventQueue> AstraCongestionApi::event_queue;
 
 std::shared_ptr<Topology> AstraCongestionApi::topology;
 
+int AstraCongestionApi::stat_row;
+
+int AstraCongestionApi::total_stat_rows;
+
+void AstraCongestionApi::setCsvConfiguration(
+    int stat_row,
+    int total_stat_rows,
+    std::shared_ptr<AstraSim::CSVWriter> tutorial_csv) noexcept {
+  AstraCongestionApi::stat_row = stat_row;
+  AstraCongestionApi::total_stat_rows = total_stat_rows;
+  AstraCongestionApi::tutorial_csv = tutorial_csv;
+}
+
+std::shared_ptr<AstraSim::CSVWriter> AstraCongestionApi::tutorial_csv;
+
 ChunkIdGenerator AstraCongestionApi::chunk_id_generator = {};
 
 EventHandlerTracker AstraCongestionApi::event_handler_tracker = {};
@@ -175,7 +190,19 @@ int AstraCongestionApi::sim_recv(
 
 void AstraCongestionApi::pass_front_end_report(
     AstraSim::AstraSimDataAPI astraSimDataAPI) {
-  // todo: implement
+  auto run_name = astraSimDataAPI.run_name;
+  auto running_time = std::to_string(astraSimDataAPI.workload_finished_time);
+  auto compute_time = std::to_string(astraSimDataAPI.total_compute);
+  auto exposed_comm_time = astraSimDataAPI.total_exposed_comm;
+
+  // tutorial csv
+  AstraCongestionApi::tutorial_csv->write_cell(stat_row + 1, 0, run_name);
+  AstraCongestionApi::tutorial_csv->write_cell(stat_row + 1, 1, running_time);
+  AstraCongestionApi::tutorial_csv->write_cell(stat_row + 1, 2, compute_time);
+  AstraCongestionApi::tutorial_csv->write_cell(
+      stat_row + 1, 3, std::to_string(exposed_comm_time));
+  AstraCongestionApi::tutorial_csv->write_cell(
+      stat_row + 1, 4, "(not measured)");
 }
 
 double AstraCongestionApi::get_BW_at_dimension(int dim) {
