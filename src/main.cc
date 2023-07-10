@@ -14,7 +14,7 @@ LICENSE file in the root directory of this source tree.
 #include "topology/HierarchicalTopologyConfig.hh"
 #include "astra-sim/json.hpp"
 #include "astra-sim/system/Sys.hh"
-#include "astra-sim/system/memory/SimpleMemory.hh"
+#include "extern/memory_backend/analytical/AnalyticalMemory.hh"
 
 using namespace std;
 using json = nlohmann::json;
@@ -104,6 +104,7 @@ int main(int argc, char* argv[]) {
       ("workload-configuration", "Workload configuration file", cxxopts::value<string>())
       ("comm-group-configuration", "Communicator group configuration file", cxxopts::value<string>()->default_value("empty"))
       ("system-configuration", "System configuration file", cxxopts::value<string>())
+      ("memory-configuration", "Memory configuration file", cxxopts::value<string>())
       ("network-configuration", "Network configuration file", cxxopts::value<string>())
       ("num-queues-per-dim", "Number of queues per each dimension", cxxopts::value<int>()->default_value("1"))
       ("compute-scale", "Compute scale", cxxopts::value<double>()->default_value("1"))
@@ -116,6 +117,7 @@ int main(int argc, char* argv[]) {
     string workload_configuration = result["workload-configuration"].as<string>();
     string comm_group_configuration = result["comm-group-configuration"].as<string>();
     string system_configuration = result["system-configuration"].as<string>();
+    string memory_configuration = result["memory-configuration"].as<string>();
     string network_configuration = result["network-configuration"].as<string>();
     int num_queues_per_dim = result["num-queues-per-dim"].as<int>();
     double comm_scale = result["comm-scale"].as<double>();
@@ -153,15 +155,10 @@ int main(int argc, char* argv[]) {
     Analytical::AnalyticalNetwork::set_topology(comm_topology);
 
     AstraSim::Sys* systems[num_npus];
-    unique_ptr<AstraSim::SimpleMemory> memories[num_npus];
+    unique_ptr<Analytical::AnalyticalMemory> mem =
+      make_unique<Analytical::AnalyticalMemory>(memory_configuration);
 
     for (int npu_id = 0; npu_id < num_npus; npu_id++) {
-      memories[npu_id] = make_unique<AstraSim::SimpleMemory>(
-          (AstraSim::AstraNetworkAPI*)(comm_networks[npu_id].get()),
-          1,
-          500000,
-          12.5);
-
       comm_networks[npu_id] = make_unique<Analytical::AnalyticalNetwork>(npu_id, dimensions_count);
 
       systems[npu_id] = new AstraSim::Sys(
@@ -169,7 +166,7 @@ int main(int argc, char* argv[]) {
           workload_configuration,
           comm_group_configuration,
           system_configuration,
-          memories[npu_id].get(),
+          mem.get(),
           comm_networks[npu_id].get(),
           physical_dims,
           queues_per_dim,
