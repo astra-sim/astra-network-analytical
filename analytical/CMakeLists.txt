@@ -21,7 +21,7 @@ target_link_libraries(AnalyticalAstra LINK_PUBLIC AstraSim)
 target_link_libraries(AnalyticalAstra LINK_PRIVATE Boost::program_options -lprotobuf -lpthread -lz)
 include_directories(
   "${PROJECT_SOURCE_DIR}/src"
-  "${PROJECT_SOURCE_DIR}/../../graph_frontend/chakra/")
+  "${PROJECT_SOURCE_DIR}/../../../graph_frontend/chakra/")
 
 # Resulting binary location settings
 set_target_properties(AnalyticalAstra

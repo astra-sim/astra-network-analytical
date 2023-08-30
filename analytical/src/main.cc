@@ -155,8 +155,8 @@ int main(int argc, char* argv[]) {
     Analytical::AnalyticalNetwork::set_topology(comm_topology);
 
     AstraSim::Sys* systems[num_npus];
-    unique_ptr<Analytical::AnalyticalMemory> mem =
-      make_unique<Analytical::AnalyticalMemory>(memory_configuration);
+    std::unique_ptr<Analytical::AnalyticalMemory> mem =
+     std::make_unique<Analytical::AnalyticalMemory>(memory_configuration);
 
     for (int npu_id = 0; npu_id < num_npus; npu_id++) {
       comm_networks[npu_id] = make_unique<Analytical::AnalyticalNetwork>(npu_id, dimensions_count);
