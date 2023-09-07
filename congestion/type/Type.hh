@@ -8,6 +8,7 @@ LICENSE file in the root directory of this source tree.
 #include <list>
 #include <memory>
 #include <string>
+#include<iostream>
 
 namespace Congestion {
 
@@ -20,6 +21,9 @@ using CallbackArg = void*;
 /// Node
 using NodeId = int;
 
+/// Link
+using LinkId = unsigned;
+
 /// Chunk and route
 using ChunkSize = double;
 using Route = std::list<std::shared_ptr<Node>>;
@@ -30,6 +34,17 @@ using Latency = double;
 
 /// Time configuration
 using Time = double;
+
+
+/// Link - information structure
+struct link_info{
+  LinkId linkId;
+  NodeId srcId;
+  NodeId destId;
+  Bandwidth bandwidth;
+  Latency latency;
+  bool busy;
+};
 
 /// Parser
 class HelpMessagePrinted : public std::exception {};

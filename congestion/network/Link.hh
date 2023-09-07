@@ -9,6 +9,7 @@ LICENSE file in the root directory of this source tree.
 #include <memory>
 #include "event-queue/EventQueue.hh"
 #include "type/Type.hh"
+#include "helper/Statistics.hh"
 
 namespace Congestion {
 
@@ -21,6 +22,26 @@ class Node;
  */
 class Link {
  public:
+  /**
+   * structure to capture the link info for a link
+   *    - this struct is populated and returned only if this is called
+   *
+   * @output: pointer to link_info struct of this object.
+   */
+  struct link_info info;
+  const link_info* get_link_info();
+  /**
+   * Display stub for link object
+   *    - overload operator << as a non-member function
+   */
+  friend std::ostream& operator<<(std::ostream& os, const Link& link){
+    os <<"  link-id: "<<link.id<<std::endl;
+    os <<"  src-id: "<<link.srcId<<"  dest-id: "<<link.destId<<std::endl;
+    os <<"  bandwidth: "<<link.bandwidth<<" latency: "<<link.latency<<std::endl;
+    os <<"  busy: "<<link.busy<<std::endl<<std::endl;
+    return os;
+  }
+
   /**
    * Callback to be called when a link becomes free.
    *   - If the link has pending chunks, process the first one.
@@ -43,7 +64,7 @@ class Link {
    * @param bandwidth bandwidth of the link
    * @param latency latency of the link
    */
-  Link(Bandwidth bandwidth, Latency latency) noexcept;
+  Link(NodeId src, NodeId dest, Bandwidth bandwidth, Latency latency) noexcept;
 
   /**
    * Destructor
@@ -81,7 +102,21 @@ class Link {
    */
   void set_free() noexcept;
 
+  /**
+   * Get the stats
+   */
+  Statistics stats;
+  std::tuple<Time, Time> activityBlock;
+
  private:
+
+  /// unique identifier for a link
+  static LinkId id;
+
+  /// Source and Destionation information
+  NodeId srcId = -1;
+  NodeId destId = -1;
+
   /// Pointer to the shared event queue
   static std::shared_ptr<EventQueue> event_queue;
 

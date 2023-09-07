@@ -17,6 +17,7 @@ LICENSE file in the root directory of this source tree.
 #include "topology/Switch.hh"
 #include "topology/Topology.hh"
 #include "astra-sim/json.hpp"
+#include "helper/Statistics.hh"
 
 using namespace Congestion;
 using json = nlohmann::json;
@@ -29,6 +30,8 @@ int get_num_npus(std::vector<int> units_counts) {
     return num_npus;
 }
 
+/// Global structure to track the network utilization.
+Statistics stats;
 
 int main(int argc, char* argv[]) {
   /// Create command line parser
@@ -284,6 +287,9 @@ int main(int argc, char* argv[]) {
   while (!event_queue->finished()) {
     event_queue->proceed();
   }
+
+  /// Report all the stats here
+  stats.report();
 
   /// terminate simulation
   return 0;

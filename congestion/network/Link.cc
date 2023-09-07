@@ -13,11 +13,16 @@ using namespace Congestion;
 // declaring static event_queue
 std::shared_ptr<EventQueue> Link::event_queue;
 
+// declaring static link-id member and setting it to -1
+LinkId Link::id = -1;
+
 void Link::link_become_free(void* link_ptr) noexcept {
   // cast to Link*
   auto link = static_cast<Link*>(link_ptr);
 
-  // set link free
+  // set link free - This is required since in the
+  // process_pending_transmission we need to have the
+  // link in free state to process.
   link->set_free();
 
   // process pending chunks if one exist
@@ -31,8 +36,17 @@ void Link::link_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept {
   Link::event_queue = event_queue;
 }
 
-Link::Link(Bandwidth bandwidth, Latency latency) noexcept
-    : bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {}
+Link::Link(NodeId src, NodeId dest, Bandwidth bandwidth, Latency latency) noexcept
+    : srcId(src),
+      destId(dest),
+      bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {
+
+    // generate an unique link-id
+    this->id = ++id;
+
+    // Initialize the activity block
+    activityBlock = std::make_tuple(-1,-1);
+}
 
 Link::~Link() noexcept = default;
 
@@ -64,10 +78,13 @@ bool Link::pending_chunk_exists() const noexcept {
 
 void Link::set_busy() noexcept {
   busy = true;
+  std::get<0>(activityBlock)=this->event_queue->get_current_time();
 }
 
 void Link::set_free() noexcept {
   busy = false;
+  std::get<1>(activityBlock)=this->event_queue->get_current_time();
+  stats.recordEntry(this->id,activityBlock);
 }
 
 Time Link::serialization_delay(ChunkSize size) const noexcept {
@@ -101,4 +118,14 @@ void Link::schedule_chunk_transmission(std::unique_ptr<Chunk> chunk) noexcept {
   auto link_free_time = current_time + serialization_time;
   auto link_ptr = static_cast<void*>(this);
   Link::event_queue->schedule_event(link_free_time, link_become_free, link_ptr);
+}
+
+const link_info* Link::get_link_info() {
+  info.linkId = this->id;
+  info.srcId = this->srcId;
+  info.destId = this->destId;
+  info.bandwidth = this->bandwidth;
+  info.latency = this->latency;
+  info.busy = this->busy;
+  return (&info);
 }
