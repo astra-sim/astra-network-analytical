@@ -1,32 +1,41 @@
+# CMake Requirement
+cmake_minimum_required(VERSION 3.15)
+
+# C++ requirement
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Setup project
-project (AnalyticalAstra)
+project(AstraSim_Analytical_Congestion_Unaware)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/local/include")
-link_directories(/usr/local/lib/)
-
-# Package requirement
-find_package(Boost 1.40 REQUIRED COMPONENTS program_options)
+# Find required packages
+find_package(Boost REQUIRED COMPONENTS program_options)
 
 # Include src files to compile
-file(GLOB_RECURSE srcs
-        "${PROJECT_SOURCE_DIR}/src/*.hh"
-        "${PROJECT_SOURCE_DIR}/src/*.cc"
-        )
+file(GLOB srcs
+        "${CMAKE_CURRENT_SOURCE_DIR}/api/*.hh"
+        "${CMAKE_CURRENT_SOURCE_DIR}/api/*.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/event-queue/*.hh"
+        "${CMAKE_CURRENT_SOURCE_DIR}/event-queue/*.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/helper/*.hh"
+        "${CMAKE_CURRENT_SOURCE_DIR}/helper/*.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/topology/*.hh"
+        "${CMAKE_CURRENT_SOURCE_DIR}/topology/*.cc"
+)
 
-# Compile sources
-add_executable(AnalyticalAstra ${srcs})
+# Compile Congestion Unaware Backend
+add_executable(AstraSim_Analytical_Congestion_Unaware ${srcs})
+target_sources(AstraSim_Analytical_Congestion_Unaware PRIVATE "${PROJECT_SOURCE_DIR}/main.cc")
 
 # Link libraries
-target_link_libraries(AnalyticalAstra LINK_PUBLIC AstraSim)
-target_link_libraries(AnalyticalAstra LINK_PRIVATE Boost::program_options -lprotobuf -lpthread -lz)
-include_directories(
-  "${PROJECT_SOURCE_DIR}/src"
-  "${PROJECT_SOURCE_DIR}/../../../graph_frontend/chakra/")
+target_link_libraries(AstraSim_Analytical_Congestion_Unaware LINK_PUBLIC AstraSim)
+target_link_libraries(AstraSim_Analytical_Congestion_Unaware LINK_PUBLIC Boost::program_options)
 
-# Resulting binary location settings
-set_target_properties(AnalyticalAstra
+# Properties
+target_include_directories(AstraSim_Analytical_Congestion_Unaware PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+set_target_properties(AstraSim_Analytical_Congestion_Unaware
         PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "bin/"
-        LIBRARY_OUTPUT_DIRECTORY "lib/"
-        ARCHIVE_OUTPUT_DIRECTORY "lib/"
-        )
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../bin/"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../lib/"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../lib/"
+)
