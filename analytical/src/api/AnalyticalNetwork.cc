@@ -17,9 +17,10 @@ CostModel* AnalyticalNetwork::cost_model;
 
 std::shared_ptr<PayloadSizeTracker> AnalyticalNetwork::payload_size_tracker;
 
-AnalyticalNetwork::AnalyticalNetwork(int rank, int dims_count) noexcept :
-AstraSim::AstraNetworkAPI(rank), dims_count(dims_count) { payload_size_tracker
-  = std::make_shared<PayloadSizeTracker>(dims_count); }
+AnalyticalNetwork::AnalyticalNetwork(int rank, int dims_count) noexcept
+    : AstraSim::AstraNetworkAPI(rank), dims_count(dims_count) {
+  payload_size_tracker = std::make_shared<PayloadSizeTracker>(dims_count);
+}
 
 int AnalyticalNetwork::sim_send(
     void* buffer,
@@ -38,7 +39,8 @@ int AnalyticalNetwork::sim_send(
   AstraSim::timespec_t delta;
   delta.time_res = AstraSim::NS;
   auto used_dim = -1;
-  std::tie(delta.time_val, used_dim) = topology->send(src, dst, count); // simulate src->dst and get latency
+  std::tie(delta.time_val, used_dim) =
+      topology->send(src, dst, count); // simulate src->dst and get latency
 
   // accumulate total message size
   if (src == 0) {
@@ -158,6 +160,7 @@ void AnalyticalNetwork::set_topology(
   AnalyticalNetwork::topology = topology_ptr;
 }
 
-void AnalyticalNetwork::set_cost_model(CostModel* const cost_model_ptr) noexcept {
+void AnalyticalNetwork::set_cost_model(
+    CostModel* const cost_model_ptr) noexcept {
   AnalyticalNetwork::cost_model = cost_model_ptr;
 }

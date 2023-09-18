@@ -61,22 +61,21 @@ AstraCongestionApi::AstraCongestionApi(int rank) noexcept
 AstraCongestionApi::~AstraCongestionApi() noexcept = default;
 
 // Divya: to port congestion backend to Chakra
-//int AstraCongestionApi::sim_comm_size(AstraSim::sim_comm comm, int* size) {
+// int AstraCongestionApi::sim_comm_size(AstraSim::sim_comm comm, int* size) {
 //  return 0;
 //}
 
-//int AstraCongestionApi::sim_finish() {
-//  return 0;
-//}
+// int AstraCongestionApi::sim_finish() {
+//   return 0;
+// }
 
-//double AstraCongestionApi::sim_time_resolution() {
-//  return 0;
-//}
+// double AstraCongestionApi::sim_time_resolution() {
+//   return 0;
+// }
 
-
-//int AstraCongestionApi::sim_init(AstraSim::AstraMemoryAPI* MEM) {
-//  return 0;
-//}
+// int AstraCongestionApi::sim_init(AstraSim::AstraMemoryAPI* MEM) {
+//   return 0;
+// }
 
 AstraSim::timespec_t AstraCongestionApi::sim_get_time() {
   auto current_time = event_queue->get_current_time();
@@ -92,20 +91,20 @@ void AstraCongestionApi::sim_schedule(
   auto event_time = event_queue->get_current_time();
 
   // calculate event time
-  //assert(delta.time_res == AstraSim::NS); // fixme: assuming NS
-  std::cout<<"[Before:] event_time: "<<event_time<<std::endl;
+  // assert(delta.time_res == AstraSim::NS); // fixme: assuming NS
+  std::cout << "[Before:] event_time: " << event_time << std::endl;
   event_time += delta.time_val;
-  std::cout<<"[After:] event_time: "<<event_time<<std::endl;
+  std::cout << "[After:] event_time: " << event_time << std::endl;
 
   // schedule event
   event_queue->schedule_event(event_time, fun_ptr, fun_arg);
 }
 
 void AstraCongestionApi::schedule(
-        AstraSim::timespec_t delta,
-        void (*fun_ptr)(void*),
-        void* fun_arg) {
-    event_queue->schedule_event(delta.time_val, fun_ptr, fun_arg);
+    AstraSim::timespec_t delta,
+    void (*fun_ptr)(void*),
+    void* fun_arg) {
+  event_queue->schedule_event(delta.time_val, fun_ptr, fun_arg);
 }
 
 int AstraCongestionApi::sim_send(
@@ -171,8 +170,8 @@ int AstraCongestionApi::sim_recv(
 
       // run recv callback immediately
       auto delta = AstraSim::timespec_t{AstraSim::NS, 0};
-      //sim_schedule(delta, msg_handler, fun_arg);
-      // Divya: Changes to port congestion backend to Chakra
+      // sim_schedule(delta, msg_handler, fun_arg);
+      //  Divya: Changes to port congestion backend to Chakra
       schedule(delta, msg_handler, fun_arg);
     } else {
       // register recv callback
@@ -188,12 +187,12 @@ int AstraCongestionApi::sim_recv(
 }
 
 // Divya: to port congestion backend to Chakra
-//void AstraCongestionApi::pass_front_end_report(
+// void AstraCongestionApi::pass_front_end_report(
 //    AstraSim::AstraSimDataAPI astraSimDataAPI) {
 //  // todo: implement
 //}
 
-//double AstraCongestionApi::get_BW_at_dimension(int dim) {
-//  // todo: implement
-//  // this is for Themis usage
-//}
+// double AstraCongestionApi::get_BW_at_dimension(int dim) {
+//   // todo: implement
+//   // this is for Themis usage
+// }

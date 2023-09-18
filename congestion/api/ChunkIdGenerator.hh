@@ -5,10 +5,10 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
+#include <stdint.h>
 #include <map>
 #include <tuple>
 #include "SendRecvId.hh"
-#include <stdint.h>
 
 namespace Congestion {
 

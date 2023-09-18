@@ -6,8 +6,8 @@ LICENSE file in the root directory of this source tree.
 #ifndef __HIERARCHICAL_TOPOLOGY_HH__
 #define __HIERARCHICAL_TOPOLOGY_HH__
 
-#include "topology/Topology.hh"
 #include "topology/HierarchicalTopologyConfig.hh"
+#include "topology/Topology.hh"
 
 namespace Analytical {
 class HierarchicalTopology : public Topology {

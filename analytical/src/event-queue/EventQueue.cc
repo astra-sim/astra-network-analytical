@@ -95,8 +95,7 @@ bool EventQueue::empty() const noexcept {
 
 void EventQueue::print() const noexcept {
   cout << "===== event-queue =====" << endl;
-  cout << "CurrentTime: " << current_time.time_val << endl
-            << endl;
+  cout << "CurrentTime: " << current_time.time_val << endl << endl;
   for (const auto& event_queue_entry : event_queue) {
     event_queue_entry.print();
   }

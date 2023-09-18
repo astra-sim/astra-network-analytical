@@ -50,7 +50,7 @@ HierarchicalTopology::HierarchicalTopology(
       bandwidth_scalar = links_count;
     } else {
       cout << "[HierarchicalTopology, constructor] Topology at dimension "
-                << dim << " not defined" << endl;
+           << dim << " not defined" << endl;
       exit(-1);
     }
 
@@ -112,7 +112,7 @@ HierarchicalTopology::HierarchicalTopology(
           link_bandwidth);
     } else {
       cout << "[HierarchicalTopology, constructor] Topology at dimension "
-                << dim << " not defined" << endl;
+           << dim << " not defined" << endl;
       exit(-1);
     }
   }
@@ -120,8 +120,8 @@ HierarchicalTopology::HierarchicalTopology(
 
 HierarchicalTopology::~HierarchicalTopology() noexcept = default;
 
-HierarchicalTopology::Bandwidth
-HierarchicalTopology::getNpuTotalBandwidthPerDim(int dimension) const noexcept {
+HierarchicalTopology::Bandwidth HierarchicalTopology::
+    getNpuTotalBandwidthPerDim(int dimension) const noexcept {
   // links_count[dim] * link_BW[dim]
   auto topology = hierarchy_config.getTopologyForDim(dimension);
 
@@ -204,8 +204,7 @@ pair<double, int> HierarchicalTopology::send(
 
   auto hbm_latency = hbmLatency(dim, payload_size);
 
-  return make_pair(
-      criticalLatency(communication_latency, hbm_latency), dim);
+  return make_pair(criticalLatency(communication_latency, hbm_latency), dim);
 }
 
 HierarchicalTopology::Latency HierarchicalTopology::linkLatency(
