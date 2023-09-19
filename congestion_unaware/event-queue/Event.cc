@@ -10,16 +10,16 @@ LICENSE file in the root directory of this source tree.
 using namespace Analytical;
 
 Event::Event(CallbackOneArg callback, void* arg1_) noexcept
-  : callback_one_arg(callback),
-  callback_two_args(nullptr),
-  arg1(arg1_), arg2(nullptr) {
-}
+    : callback_one_arg(callback),
+      callback_two_args(nullptr),
+      arg1(arg1_),
+      arg2(nullptr) {}
 
 Event::Event(CallbackTwoArgs callback, void* arg1_, void* arg2_) noexcept
-  : callback_one_arg(nullptr),
-  callback_two_args(callback),
-  arg1(arg1_), arg2(arg2_) {
-}
+    : callback_one_arg(nullptr),
+      callback_two_args(callback),
+      arg1(arg1_),
+      arg2(arg2_) {}
 
 Event::CallbackOneArg Event::get_fun_ptr() const noexcept {
   return callback_one_arg;

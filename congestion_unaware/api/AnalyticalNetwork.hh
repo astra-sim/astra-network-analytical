@@ -10,10 +10,10 @@ LICENSE file in the root directory of this source tree.
 
 #include "api/PayloadSizeTracker.hh"
 #include "api/SendRecvTrackingMap.hh"
-#include "event-queue/EventQueue.hh"
-#include "topology/Topology.hh"
-#include "topology/CostModel.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
+#include "event-queue/EventQueue.hh"
+#include "topology/CostModel.hh"
+#include "topology/Topology.hh"
 
 namespace Analytical {
 class AnalyticalNetwork : public AstraSim::AstraNetworkAPI {

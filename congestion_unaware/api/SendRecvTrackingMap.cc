@@ -55,7 +55,8 @@ AstraSim::timespec_t Analytical::SendRecvTrackingMap::pop_send_finish_time(
 
   typedef multimap<Key, SendRecvTrackingMapValue>::iterator iterator;
   Key key = make_tuple(tag, src, dest, count);
-  std::pair<iterator, iterator> iterpair = send_recv_tracking_map.equal_range(key);
+  std::pair<iterator, iterator> iterpair =
+      send_recv_tracking_map.equal_range(key);
 
   AstraSim::timespec_t sim_finish_time;
 
@@ -98,14 +99,12 @@ void Analytical::SendRecvTrackingMap::insert_send(
     int dest,
     PayloadSize count,
     AstraSim::timespec_t send_finish_time) noexcept {
-
   bool duplicate_found = false;
 
   Key key = make_tuple(tag, src, dest, count);
 
   send_recv_tracking_map.emplace(
-      key,
-      SendRecvTrackingMapValue::make_send_value(send_finish_time));
+      key, SendRecvTrackingMapValue::make_send_value(send_finish_time));
 }
 
 void Analytical::SendRecvTrackingMap::insert_recv(
@@ -127,5 +126,5 @@ void Analytical::SendRecvTrackingMap::insert_recv(
 
 void Analytical::SendRecvTrackingMap::print() const noexcept {
   cout << "[SendRecvTrackingMap] Entries not processed: "
-            << send_recv_tracking_map.size() << endl;
+       << send_recv_tracking_map.size() << endl;
 }

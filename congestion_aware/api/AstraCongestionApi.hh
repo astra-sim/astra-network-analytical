@@ -7,14 +7,14 @@ LICENSE file in the root directory of this source tree.
 
 #include "ChunkIdGenerator.hh"
 #include "EventHandlerTracker.hh"
-#include "astra-sim/system/AstraNetworkAPI.hh"
 #include "astra-sim/system/AstraMemoryAPI.hh"
+#include "astra-sim/system/AstraNetworkAPI.hh"
 #include "astra-sim/system/AstraSimDataAPI.hh"
+#include "astra-sim/system/Common.hh"
 #include "event-queue/EventQueue.hh"
 #include "network/Chunk.hh"
 #include "network/Link.hh"
 #include "topology/Topology.hh"
-#include "astra-sim/system/Common.hh"
 
 namespace Congestion {
 
@@ -33,21 +33,21 @@ class AstraCongestionApi : public AstraSim::AstraNetworkAPI {
 
   ~AstraCongestionApi() noexcept;
 
-  //int sim_comm_size(AstraSim::sim_comm comm, int* size) override;
+  // int sim_comm_size(AstraSim::sim_comm comm, int* size) override;
 
-  //int sim_finish() override;
+  // int sim_finish() override;
 
-  //double sim_time_resolution() override;
+  // double sim_time_resolution() override;
 
   // Divya: to port congestion backend to Chakra
-  //int sim_init(AstraSim::AstraMemoryAPI* MEM) override;
+  // int sim_init(AstraSim::AstraMemoryAPI* MEM) override;
 
   AstraSim::timespec_t sim_get_time() override;
-// Divya: Changes to port congestion backend to Chakra
+  // Divya: Changes to port congestion backend to Chakra
   void sim_schedule(
-    AstraSim::timespec_t delta,
-    void (*fun_ptr)(void* fun_arg),
-    void* fun_arg);
+      AstraSim::timespec_t delta,
+      void (*fun_ptr)(void* fun_arg),
+      void* fun_arg);
 
   void schedule(
       AstraSim::timespec_t delta,
@@ -74,9 +74,9 @@ class AstraCongestionApi : public AstraSim::AstraNetworkAPI {
       void (*msg_handler)(void* fun_arg),
       void* fun_arg) override;
 
-  //Divya: to port congestion backend to Chakra
-  //void pass_front_end_report(
-  //    AstraSim::AstraSimDataAPI astraSimDataAPI) override;
+  // Divya: to port congestion backend to Chakra
+  // void pass_front_end_report(
+  //     AstraSim::AstraSimDataAPI astraSimDataAPI) override;
 
   // double get_BW_at_dimension(int dim) override;
 

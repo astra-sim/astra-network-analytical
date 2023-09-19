@@ -27,8 +27,7 @@ int EventQueueEntry::compare_time_stamp(
   return 0;
 }
 
-AstraSim::timespec_t EventQueueEntry::get_time_stamp()
-    const noexcept {
+AstraSim::timespec_t EventQueueEntry::get_time_stamp() const noexcept {
   return time_stamp;
 }
 

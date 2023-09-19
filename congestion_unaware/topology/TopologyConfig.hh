@@ -13,7 +13,8 @@ namespace Analytical {
 struct TopologyConfig {
  public:
   using NpuId = int; // each NPU's id
-  using NpuAddress = std::vector<int>; // NPU's address (integer id for each dimension)
+  using NpuAddress =
+      std::vector<int>; // NPU's address (integer id for each dimension)
   using PayloadSize = uint64_t; // Byte
   using Latency = double; // ns
   using Bandwidth = double; // GB/s (B/ns)

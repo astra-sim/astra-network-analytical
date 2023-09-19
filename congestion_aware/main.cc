@@ -3,32 +3,31 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
+#include <iostream> // Divya: to port congestion backend to Chakra
 #include <vector>
-#include <iostream>  // Divya: to port congestion backend to Chakra
 #include "api/AstraCongestionApi.hh"
 #include "astra-sim/system/Sys.hh"
 // #include "astra-sim/system/memory/SimpleMemory.hh"
-#include "extern/memory_backend/analytical/AnalyticalMemory.hh" // Divya: to port congestion backend to latest Chakra
+#include "astra-sim/json.hpp"
 #include "event-queue/EventQueue.hh"
+#include "extern/memory_backend/analytical/AnalyticalMemory.hh" // Divya: to port congestion backend to latest Chakra
 #include "helper/CommandLineOptParser.hh"
 #include "helper/NetworkConfigParser.hh"
 #include "topology/FullyConnected.hh"
 #include "topology/Ring.hh"
 #include "topology/Switch.hh"
 #include "topology/Topology.hh"
-#include "astra-sim/json.hpp"
 
 using namespace Congestion;
 using json = nlohmann::json;
 
 int get_num_npus(std::vector<int> units_counts) {
-    int num_npus = 1;
-    for (auto units_count: units_counts) {
-        num_npus *= units_count;
-    }
-    return num_npus;
+  int num_npus = 1;
+  for (auto units_count : units_counts) {
+    num_npus *= units_count;
+  }
+  return num_npus;
 }
-
 
 int main(int argc, char* argv[]) {
   /// Create command line parser
@@ -46,7 +45,6 @@ int main(int argc, char* argv[]) {
       "memory-configuration", "Memory configuration File Path");
   command_line_parser.define_option<std::string>(
       "comm-group-configuration", "Communicator group configuration file");
-
 
   // run-related names and paths
   command_line_parser.define_option<std::string>("run-name", "Run Name");
@@ -151,15 +149,15 @@ int main(int argc, char* argv[]) {
     memory_file_path =
         command_line_parser.get_value<std::string>("memory-configuration");
 
-    //run_name = command_line_parser.get_value<std::string>("run-name");
-    //path = command_line_parser.get_value<std::string>("path");
+    // run_name = command_line_parser.get_value<std::string>("run-name");
+    // path = command_line_parser.get_value<std::string>("path");
 
     comm_scale = command_line_parser.get_value<float>("comm-scale");
     compute_scale = command_line_parser.get_value<float>("compute-scale");
     injection_scale = command_line_parser.get_value<float>("injection-scale");
-    //num_passes = command_line_parser.get_value<int>("num-passes");
-    //total_stat_rows = command_line_parser.get_value<int>("total-stat-rows");
-    //stat_row = command_line_parser.get_value<int>("stat-row");
+    // num_passes = command_line_parser.get_value<int>("num-passes");
+    // total_stat_rows = command_line_parser.get_value<int>("total-stat-rows");
+    // stat_row = command_line_parser.get_value<int>("stat-row");
     rendezvous_protocol =
         command_line_parser.get_value<bool>("rendezvous-protocol");
   } catch (const OptNotSpecifiedError& e) {
@@ -196,7 +194,8 @@ int main(int argc, char* argv[]) {
   auto npus_count = -1;
   if (topology_name == "Ring") {
     npus_count = npus_count_dim[0];
-    topology = std::make_shared<Ring>(npus_count, bandwidth[0], latency[0], true);
+    topology =
+        std::make_shared<Ring>(npus_count, bandwidth[0], latency[0], true);
   } else if (topology_name == "Switch") {
     npus_count = npus_count_dim[0];
     topology = std::make_shared<Switch>(npus_count, bandwidth[0], latency[0]);
@@ -216,8 +215,8 @@ int main(int argc, char* argv[]) {
 
   /// Create ASTRA-sim related resources
   std::shared_ptr<Congestion::AstraCongestionApi> congestion_apis[npus_count];
-  //std::shared_ptr<AstraSim::SimpleMemory> memories[npus_count];
-   std::unique_ptr<Analytical::AnalyticalMemory> mem =
+  // std::shared_ptr<AstraSim::SimpleMemory> memories[npus_count];
+  std::unique_ptr<Analytical::AnalyticalMemory> mem =
       std::make_unique<Analytical::AnalyticalMemory>(memory_file_path);
 
   AstraSim::Sys* systems[npus_count];
@@ -230,12 +229,12 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < npus_count; i++) {
     congestion_apis[i] = std::make_shared<AstraCongestionApi>(i);
 
-    //memories[i] = std::make_shared<AstraSim::SimpleMemory>(
-    //memories[i] = std::make_unique<AstraSim::SimpleMemory>(
-    //    (AstraSim::AstraNetworkAPI*)(congestion_apis[i].get()),
-    //    1,
-    //    500000,
-    //    12.5);
+    // memories[i] = std::make_shared<AstraSim::SimpleMemory>(
+    // memories[i] = std::make_unique<AstraSim::SimpleMemory>(
+    //     (AstraSim::AstraNetworkAPI*)(congestion_apis[i].get()),
+    //     1,
+    //     500000,
+    //     12.5);
 
     /*
     systems[i] = new AstraSim::Sys(
@@ -259,22 +258,19 @@ int main(int argc, char* argv[]) {
     */
 
     systems[i] = new AstraSim::Sys(
-            i,
-            workload_file_path,
-            comm_group_configuration,
-            system_file_path,
-            mem.get(),
-            //memories[i].get(),
-            congestion_apis[i].get(),
-            npus_count_dim,
-            queues_per_dim,
-            injection_scale,
-            comm_scale,
-            rendezvous_protocol
-            );
+        i,
+        workload_file_path,
+        comm_group_configuration,
+        system_file_path,
+        mem.get(),
+        // memories[i].get(),
+        congestion_apis[i].get(),
+        npus_count_dim,
+        queues_per_dim,
+        injection_scale,
+        comm_scale,
+        rendezvous_protocol);
   }
-
-
 
   /// Run ASTRA-sim simulation
   for (int i = 0; i < npus_count; i++) {

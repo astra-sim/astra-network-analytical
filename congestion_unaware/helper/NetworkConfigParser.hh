@@ -9,8 +9,8 @@ LICENSE file in the root directory of this source tree.
 #include <vector>
 
 #include "helper/json.hh"
-#include "topology/TopologyConfig.hh"
 #include "topology/HierarchicalTopologyConfig.hh"
+#include "topology/TopologyConfig.hh"
 
 namespace Analytical {
 class NetworkConfigParser {
@@ -19,7 +19,8 @@ class NetworkConfigParser {
   using DimensionType = HierarchicalTopologyConfig::DimensionType;
   using Bandwidth = TopologyConfig::Bandwidth;
 
-  explicit NetworkConfigParser(const std::string& network_configuration) noexcept;
+  explicit NetworkConfigParser(
+      const std::string& network_configuration) noexcept;
 
   template <typename T>
   T get(const char* arg_name) const noexcept {

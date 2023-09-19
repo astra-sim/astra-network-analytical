@@ -23,7 +23,8 @@ bool Analytical::SendRecvTrackingMapValue::is_recv() const noexcept {
   return operation_type == OperationType::recv;
 }
 
-AstraSim::timespec_t Analytical::SendRecvTrackingMapValue::get_send_finish_time() const noexcept {
+AstraSim::timespec_t Analytical::SendRecvTrackingMapValue::
+    get_send_finish_time() const noexcept {
   return send_finish_time;
 }
 

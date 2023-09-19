@@ -10,8 +10,8 @@ LICENSE file in the root directory of this source tree.
 #include <tuple>
 
 #include "api/SendRecvTrackingMapValue.hh"
-#include "topology/TopologyConfig.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
+#include "topology/TopologyConfig.hh"
 
 namespace Analytical {
 class SendRecvTrackingMap {
