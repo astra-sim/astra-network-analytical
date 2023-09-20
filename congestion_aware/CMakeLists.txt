@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Setup project
-project(AstraSim_Analytical_Congestion_Aware)
+project(Analytical_Congestion_Aware)
+
+# Can be compiled into either library or executable
+option(NETWORK_BACKEND_BUILD_AS_LIBRARY "Build as a library" OFF)
 
 # Find required packages
 find_package(Boost REQUIRED COMPONENTS program_options)
@@ -29,17 +32,20 @@ file(GLOB srcs
 )
 
 # Compile Congestion Aware Backend
-add_executable(AstraSim_Analytical_Congestion_Aware ${srcs})
-target_sources(AstraSim_Analytical_Congestion_Aware PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/main.cc")
+if (NETWORK_BACKEND_BUILD_AS_LIBRARY)
+    add_library(Analytical_Congestion_Aware STATIC ${srcs})
+else ()
+    add_executable(Analytical_Congestion_Aware ${srcs})
+    target_sources(Analytical_Congestion_Aware PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/main.cc")
+endif ()
 
 # Link libraries
-target_link_libraries(AstraSim_Analytical_Congestion_Aware LINK_PUBLIC AstraSim)
-target_link_libraries(AstraSim_Analytical_Congestion_Aware LINK_PUBLIC Boost::program_options)
-target_link_libraries(AstraSim_Analytical_Congestion_Aware LINK_PUBLIC yaml-cpp)
+target_link_libraries(Analytical_Congestion_Aware LINK_PUBLIC Boost::program_options)
+target_link_libraries(Analytical_Congestion_Aware LINK_PUBLIC yaml-cpp)
 
 # Properties
-target_include_directories(AstraSim_Analytical_Congestion_Aware PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-set_target_properties(AstraSim_Analytical_Congestion_Aware
+target_include_directories(Analytical_Congestion_Aware PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+set_target_properties(Analytical_Congestion_Aware
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../bin/"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../lib/"
