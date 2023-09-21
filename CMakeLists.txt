@@ -41,9 +41,25 @@ file(GLOB congestion_aware_srcs
 if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     if (NETWORK_BACKEND_BUILD_AS_LIBRARY)
         add_library(Analytical_Congestion_Unaware STATIC ${congestion_unaware_srcs} ${common_srcs})
+
+        # Properties
+        set_target_properties(Analytical_Congestion_Unaware
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../bin/
+                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
+                ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
+        )
     else ()
         add_executable(Analytical_Congestion_Unaware ${congestion_unaware_srcs} ${common_srcs})
-        target_sources(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/main.cc)
+        target_sources(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/example.cc)
+
+        # Properties
+        set_target_properties(Analytical_Congestion_Unaware
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/
+                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/
+                ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/
+        )
     endif ()
 
     # Link libraries
@@ -55,23 +71,31 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
     target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../../)  # TODO: remove this
     target_include_directories(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern/)
-
-    # Properties
-    set_target_properties(Analytical_Congestion_Unaware
-            PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../bin/
-            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
-            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
-    )
 endif ()
 
 # Compile Congestion Aware Backend
 if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
     if (NETWORK_BACKEND_BUILD_AS_LIBRARY)
         add_library(Analytical_Congestion_Aware STATIC ${congestion_aware_srcs} ${common_srcs})
+
+        # Properties
+        set_target_properties(Analytical_Congestion_Aware
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../bin/
+                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
+                ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
+        )
     else ()
         add_executable(Analytical_Congestion_Aware ${congestion_aware_srcs} ${common_srcs})
-        target_sources(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/main.cc)
+        target_sources(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/example.cc)
+
+        # Properties
+        set_target_properties(Analytical_Congestion_Aware
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/
+                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/
+                ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/
+        )
     endif ()
 
     # Link libraries
@@ -82,12 +106,4 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
     target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
     target_include_directories(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern/)
-
-    # Properties
-    set_target_properties(Analytical_Congestion_Aware
-            PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../bin/
-            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
-            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
-    )
 endif ()
