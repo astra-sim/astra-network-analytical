@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <boost/program_options.hpp>
 #include <cassert>
-#include <congestion_aware/type/Type.hh>
+#include <common/type/Type.hh>
 #include <optional>
 #include <string>
 

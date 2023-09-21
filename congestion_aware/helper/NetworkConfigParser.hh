@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <yaml-cpp/yaml.h>
 #include <cassert>
-#include <congestion_aware/type/Type.hh>
+#include <common/type/Type.hh>
 
 namespace Congestion {
 

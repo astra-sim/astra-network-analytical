@@ -6,7 +6,7 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <common/event-queue/EventQueue.hh>
-#include <congestion_aware/type/Type.hh>
+#include <common/type/Type.hh>
 #include <list>
 #include <memory>
 
