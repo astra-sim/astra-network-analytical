@@ -4,9 +4,9 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "Topology.hh"
-#include "network/Chunk.hh"
-#include "network/Link.hh"
-#include "network/Node.hh"
+#include <congestion_aware/network/Chunk.hh>
+#include <congestion_aware/network/Link.hh>
+#include <congestion_aware/network/Node.hh>
 
 using namespace Congestion;
 

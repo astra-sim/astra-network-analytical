@@ -8,8 +8,8 @@ LICENSE file in the root directory of this source tree.
 #include <cassert>
 #include <memory>
 #include <vector>
-#include "event-queue/EventQueue.hh"
-#include "network/Node.hh"
+#include <congestion_aware/event-queue/EventQueue.hh>
+#include <congestion_aware/network/Node.hh>
 
 namespace Congestion {
 

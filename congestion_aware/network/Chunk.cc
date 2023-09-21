@@ -3,10 +3,10 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "network/Chunk.hh"
+#include <congestion_aware/network/Chunk.hh>
 #include <cassert>
-#include "network/Link.hh"
-#include "network/Node.hh"
+#include <congestion_aware/network/Link.hh>
+#include <congestion_aware/network/Node.hh>
 
 using namespace Congestion;
 

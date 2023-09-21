@@ -5,7 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "topology/Topology.hh"
+#include <congestion_aware/topology/Topology.hh>
 
 namespace Congestion {
 

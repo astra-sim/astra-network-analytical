@@ -5,7 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <cassert>
 #include <iostream>
-#include "helper/CommandLineOptParser.hh"
+#include "CommandLineOptParser.hh"
 
 using namespace Congestion;
 

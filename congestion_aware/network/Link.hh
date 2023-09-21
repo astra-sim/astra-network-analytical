@@ -7,8 +7,8 @@ LICENSE file in the root directory of this source tree.
 
 #include <list>
 #include <memory>
-#include "event-queue/EventQueue.hh"
-#include "type/Type.hh"
+#include <congestion_aware/event-queue/EventQueue.hh>
+#include <congestion_aware/type/Type.hh>
 
 namespace Congestion {
 

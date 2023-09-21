@@ -6,8 +6,8 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <list>
-#include "event-queue/EventList.hh"
-#include "type/Type.hh"
+#include <congestion_aware/event-queue/EventList.hh>
+#include <congestion_aware/type/Type.hh>
 
 namespace Congestion {
 

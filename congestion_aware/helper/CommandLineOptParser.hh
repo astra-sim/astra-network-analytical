@@ -9,7 +9,7 @@ LICENSE file in the root directory of this source tree.
 #include <cassert>
 #include <optional>
 #include <string>
-#include "type/Type.hh"
+#include <congestion_aware/type/Type.hh>
 
 namespace po = boost::program_options;
 
