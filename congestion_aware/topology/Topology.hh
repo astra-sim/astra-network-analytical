@@ -6,10 +6,10 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <cassert>
-#include <memory>
-#include <vector>
 #include <congestion_aware/event-queue/EventQueue.hh>
 #include <congestion_aware/network/Node.hh>
+#include <memory>
+#include <vector>
 
 namespace Congestion {
 

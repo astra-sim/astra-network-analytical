@@ -5,10 +5,10 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <list>
-#include <memory>
 #include <congestion_aware/event-queue/EventQueue.hh>
 #include <congestion_aware/type/Type.hh>
+#include <list>
+#include <memory>
 
 namespace Congestion {
 

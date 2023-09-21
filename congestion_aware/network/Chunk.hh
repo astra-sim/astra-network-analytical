@@ -5,8 +5,8 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <list>
 #include <congestion_aware/type/Type.hh>
+#include <list>
 
 namespace Congestion {
 
