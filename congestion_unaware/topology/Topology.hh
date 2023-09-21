@@ -8,8 +8,8 @@ LICENSE file in the root directory of this source tree.
 
 #include <vector>
 
-#include "topology/CostModel.hh"
-#include "topology/TopologyConfig.hh"
+#include "CostModel.hh"
+#include "TopologyConfig.hh"
 
 namespace Analytical {
 class Topology {

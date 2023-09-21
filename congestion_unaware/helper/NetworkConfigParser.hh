@@ -8,9 +8,9 @@ LICENSE file in the root directory of this source tree.
 
 #include <vector>
 
-#include "helper/json.hh"
-#include "topology/HierarchicalTopologyConfig.hh"
-#include "topology/TopologyConfig.hh"
+#include <json/json.hpp>
+#include <congestion_unaware/topology/HierarchicalTopologyConfig.hh>
+#include <congestion_unaware/topology/TopologyConfig.hh>
 
 namespace Analytical {
 class NetworkConfigParser {

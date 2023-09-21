@@ -9,9 +9,9 @@ LICENSE file in the root directory of this source tree.
 #include <cassert>
 #include <list>
 
-#include "astra-sim/system/Common.hh"
-#include "event-queue/Event.hh"
-#include "event-queue/EventQueueEntry.hh"
+#include <astra-sim/system/Common.hh>
+#include <congestion_unaware/event-queue/Event.hh>
+#include <congestion_unaware/event-queue/EventQueueEntry.hh>
 
 namespace Analytical {
 class EventQueue {

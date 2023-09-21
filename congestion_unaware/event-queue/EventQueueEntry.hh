@@ -8,8 +8,8 @@ LICENSE file in the root directory of this source tree.
 
 #include <list>
 
-#include "astra-sim/system/Common.hh"
-#include "event-queue/Event.hh"
+#include <astra-sim/system/Common.hh>
+#include <congestion_unaware/event-queue/Event.hh>
 
 namespace Analytical {
 struct EventQueueEntry {
