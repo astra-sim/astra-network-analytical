@@ -10,7 +10,7 @@ LICENSE file in the root directory of this source tree.
 // #include "astra-sim/system/memory/SimpleMemory.hh"
 #include "astra-sim/json.hpp"
 #include "event-queue/EventQueue.hh"
-#include "extern/memory_backend/analytical/AnalyticalMemory.hh" // Divya: to port congestion backend to latest Chakra
+#include "extern/remote_memory_backend/analytical/AnalyticalRemoteMemory.hh" // Divya: to port congestion backend to latest Chakra
 #include "helper/CommandLineOptParser.hh"
 #include "helper/NetworkConfigParser.hh"
 #include "topology/FullyConnected.hh"
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   command_line_parser.define_option<std::string>(
       "workload-configuration", "Workload Configuration File Path");
   command_line_parser.define_option<std::string>(
-      "memory-configuration", "Memory configuration File Path");
+      "remote-memory-configuration", "Remote memory configuration File Path");
   command_line_parser.define_option<std::string>(
       "comm-group-configuration", "Communicator group configuration file");
 
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
     workload_file_path =
         command_line_parser.get_value<std::string>("workload-configuration");
     memory_file_path =
-        command_line_parser.get_value<std::string>("memory-configuration");
+        command_line_parser.get_value<std::string>("remote-memory-configuration");
 
     // run_name = command_line_parser.get_value<std::string>("run-name");
     // path = command_line_parser.get_value<std::string>("path");
@@ -216,8 +216,8 @@ int main(int argc, char* argv[]) {
   /// Create ASTRA-sim related resources
   std::shared_ptr<Congestion::AstraCongestionApi> congestion_apis[npus_count];
   // std::shared_ptr<AstraSim::SimpleMemory> memories[npus_count];
-  std::unique_ptr<Analytical::AnalyticalMemory> mem =
-      std::make_unique<Analytical::AnalyticalMemory>(memory_file_path);
+  std::unique_ptr<Analytical::AnalyticalRemoteMemory> mem =
+      std::make_unique<Analytical::AnalyticalRemoteMemory>(memory_file_path);
 
   AstraSim::Sys* systems[npus_count];
 

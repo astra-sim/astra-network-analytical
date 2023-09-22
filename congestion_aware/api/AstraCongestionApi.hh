@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 
 #include "ChunkIdGenerator.hh"
 #include "EventHandlerTracker.hh"
-#include "astra-sim/system/AstraMemoryAPI.hh"
+#include "astra-sim/system/AstraRemoteMemoryAPI.hh"
 #include "astra-sim/system/AstraNetworkAPI.hh"
 #include "astra-sim/system/AstraSimDataAPI.hh"
 #include "astra-sim/system/Common.hh"
@@ -40,7 +40,7 @@ class AstraCongestionApi : public AstraSim::AstraNetworkAPI {
   // double sim_time_resolution() override;
 
   // Divya: to port congestion backend to Chakra
-  // int sim_init(AstraSim::AstraMemoryAPI* MEM) override;
+  // int sim_init(AstraSim::AstraRemoteMemoryAPI* MEM) override;
 
   AstraSim::timespec_t sim_get_time() override;
   // Divya: Changes to port congestion backend to Chakra

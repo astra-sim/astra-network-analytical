@@ -10,7 +10,7 @@ LICENSE file in the root directory of this source tree.
 #include "astra-sim/system/Sys.hh"
 #include "event-queue/EventQueue.hh"
 #include "event-queue/EventQueueEntry.hh"
-#include "extern/memory_backend/analytical/AnalyticalMemory.hh"
+#include "extern/remote_memory_backend/analytical/AnalyticalRemoteMemory.hh"
 #include "helper/NetworkConfigParser.hh"
 #include "helper/cxxopts.hpp"
 #include "topology/HierarchicalTopology.hh"
@@ -108,8 +108,8 @@ int main(int argc, char* argv[]) {
         "system-configuration",
         "System configuration file",
         cxxopts::value<string>())(
-        "memory-configuration",
-        "Memory configuration file",
+        "remote-memory-configuration",
+        "Remote memory configuration file",
         cxxopts::value<string>())(
         "network-configuration",
         "Network configuration file",
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
     string comm_group_configuration =
         result["comm-group-configuration"].as<string>();
     string system_configuration = result["system-configuration"].as<string>();
-    string memory_configuration = result["memory-configuration"].as<string>();
+    string memory_configuration = result["remote-memory-configuration"].as<string>();
     string network_configuration = result["network-configuration"].as<string>();
     int num_queues_per_dim = result["num-queues-per-dim"].as<int>();
     double comm_scale = result["comm-scale"].as<double>();
@@ -175,8 +175,8 @@ int main(int argc, char* argv[]) {
     Analytical::AnalyticalNetwork::set_topology(comm_topology);
 
     AstraSim::Sys* systems[num_npus];
-    std::unique_ptr<Analytical::AnalyticalMemory> mem =
-        std::make_unique<Analytical::AnalyticalMemory>(memory_configuration);
+    std::unique_ptr<Analytical::AnalyticalRemoteMemory> mem =
+        std::make_unique<Analytical::AnalyticalRemoteMemory>(memory_configuration);
 
     for (int npu_id = 0; npu_id < num_npus; npu_id++) {
       comm_networks[npu_id] =

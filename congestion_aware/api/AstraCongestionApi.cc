@@ -73,7 +73,7 @@ AstraCongestionApi::~AstraCongestionApi() noexcept = default;
 //   return 0;
 // }
 
-// int AstraCongestionApi::sim_init(AstraSim::AstraMemoryAPI* MEM) {
+// int AstraCongestionApi::sim_init(AstraSim::AstraRemoteMemoryAPI* MEM) {
 //   return 0;
 // }
 
