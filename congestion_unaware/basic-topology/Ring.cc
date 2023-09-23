@@ -3,7 +3,7 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "congestion_unaware/topology/Ring.hh"
+#include "Ring.hh"
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
@@ -13,19 +13,13 @@ Ring::Ring(
     Bandwidth bandwidth,
     Latency latency,
     bool bidirectional) noexcept
-    : latency(latency), bidirectional(bidirectional) {
+    : bidirectional(bidirectional), BasicTopology(nodes_count, bandwidth, latency) {
   assert(nodes_count > 0);
   assert(bandwidth > 0);
   assert(latency >= 0);
-
-  // set bandwidth
-  this->bandwidth = Topology::bw_GBps_to_Bpns(bandwidth);
-
-  // set nodes_count
-  set_nodes_count(nodes_count);
 }
 
-EventTime Ring::send(NodeId src, NodeId dest, ChunkSize size) const noexcept {
+int Ring::compute_hops_count(NodeId src, NodeId dest) const noexcept {
   assert(0 <= src && src < nodes_count);
   assert(0 <= dest && dest < nodes_count);
   assert(src != dest);
@@ -42,14 +36,12 @@ EventTime Ring::send(NodeId src, NodeId dest, ChunkSize size) const noexcept {
   }
   auto anti_clockwise_distance = nodes_count - clockwise_distance;
 
-  // compute hops count
-  auto hops_count = clockwise_distance;
-  if (bidirectional && (anti_clockwise_distance < clockwise_distance)) {
-    hops_count = anti_clockwise_distance;
+
+  if (!bidirectional) {
+    // uni-directional: return clockwise distance
+    return clockwise_distance;
   }
 
-  // get communication delay
-  auto comms_delay =
-      Topology::communication_delay(bandwidth, latency, hops_count, size);
-  return comms_delay;
+  // bi-directional: return shorter distance
+  return (clockwise_distance < anti_clockwise_distance) ? clockwise_distance : anti_clockwise_distance;
 }

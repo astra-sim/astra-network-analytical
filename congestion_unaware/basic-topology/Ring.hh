@@ -7,25 +7,26 @@ LICENSE file in the root directory of this source tree.
 
 #include "common/Common.hh"
 #include "common/Type.hh"
-#include "congestion_unaware/topology/Topology.hh"
+#include "congestion_unaware/basic-topology/BasicTopology.hh"
 
 using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionUnaware {
 
-class FullyConnected final : public Topology {
+class Ring final : public BasicTopology {
  public:
-  explicit FullyConnected(
+  explicit Ring(
       int nodes_count,
       Bandwidth bandwidth,
-      Latency latency) noexcept;
+      Latency latency,
+      bool bidirectional = true) noexcept;
 
-  [[nodiscard]] EventTime send(NodeId src, NodeId dest, ChunkSize size)
-      const noexcept override;
+  [[nodiscard]] int compute_hops_count(
+      NodeId src,
+      NodeId dest) const noexcept override;
 
  private:
-  Bandwidth bandwidth;
-  Latency latency;
+  bool bidirectional;
 };
 
 } // namespace NetworkAnalyticalCongestionUnaware

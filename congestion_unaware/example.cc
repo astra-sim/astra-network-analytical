@@ -4,7 +4,7 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "common/Common.hh"
-#include "topology/Ring.hh"
+#include "congestion_unaware/basic-topology/Ring.hh"
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;

@@ -7,25 +7,21 @@ LICENSE file in the root directory of this source tree.
 
 #include "common/Common.hh"
 #include "common/Type.hh"
-#include "congestion_unaware/topology/Topology.hh"
+#include "congestion_unaware/basic-topology/BasicTopology.hh"
 
 using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionUnaware {
 
-class Switch final : public Topology {
+class Switch final : public BasicTopology {
  public:
   explicit Switch(
       int nodes_count,
       Bandwidth bandwidth,
       Latency latency) noexcept;
 
-  [[nodiscard]] EventTime send(NodeId src, NodeId dest, ChunkSize size)
+  [[nodiscard]] int compute_hops_count(NodeId src, NodeId dest)
       const noexcept override;
-
- private:
-  Bandwidth bandwidth;
-  Latency latency;
 };
 
 } // namespace NetworkAnalyticalCongestionUnaware
