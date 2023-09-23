@@ -3,9 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "Switch.hh"
+#include "congestion_aware/topology/Switch.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalyticalCongestionAware;
 
 Switch::Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept
     : switch_id(npus_count), Topology(npus_count + 1) {
@@ -24,8 +24,6 @@ Switch::Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept
     connect(i, switch_id, bandwidth, latency, true);
   }
 }
-
-Switch::~Switch() noexcept = default;
 
 Route Switch::route(NodeId src, NodeId dest) const noexcept {
   // assert npus are in valid range

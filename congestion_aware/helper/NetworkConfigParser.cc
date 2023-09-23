@@ -5,7 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #include "NetworkConfigParser.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalyticalCongestionAware;
 
 NetworkConfigParser::NetworkConfigParser() noexcept : parsed(false) {}
 

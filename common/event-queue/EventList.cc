@@ -3,22 +3,20 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "EventList.hh"
+#include "common/event-queue/EventList.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalytical;
 
-EventList::EventList(Time time) noexcept : time(time) {
+EventList::EventList(EventTime event_time) noexcept : event_time(event_time) {
   // create an empty event list
   events = std::list<Event>();
 }
 
-EventList::~EventList() noexcept = default;
-
-Time EventList::get_time() const noexcept {
-  return time;
+EventTime EventList::get_event_time() const noexcept {
+  return event_time;
 }
 
-void EventList::schedule_event(
+void EventList::add_event(
     Callback callback,
     CallbackArg callback_arg) noexcept {
   // add the event to the event list
@@ -26,7 +24,7 @@ void EventList::schedule_event(
 }
 
 void EventList::invoke_events() noexcept {
-  // invoke every events in the event list
+  // invoke all events in the event list
   while (!events.empty()) {
     events.front().invoke_event();
     events.pop_front();

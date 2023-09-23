@@ -3,17 +3,16 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "Topology.hh"
-#include <congestion_aware/network/Chunk.hh>
-#include <congestion_aware/network/Link.hh>
-#include <congestion_aware/network/Node.hh>
+#include "congestion_aware/topology/Topology.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalyticalCongestionAware;
 
-void Topology::link_event_queue(
+void Topology::set_event_queue(
     std::shared_ptr<EventQueue> event_queue) noexcept {
+  assert(event_queue != nullptr);
+
   // link this event_queue with Link class.
-  Link::link_event_queue(event_queue);
+  Link::set_event_queue(std::move(event_queue));
 }
 
 Topology::Topology(int npus_count) noexcept : npus_count(npus_count) {
@@ -25,11 +24,14 @@ Topology::Topology(int npus_count) noexcept : npus_count(npus_count) {
   }
 }
 
-Topology::~Topology() noexcept = default;
-
 void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {
-  // get src npu id
+  assert(chunk != nullptr);
+
+  // get src npu node_id
   auto src = chunk->current_node()->get_id();
+
+  // assert src is valid
+  assert(0 <= src && src < npus_count);
 
   // initiate transmission from src
   npus[src]->send(std::move(chunk));

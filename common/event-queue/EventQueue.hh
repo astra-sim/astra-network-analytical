@@ -5,11 +5,11 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <common/type/Type.hh>
-#include <list>
-#include "EventList.hh"
+#include "common/Common.hh"
+#include "common/Type.hh"
+#include "common/event-queue/EventList.hh"
 
-namespace Congestion {
+namespace NetworkAnalytical {
 
 /**
  * EventQueue stores all events and invoke them in order.
@@ -22,46 +22,42 @@ class EventQueue {
   EventQueue() noexcept;
 
   /**
-   * Destructor.
-   */
-  ~EventQueue() noexcept;
-
-  /**
-   * Get current time.
+   * Get current time the event_queue is processing.
    *
-   * @return current time
+   * @return current time of the event_queue
    */
-  Time get_current_time() const noexcept;
+  [[nodiscard]] EventTime get_current_time() const noexcept;
 
   /**
    * Check whether all events scheduled are invoked.
    *
-   * @return true if all events are processed, false otherwise
+   * @return true if all events are invoked, false otherwise
    */
-  bool finished() const noexcept;
+  [[nodiscard]] bool finished() const noexcept;
 
   /**
-   * Proceed to the next time slot and invoke all events scheduled at that time.
+   * Proceed to the next event time slot
+   * and invoke all events scheduled at that event time.
    */
   void proceed() noexcept;
 
   /**
    * Schedule an event at a specific time.
-   * @param time time to schedule the event
+   * @param event_time event time to schedule the event
    * @param callback callback function pointer
    * @param callback_arg callback function argument
    */
   void schedule_event(
-      Time time,
+      EventTime event_time,
       Callback callback,
       CallbackArg callback_arg) noexcept;
 
  private:
   /// current time of the event queue
-  Time current_time;
+  EventTime current_time;
 
   /// list of events (EventList) scheduled
   std::list<EventList> event_queue;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalytical

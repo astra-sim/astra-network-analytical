@@ -27,12 +27,12 @@ file(GLOB common_srcs
 )
 
 file(GLOB congestion_unaware_srcs
-        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/helper/*.cc
+#        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/helper/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/topology/*.cc
 )
 
 file(GLOB congestion_aware_srcs
-        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/helper/*.cc
+#        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/helper/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/network/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/topology/*.cc
 )
@@ -61,6 +61,10 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
                 ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/
         )
     endif ()
+
+    # Common properties
+    set_target_properties(Analytical_Congestion_Unaware PROPERTIES COMPILE_WARNING_AS_ERROR ON)
+
 
     # Link libraries
     target_link_libraries(Analytical_Congestion_Unaware LINK_PUBLIC Boost::program_options)
@@ -98,12 +102,15 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
         )
     endif ()
 
+    # Common properties
+    set_target_properties(Analytical_Congestion_Aware PROPERTIES COMPILE_WARNING_AS_ERROR ON)
+
     # Link libraries
     target_link_libraries(Analytical_Congestion_Aware LINK_PUBLIC Boost::program_options)
     target_link_libraries(Analytical_Congestion_Aware LINK_PUBLIC yaml-cpp)
 
     # Include directories
-    target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+    target_include_directories(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern/)
 endif ()

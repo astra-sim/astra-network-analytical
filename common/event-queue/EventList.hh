@@ -5,11 +5,11 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <common/type/Type.hh>
-#include <list>
-#include "Event.hh"
+#include "common/Common.hh"
+#include "common/Type.hh"
+#include "common/event-queue/Event.hh"
 
-namespace Congestion {
+namespace NetworkAnalytical {
 
 /**
  * EventList represents a list of events
@@ -20,21 +20,16 @@ class EventList {
   /**
    * Constructor.
    *
-   * @param time time of the event list
+   * @param event_time the time the list of events will take place
    */
-  explicit EventList(Time time) noexcept;
+  explicit EventList(EventTime event_time) noexcept;
 
   /**
-   * Destructor.
-   */
-  ~EventList() noexcept;
-
-  /**
-   * Get the time of the event list.
+   * Get the event time of the event list.
    *
    * @return scheduled event time
    */
-  Time get_time() const noexcept;
+  [[nodiscard]] EventTime get_event_time() const noexcept;
 
   /**
    * Add an event to the event list.
@@ -42,7 +37,7 @@ class EventList {
    * @param callback callback function pointer
    * @param callback_arg argument for the callback function
    */
-  void schedule_event(Callback callback, CallbackArg callback_arg) noexcept;
+  void add_event(Callback callback, CallbackArg callback_arg) noexcept;
 
   /**
    * invoke all events in the event list.
@@ -51,10 +46,10 @@ class EventList {
 
  private:
   /// scheduled event time
-  Time time;
+  EventTime event_time;
 
   /// list of events
   std::list<Event> events;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalytical

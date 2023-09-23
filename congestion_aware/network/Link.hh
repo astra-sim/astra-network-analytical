@@ -5,15 +5,14 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <common/event-queue/EventQueue.hh>
-#include <common/type/Type.hh>
-#include <list>
-#include <memory>
+#include "common/Common.hh"
+#include "common/Type.hh"
+#include "common/event-queue/EventQueue.hh"
+#include "congestion_aware/network/Type.hh"
 
-namespace Congestion {
+using namespace NetworkAnalytical;
 
-class Chunk;
-class Node;
+namespace NetworkAnalyticalCongestionAware {
 
 /**
  * Link models physical links between two nodes.
@@ -34,8 +33,8 @@ class Link {
    *
    * @param event_queue (shared) pointer to the event queue
    */
-  static void link_event_queue(
-      std::shared_ptr<EventQueue> event_queue) noexcept;
+  static void set_event_queue(
+      std::shared_ptr<EventQueue> event_queue_ptr) noexcept;
 
   /**
    * Constructor
@@ -44,11 +43,6 @@ class Link {
    * @param latency latency of the link
    */
   Link(Bandwidth bandwidth, Latency latency) noexcept;
-
-  /**
-   * Destructor
-   */
-  ~Link() noexcept;
 
   /**
    * Send a chunk through the link.
@@ -69,7 +63,7 @@ class Link {
    *
    * @return true if the link has pending chunks, false otherwise
    */
-  bool pending_chunk_exists() const noexcept;
+  [[nodiscard]] bool pending_chunk_exists() const noexcept;
 
   /**
    * Set the link as busy.
@@ -101,7 +95,7 @@ class Link {
    * @param size size of the target chunk
    * @return serialization delay of the chunk
    */
-  Time serialization_delay(ChunkSize size) const noexcept;
+  [[nodiscard]] EventTime serialization_delay(ChunkSize size) const noexcept;
 
   /**
    * Compute the communication delay of a chunk.
@@ -110,7 +104,7 @@ class Link {
    * @param size size of the target chunk
    * @return communication delay of the chunk
    */
-  Time communication_delay(ChunkSize size) const noexcept;
+  [[nodiscard]] EventTime communication_delay(ChunkSize size) const noexcept;
 
   /**
    * Schedule the transmission of a chunk.
@@ -123,4 +117,4 @@ class Link {
   void schedule_chunk_transmission(std::unique_ptr<Chunk> chunk) noexcept;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware

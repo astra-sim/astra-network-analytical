@@ -3,19 +3,20 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include <cassert>
-#include <congestion_aware/network/Chunk.hh>
-#include <congestion_aware/network/Link.hh>
-#include <congestion_aware/network/Node.hh>
+#include "congestion_aware/network/Link.hh"
+#include "congestion_aware/network/Chunk.hh"
+#include "congestion_aware/network/Node.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalyticalCongestionAware;
 
 // declaring static event_queue
 std::shared_ptr<EventQueue> Link::event_queue;
 
 void Link::link_become_free(void* link_ptr) noexcept {
+  assert(link_ptr != nullptr);
+
   // cast to Link*
-  auto link = static_cast<Link*>(link_ptr);
+  auto* link = static_cast<Link*>(link_ptr);
 
   // set link free
   link->set_free();
@@ -26,17 +27,23 @@ void Link::link_become_free(void* link_ptr) noexcept {
   }
 }
 
-void Link::link_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept {
-  // link event queue
-  Link::event_queue = event_queue;
+void Link::set_event_queue(
+    std::shared_ptr<EventQueue> event_queue_ptr) noexcept {
+  assert(event_queue_ptr != nullptr);
+
+  // set the event queue
+  Link::event_queue = std::move(event_queue_ptr);
 }
 
 Link::Link(Bandwidth bandwidth, Latency latency) noexcept
-    : bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {}
-
-Link::~Link() noexcept = default;
+    : bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {
+  assert(bandwidth > 0);
+  assert(latency >= 0);
+}
 
 void Link::send(std::unique_ptr<Chunk> chunk) noexcept {
+  assert(chunk != nullptr);
+
   if (busy) {
     // add to pending chunks
     pending_chunks.push_back(std::move(chunk));
@@ -70,15 +77,27 @@ void Link::set_free() noexcept {
   busy = false;
 }
 
-Time Link::serialization_delay(ChunkSize size) const noexcept {
-  return size / bandwidth;
+EventTime Link::serialization_delay(ChunkSize size) const noexcept {
+  assert(size > 0);
+
+  // calculate serialization delay
+  auto delay = size / bandwidth;
+
+  return static_cast<EventTime>(delay);
 }
 
-Time Link::communication_delay(ChunkSize size) const noexcept {
-  return latency + serialization_delay(size);
+EventTime Link::communication_delay(ChunkSize size) const noexcept {
+  assert(size > 0);
+
+  // calculate communication delay
+  auto delay = latency + (size / bandwidth);
+
+  return static_cast<EventTime>(delay);
 }
 
 void Link::schedule_chunk_transmission(std::unique_ptr<Chunk> chunk) noexcept {
+  assert(chunk != nullptr);
+
   // link should be free
   assert(!busy);
 

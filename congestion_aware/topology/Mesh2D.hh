@@ -5,9 +5,11 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <congestion_aware/topology/Topology.hh>
+#include "congestion_aware/topology/Topology.hh"
 
-namespace Congestion {
+using namespace NetworkAnalytical;
+
+namespace NetworkAnalyticalCongestionAware {
 
 /**
  * A 2D Mesh topology.
@@ -25,11 +27,6 @@ class Mesh2D final : public Topology {
   Mesh2D(int width, int height, Bandwidth bandwidth, Latency latency) noexcept;
 
   /**
-   * Destructor
-   */
-  ~Mesh2D() noexcept;
-
-  /**
    * Implementation of route function.
    */
   Route route(NodeId src, NodeId dest) const noexcept override;
@@ -42,4 +39,4 @@ class Mesh2D final : public Topology {
   int height;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware

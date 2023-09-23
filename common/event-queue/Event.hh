@@ -5,9 +5,10 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <common/type/Type.hh>
+#include "common/Common.hh"
+#include "common/Type.hh"
 
-namespace Congestion {
+namespace NetworkAnalytical {
 
 /**
  * Event is a wrapper for a callback function and its argument.
@@ -23,11 +24,6 @@ class Event {
   Event(Callback callback, CallbackArg callback_arg) noexcept;
 
   /**
-   * Destructor.
-   */
-  ~Event() noexcept;
-
-  /**
    * Invoke the callback function with the argument.
    */
   void invoke_event() noexcept;
@@ -40,4 +36,4 @@ class Event {
   CallbackArg callback_arg;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalytical

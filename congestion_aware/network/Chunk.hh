@@ -5,13 +5,13 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <common/type/Type.hh>
-#include <list>
+#include "common/Common.hh"
+#include "common/Type.hh"
+#include "congestion_aware/network/Type.hh"
 
-namespace Congestion {
+using namespace NetworkAnalytical;
 
-class Link;
-class Node;
+namespace NetworkAnalyticalCongestionAware {
 
 /**
  * Chunk class
@@ -43,23 +43,18 @@ class Chunk {
       CallbackArg callback_arg) noexcept;
 
   /**
-   * Destructor
-   */
-  ~Chunk() noexcept;
-
-  /**
    * Get the current node of the chunk
    *
    * @return current node of the chunk
    */
-  std::shared_ptr<Node> current_node() const noexcept;
+  [[nodiscard]] std::shared_ptr<Node> current_node() const noexcept;
 
   /**
    * Get the next node of the chunk
    *
    * @return next node of the chunk
    */
-  std::shared_ptr<Node> next_node() const noexcept;
+  [[nodiscard]] std::shared_ptr<Node> next_node() const noexcept;
 
   /**
    * Mark the chunk arrived next node
@@ -73,14 +68,14 @@ class Chunk {
    *
    * @return true if the chunk arrived at its destination, false otherwise
    */
-  bool arrived_dest() const noexcept;
+  [[nodiscard]] bool arrived_dest() const noexcept;
 
   /**
    * Get the size of the chunk
    *
    * @return size of the chunk
    */
-  ChunkSize get_size() const noexcept;
+  [[nodiscard]] ChunkSize get_size() const noexcept;
 
   /**
    * Invoke the callback
@@ -91,9 +86,12 @@ class Chunk {
 
  private:
   /// size of the chunk
-  ChunkSize size;
+  ChunkSize chunk_size;
 
   /// route of the chunk to its destination
+  // Route has the structure of [current Node, next Node, ..., dest Node]
+  // e.g., if a chunk starts from node 5, then reaches destination 3,
+  // the route would be e.g., [5, 1, 6, 2, 3]
   Route route;
 
   /// callback to be invoked when the chunk arrives at its destination
@@ -103,4 +101,4 @@ class Chunk {
   CallbackArg callback_arg;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware

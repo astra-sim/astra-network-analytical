@@ -5,9 +5,9 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <congestion_aware/topology/Topology.hh>
+#include "congestion_aware/topology/Topology.hh"
 
-namespace Congestion {
+namespace NetworkAnalyticalCongestionAware {
 
 /**
  * A FullyConnected topology.
@@ -24,14 +24,9 @@ class FullyConnected final : public Topology {
   FullyConnected(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
   /**
-   * Destructor.
-   */
-  ~FullyConnected() noexcept;
-
-  /**
    * Implementation of route function.
    */
   Route route(NodeId src, NodeId dest) const noexcept override;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware

@@ -5,14 +5,13 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <common/type/Type.hh>
-#include <map>
-#include <memory>
+#include "common/Common.hh"
+#include "common/Type.hh"
+#include "congestion_aware/network/Type.hh"
 
-namespace Congestion {
+using namespace NetworkAnalytical;
 
-class Chunk;
-class Link;
+namespace NetworkAnalyticalCongestionAware {
 
 /**
  * Node represents a single node in the network.
@@ -22,25 +21,20 @@ class Node {
   /**
    * Constructor.
    *
-   * @param id id of the node
+   * @param id node_id of the node
    */
   explicit Node(NodeId id) noexcept;
 
   /**
-   * Destructor.
-   */
-  ~Node() noexcept;
-
-  /**
-   * Get id of the node.
+   * Get node_id of the node.
    *
-   * @return id of the node
+   * @return node_id of the node
    */
-  NodeId get_id() const noexcept;
+  [[nodiscard]] NodeId get_id() const noexcept;
 
   /**
    * Initiate a chunk transmission.
-   *   - This node should be the source of the chunk.
+   * You must invoke this method using the source node of the chunk.
    *
    * @param chunk chunk to send
    */
@@ -49,27 +43,27 @@ class Node {
   /**
    * Connect this node to another node.
    *
-   * @param id id of the node to connect to
+   * @param id node_id of the node to connect to
    * @param bandwidth bandwidth of the link
    * @param latency latency of the link
    */
   void connect(NodeId id, Bandwidth bandwidth, Latency latency) noexcept;
 
  private:
-  /// node id
-  NodeId id;
+  /// node node_id
+  NodeId node_id;
 
   /// links to other nodes
-  /// map[dest node id] -> link
+  /// map[dest node node_id] -> link
   std::map<NodeId, std::shared_ptr<Link>> links;
 
   /**
    * Check if this node is connected to another node.
    *
-   * @param dest id of the node to check
+   * @param dest node_id of the node to check
    * @return true if connected, false otherwise
    */
-  bool connected(NodeId dest) const noexcept;
+  [[nodiscard]] bool connected(NodeId dest) const noexcept;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware

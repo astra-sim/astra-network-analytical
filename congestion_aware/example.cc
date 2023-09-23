@@ -3,18 +3,19 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include <common/event-queue/EventQueue.hh>
-#include <iostream>
-#include <vector>
+#include "common/Common.hh"
+#include "common/event-queue/EventQueue.hh"
 #include "network/Chunk.hh"
-#include "network/Link.hh"
-#include "network/Node.hh"
 #include "topology/Ring.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalytical;
+using namespace NetworkAnalyticalCongestionAware;
 
-void callback(void* event_queue_ptr) {
+void chunk_arrived_callback(void* event_queue_ptr) {
+  //  typecast event_queue_ptr
   auto event_queue = static_cast<EventQueue*>(event_queue_ptr);
+
+  // print chunk arrival time
   auto current_time = event_queue->get_current_time();
   std::cout << "A chunk arrived at destination at time: " << current_time
             << " ns" << std::endl;
@@ -23,7 +24,7 @@ void callback(void* event_queue_ptr) {
 int main() {
   /// Instantiate shared resources
   auto event_queue = std::make_shared<EventQueue>();
-  Link::link_event_queue(event_queue);
+  Topology::set_event_queue(event_queue);
 
   /// Setup topology
   // topology configuration
@@ -50,8 +51,9 @@ int main() {
 
       // crate a chunk
       auto route = std::move(topology->route(i, j));
+      auto* event_queue_ptr = static_cast<void*>(event_queue.get());
       auto chunk = std::make_unique<Chunk>(
-          chunk_size, route, callback, event_queue.get());
+          chunk_size, route, chunk_arrived_callback, event_queue_ptr);
 
       // send a chunk
       topology->send(std::move(chunk));

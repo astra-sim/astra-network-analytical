@@ -5,13 +5,14 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <cassert>
-#include <common/event-queue/EventQueue.hh>
-#include <congestion_aware/network/Node.hh>
-#include <memory>
-#include <vector>
+#include "common/event-queue/EventQueue.hh"
+#include "congestion_aware/network/Chunk.hh"
+#include "congestion_aware/network/Link.hh"
+#include "congestion_aware/network/Node.hh"
 
-namespace Congestion {
+using namespace NetworkAnalytical;
+
+namespace NetworkAnalyticalCongestionAware {
 
 class Topology {
  public:
@@ -20,8 +21,7 @@ class Topology {
    *
    * @param event_queue The event queue to be linked.
    */
-  static void link_event_queue(
-      std::shared_ptr<EventQueue> event_queue) noexcept;
+  static void set_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept;
 
   /**
    * Construct a topology with the given number of npus.
@@ -31,22 +31,17 @@ class Topology {
   explicit Topology(int npus_count) noexcept;
 
   /**
-   * Topology destructor
-   */
-  ~Topology() noexcept;
-
-  /**
    * Construct the route from src to dest.
    * Route is a list of std::shared_ptr<Node>, including both src and dest.
    *
    * e.g., route(0, 3) = [0, 1, 2, 3]
    *
-   * @param src src npu id
-   * @param dest dest npu id
+   * @param src src npu node_id
+   * @param dest dest npu node_id
    *
    * @return route from src to dest
    */
-  virtual Route route(NodeId src, NodeId dest) const noexcept = 0;
+  [[nodiscard]] virtual Route route(NodeId src, NodeId dest) const noexcept = 0;
 
   /**
    * Initiate the transmission of a chunk.
@@ -68,8 +63,8 @@ class Topology {
    *
    * if bidirectional=true, dest -> src connection is also established.
    *
-   * @param src src npu id
-   * @param dest dest npu id
+   * @param src src npu node_id
+   * @param dest dest npu node_id
    * @param bandwidth bandwidth of link
    * @param latency latency of link
    * @param bidirectional true if connection is bidirectional, false otherwise
@@ -82,4 +77,4 @@ class Topology {
       bool bidirectional = true) noexcept;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware

@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 #include <iostream>
 #include "CommandLineOptParser.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalyticalCongestionAware;
 
 CommandLineOptParser::CommandLineOptParser() noexcept : parsed(false) {
   // by default, add help option

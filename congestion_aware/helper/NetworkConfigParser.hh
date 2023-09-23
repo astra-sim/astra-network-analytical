@@ -6,10 +6,9 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <yaml-cpp/yaml.h>
-#include <cassert>
-#include <common/type/Type.hh>
+#include "common/Common.hh"
 
-namespace Congestion {
+namespace NetworkAnalyticalCongestionAware {
 
 /**
  * @brief NetworkConfigParser parses network config file (in yaml format).
@@ -64,4 +63,4 @@ class NetworkConfigParser {
   bool parsed;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware

@@ -3,9 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "Mesh2D.hh"
+#include "congestion_aware/topology/Mesh2D.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalyticalCongestionAware;
 
 Mesh2D::Mesh2D(
     int width,
@@ -47,8 +47,6 @@ Mesh2D::Mesh2D(
     }
   }
 }
-
-Mesh2D::~Mesh2D() noexcept = default;
 
 Route Mesh2D::route(NodeId src, NodeId dest) const noexcept {
   // assert npus are in valid range

@@ -6,14 +6,11 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <boost/program_options.hpp>
-#include <cassert>
-#include <common/type/Type.hh>
-#include <optional>
-#include <string>
+#include "common/Type.hh"
 
 namespace po = boost::program_options;
 
-namespace Congestion {
+namespace NetworkAnalyticalCongestionAware {
 
 /**
  * @brief Command line options parser
@@ -148,4 +145,4 @@ class CommandLineOptParser {
   bool parsed;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware

@@ -3,9 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "Ring.hh"
+#include "congestion_aware/topology/Ring.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalyticalCongestionAware;
 
 Ring::Ring(
     int npus_count,
@@ -26,8 +26,6 @@ Ring::Ring(
   }
   connect(npus_count - 1, 0, bandwidth, latency, bidirectional);
 }
-
-Ring::~Ring() noexcept = default;
 
 Route Ring::route(NodeId src, NodeId dest) const noexcept {
   // assert npus are in valid range

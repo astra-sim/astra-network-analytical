@@ -3,9 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "FullyConnected.hh"
+#include "congestion_aware/topology/FullyConnected.hh"
 
-using namespace Congestion;
+using namespace NetworkAnalyticalCongestionAware;
 
 FullyConnected::FullyConnected(
     int npus_count,
@@ -28,8 +28,6 @@ FullyConnected::FullyConnected(
     }
   }
 }
-
-FullyConnected::~FullyConnected() noexcept = default;
 
 Route FullyConnected::route(NodeId src, NodeId dest) const noexcept {
   // assert npus are in valid range

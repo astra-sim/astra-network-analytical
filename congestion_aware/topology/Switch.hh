@@ -5,9 +5,11 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <congestion_aware/topology/Topology.hh>
+#include "congestion_aware/topology/Topology.hh"
 
-namespace Congestion {
+using namespace NetworkAnalytical;
+
+namespace NetworkAnalyticalCongestionAware {
 
 /**
  * A switch topology.
@@ -24,18 +26,13 @@ class Switch final : public Topology {
   Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
   /**
-   * Destructor.
-   */
-  ~Switch() noexcept;
-
-  /**
    * Implementation of route function.
    */
   Route route(NodeId src, NodeId dest) const noexcept override;
 
  private:
-  /// id of the switch node
+  /// node_id of the switch node
   NodeId switch_id;
 };
 
-} // namespace Congestion
+} // namespace NetworkAnalyticalCongestionAware
