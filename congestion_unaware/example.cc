@@ -4,7 +4,7 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "common/Common.hh"
-#include "topology/FullyConnected.hh"
+#include "topology/Ring.hh"
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
@@ -20,11 +20,11 @@ int main(int argc, char* argv[]) {
 
   /// generate topology
   auto topology =
-      std::make_shared<FullyConnected>(npus_count, bandwidth, latency);
+      std::make_shared<Ring>(npus_count, bandwidth, latency, false);
 
   /// run sample send-recv
-  auto src_id = 0;
-  auto dest_id = 7;
+  auto src_id = 5;
+  auto dest_id = 1;
   auto comm_delay = topology->send(src_id, dest_id, chunk_size);
   std::cout << "comm_delay: " << comm_delay << std::endl;
 
