@@ -30,6 +30,7 @@ file(GLOB congestion_unaware_srcs
 #        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/helper/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/topology/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/basic-topology/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/multi-dim-topology/*.cc
 )
 
 file(GLOB congestion_aware_srcs

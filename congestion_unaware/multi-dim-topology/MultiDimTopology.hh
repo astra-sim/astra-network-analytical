@@ -7,34 +7,35 @@ LICENSE file in the root directory of this source tree.
 
 #include "common/Common.hh"
 #include "common/Type.hh"
+#include "congestion_unaware/basic-topology/BasicTopology.hh"
 #include "congestion_unaware/topology/Topology.hh"
 
 using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionUnaware {
 
-class BasicTopology : public Topology {
+class MultiDimTopology : public Topology {
  public:
-  BasicTopology(int nodes_count, Bandwidth bandwidth, Latency latency) noexcept;
-
-  virtual ~BasicTopology() noexcept;
+  MultiDimTopology() noexcept;
 
   [[nodiscard]] EventTime send(NodeId src, NodeId dest, ChunkSize size)
       const noexcept override;
 
- protected:
-  [[nodiscard]] virtual int compute_hops_count(NodeId src, NodeId dest)
-      const noexcept = 0;
+  void add_dim(std::unique_ptr<BasicTopology> topology) noexcept;
 
  private:
-  [[nodiscard]] static Bandwidth bw_GBps_to_Bpns(Bandwidth bw_GBps) noexcept;
+  using MultiDimAddress = std::vector<NodeId>;
 
-  [[nodiscard]] EventTime compute_communication_delay(
-      int hops_count,
-      ChunkSize size) const noexcept;
+  int dims_count;
+  std::vector<std::unique_ptr<BasicTopology>> topologies_per_dim;
+  std::vector<int> nodes_count_per_dim;
 
-  Bandwidth bandwidth;
-  Latency latency;
+  [[nodiscard]] MultiDimAddress translate_address(
+      NodeId node_id) const noexcept;
+
+  [[nodiscard]] int get_dim_to_transfer(
+      MultiDimAddress src_address,
+      MultiDimAddress dest_address) const noexcept;
 };
 
 } // namespace NetworkAnalyticalCongestionUnaware

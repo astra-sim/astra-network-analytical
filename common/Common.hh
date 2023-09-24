@@ -6,6 +6,7 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <list>
 #include <map>

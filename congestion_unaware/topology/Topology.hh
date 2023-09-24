@@ -19,6 +19,8 @@ class Topology {
   [[nodiscard]] virtual EventTime send(NodeId src, NodeId dest, ChunkSize size)
       const noexcept = 0;
 
+  [[nodiscard]] int get_nodes_count() const noexcept;
+
  protected:
   int nodes_count;
 

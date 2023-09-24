@@ -24,6 +24,8 @@ BasicTopology::BasicTopology(
   set_nodes_count(nodes_count);
 }
 
+BasicTopology::~BasicTopology() noexcept = default;
+
 EventTime BasicTopology::send(NodeId src, NodeId dest, ChunkSize size)
     const noexcept {
   assert(0 <= src && src < nodes_count);

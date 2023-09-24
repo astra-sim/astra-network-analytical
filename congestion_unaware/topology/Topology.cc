@@ -15,3 +15,7 @@ void Topology::set_nodes_count(int new_nodes_count) noexcept {
 
   nodes_count = new_nodes_count;
 }
+
+int Topology::get_nodes_count() const noexcept {
+  return nodes_count;
+}
