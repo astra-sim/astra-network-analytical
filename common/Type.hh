@@ -12,16 +12,19 @@ using Callback = void (*)(void*);
 using CallbackArg = void*;
 
 /// Node
-using NodeId = int;  // starting from 0
+using NodeId = int; // starting from 0
 
 /// Chunk and route
-using ChunkSize = double;  // in Bytes
+using ChunkSize = double; // in Bytes
 
 /// Network
-using Bandwidth = double;  // in GB/s ~ B/ns
-using Latency = double;  // in ns
+using Bandwidth = double; // in GB/s
+using Latency = double; // in ns
 
 /// Event Time resolution
-using EventTime = uint64_t;  // in ns
+using EventTime = uint64_t; // in ns
+
+/// Topology Building Blocks
+enum class TopologyBuildingBlock { Ring, FullyConnected, Switch };
 
 } // namespace NetworkAnalytical

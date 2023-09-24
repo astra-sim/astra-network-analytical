@@ -23,11 +23,10 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extern/yaml-cpp yaml-cpp)
 # Include src files to compile
 file(GLOB common_srcs
         ${CMAKE_CURRENT_SOURCE_DIR}/common/event-queue/*.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/type/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/network-parser/*.cc
 )
 
 file(GLOB congestion_unaware_srcs
-#        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/helper/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/topology/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/basic-topology/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/multi-dim-topology/*.cc
