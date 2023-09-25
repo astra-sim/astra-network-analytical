@@ -5,7 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "congestion_aware/topology/Topology.hh"
+#include "congestion_aware/basic-topology/BasicTopology.hh"
 
 using namespace NetworkAnalytical;
 
@@ -14,7 +14,7 @@ namespace NetworkAnalyticalCongestionAware {
 /**
  * A ring basic-topology.
  */
-class Ring final : public Topology {
+class Ring final : public BasicTopology {
  public:
   /**
    * Constructor.
@@ -33,7 +33,8 @@ class Ring final : public Topology {
   /**
    * Implementation of route function.
    */
-  Route route(DeviceId src, DeviceId dest) const noexcept override;
+  [[nodiscard]] Route route(DeviceId src, DeviceId dest)
+      const noexcept override;
 
  private:
   /// mark whether the ring is bidirectional.

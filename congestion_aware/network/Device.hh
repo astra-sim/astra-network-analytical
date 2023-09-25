@@ -14,54 +14,56 @@ using namespace NetworkAnalytical;
 namespace NetworkAnalyticalCongestionAware {
 
 /**
- * Node represents a single node in the network.
+ * Device class represents a single device in the network.
+ * Device is usually an NPU or a switch.
  */
-class Node {
+class Device {
  public:
   /**
    * Constructor.
    *
-   * @param id node_id of the node
+   * @param id id of the device
    */
-  explicit Node(DeviceId id) noexcept;
+  explicit Device(DeviceId id) noexcept;
 
   /**
-   * Get node_id of the node.
+   * Get id of the device.
    *
-   * @return node_id of the node
+   * @return id of the device
    */
   [[nodiscard]] DeviceId get_id() const noexcept;
 
   /**
    * Initiate a chunk transmission.
-   * You must invoke this method using the source node of the chunk.
+   * You must invoke this method on the source device of the chunk.
    *
    * @param chunk chunk to send
    */
   void send(std::unique_ptr<Chunk> chunk) noexcept;
 
   /**
-   * Connect this node to another node.
+   * Connect a device to another device.
    *
-   * @param id node_id of the node to connect to
+   * @param id id of the device to connect this device to
    * @param bandwidth bandwidth of the link
    * @param latency latency of the link
    */
   void connect(DeviceId id, Bandwidth bandwidth, Latency latency) noexcept;
 
  private:
-  /// node node_id
-  DeviceId node_id;
+  /// device Id
+  DeviceId device_id;
 
   /// links to other nodes
   /// map[dest node node_id] -> link
   std::map<DeviceId, std::shared_ptr<Link>> links;
 
   /**
-   * Check if this node is connected to another node.
+   * Check if this device is connected to another device.
    *
-   * @param dest node_id of the node to check
-   * @return true if connected, false otherwise
+   * @param dest id of the device to check te connectivity
+   * @return true if this device is connected to the given device,
+   * false otherwise
    */
   [[nodiscard]] bool connected(DeviceId dest) const noexcept;
 };

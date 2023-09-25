@@ -7,8 +7,7 @@ LICENSE file in the root directory of this source tree.
 
 #include "common/event-queue/EventQueue.hh"
 #include "congestion_aware/network/Chunk.hh"
-#include "congestion_aware/network/Link.hh"
-#include "congestion_aware/network/Node.hh"
+#include "congestion_aware/network/Device.hh"
 
 using namespace NetworkAnalytical;
 
@@ -17,31 +16,30 @@ namespace NetworkAnalyticalCongestionAware {
 class Topology {
  public:
   /**
-   * Link the event queue to the Link class.
+   * Set the event queue of the Link class.
    *
    * @param event_queue The event queue to be linked.
    */
   static void set_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept;
 
   /**
-   * Construct a basic-topology with the given number of npus.
-   *
-   * @param npus_count number of npus in the basic-topology
+   * Instantiate a topology object.
    */
-  explicit Topology(int npus_count) noexcept;
+  Topology() noexcept;
 
   /**
    * Construct the route from src to dest.
-   * Route is a list of std::shared_ptr<Node>, including both src and dest.
+   * Route is a list of std::shared_ptr<e>, includinDevice both src and dest.
    *
    * e.g., route(0, 3) = [0, 1, 2, 3]
    *
-   * @param src src npu node_id
-   * @param dest dest npu node_id
+   * @param src src device id
+   * @param dest dest device id
    *
    * @return route from src to dest
    */
-  [[nodiscard]] virtual Route route(DeviceId src, DeviceId dest) const noexcept = 0;
+  [[nodiscard]] virtual Route route(DeviceId src, DeviceId dest)
+      const noexcept = 0;
 
   /**
    * Initiate the transmission of a chunk.
@@ -50,14 +48,21 @@ class Topology {
    */
   void send(std::unique_ptr<Chunk> chunk) noexcept;
 
-  [[nodiscard]] int get_nodes_count() const noexcept;
+  [[nodiscard]] int get_npus_count() const noexcept;
+
+  [[nodiscard]] int get_devices_count() const noexcept;
 
  protected:
-  /// number of npus in the basic-topology
+  /// number of total devices (including switches) in the topology
+  int devices_count;
+
+  /// number of NPUs in the topology
   int npus_count;
 
-  /// vector of Node instances in the basic-topology
-  std::vector<std::shared_ptr<Node>> npus;
+  /// vector of Device instances in the topology
+  std::vector<std::shared_ptr<Device>> devices;
+
+  void instantiate_devices() noexcept;
 
   /**
    * Connect src -> dest with the given bandwidth and latency.
@@ -65,8 +70,8 @@ class Topology {
    *
    * if bidirectional=true, dest -> src connection is also established.
    *
-   * @param src src npu node_id
-   * @param dest dest npu node_id
+   * @param src src device id
+   * @param dest dest device id
    * @param bandwidth bandwidth of link
    * @param latency latency of link
    * @param bidirectional true if connection is bidirectional, false otherwise

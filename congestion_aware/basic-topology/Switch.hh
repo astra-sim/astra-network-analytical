@@ -5,7 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "congestion_aware/topology/Topology.hh"
+#include "congestion_aware/basic-topology/BasicTopology.hh"
 
 using namespace NetworkAnalytical;
 
@@ -14,7 +14,7 @@ namespace NetworkAnalyticalCongestionAware {
 /**
  * A switch basic-topology.
  */
-class Switch final : public Topology {
+class Switch final : public BasicTopology {
  public:
   /**
    * Constructor.
@@ -28,7 +28,8 @@ class Switch final : public Topology {
   /**
    * Implementation of route function.
    */
-  Route route(DeviceId src, DeviceId dest) const noexcept override;
+  [[nodiscard]] Route route(DeviceId src, DeviceId dest)
+      const noexcept override;
 
  private:
   /// node_id of the switch node

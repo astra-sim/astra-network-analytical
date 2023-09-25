@@ -7,17 +7,19 @@ LICENSE file in the root directory of this source tree.
 
 using namespace NetworkAnalyticalCongestionAware;
 
-Switch::Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept
-    : switch_id(npus_count), Topology(npus_count + 1) {
+Switch::Switch(
+    const int npus_count,
+    const Bandwidth bandwidth,
+    const Latency latency) noexcept
+    : BasicTopology(npus_count, npus_count + 1, bandwidth, latency) {
   // e.g., if npus_count=8, then
-  // there are total 9 nodes, where ordinary npus are 0-7, and switch is 8
-
-  // assert npus_count is valid
+  // there are total 9 devices, where ordinary npus are 0-7, and switch is 8
   assert(npus_count > 0);
-
-  // assert bandwidth and latency are valid
   assert(bandwidth > 0);
   assert(latency >= 0);
+
+  // set switch id
+  switch_id = npus_count;
 
   // connect npus and switches, the link should be bidirectional
   for (auto i = 0; i < npus_count; i++) {
@@ -33,9 +35,9 @@ Route Switch::route(DeviceId src, DeviceId dest) const noexcept {
   // construct route
   // start at source, and go to switch, then go to destination
   auto route = Route();
-  route.push_back(npus[src]);
-  route.push_back(npus[switch_id]);
-  route.push_back(npus[dest]);
+  route.push_back(devices[src]);
+  route.push_back(devices[switch_id]);
+  route.push_back(devices[dest]);
 
   return route;
 }

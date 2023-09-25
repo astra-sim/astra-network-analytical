@@ -22,8 +22,8 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionAware::construct_topology(
 
   // for now, congestion_aware backend supports 1-dim topology only
   if (dims_count != 1) {
-    std::cerr << "[analytical/congestion_aware] only support 1-dim topology"
-              << std::endl;
+    std::cerr << "[Error] (network/analytical/congestion_aware) "
+              << "only support 1-dim topology" << std::endl;
     std::exit(-1);
   }
 
@@ -42,8 +42,8 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionAware::construct_topology(
       return std::make_shared<FullyConnected>(npus_count, bandwidth, latency);
     default:
       // shouldn't reaach here
-      std::cerr << "[analytical/congestion_aware] not supported basic-topology"
-                << std::endl;
+      std::cerr << "[Error] (network/analytical/congestion_aware) "
+                << "not supported basic-topology" << std::endl;
       std::exit(-1);
   }
 }

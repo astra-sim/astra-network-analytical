@@ -29,7 +29,7 @@ class Link {
   static void link_become_free(void* link_ptr) noexcept;
 
   /**
-   * Link common event queue to the Link class.
+   * Link event queue to the Link class.
    *
    * @param event_queue (shared) pointer to the event queue
    */
@@ -92,19 +92,19 @@ class Link {
   /**
    * Compute the serialization delay of a chunk.
    *
-   * @param size size of the target chunk
+   * @param chunk_size size of the target chunk
    * @return serialization delay of the chunk
    */
-  [[nodiscard]] EventTime serialization_delay(ChunkSize size) const noexcept;
+  [[nodiscard]] EventTime serialization_delay(ChunkSize chunk_size) const noexcept;
 
   /**
    * Compute the communication delay of a chunk.
    * i.e., communication delay = (link latency) + (serialization delay)
    *
-   * @param size size of the target chunk
+   * @param chunk_size size of the target chunk
    * @return communication delay of the chunk
    */
-  [[nodiscard]] EventTime communication_delay(ChunkSize size) const noexcept;
+  [[nodiscard]] EventTime communication_delay(ChunkSize chunk_size) const noexcept;
 
   /**
    * Schedule the transmission of a chunk.

@@ -5,14 +5,14 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "congestion_aware/topology/Topology.hh"
+#include "congestion_aware/basic-topology/BasicTopology.hh"
 
 namespace NetworkAnalyticalCongestionAware {
 
 /**
  * A FullyConnected basic-topology.
  */
-class FullyConnected final : public Topology {
+class FullyConnected final : public BasicTopology {
  public:
   /**
    * Constructor.
@@ -26,7 +26,7 @@ class FullyConnected final : public Topology {
   /**
    * Implementation of route function.
    */
-  Route route(DeviceId src, DeviceId dest) const noexcept override;
+  [[nodiscard]] Route route(DeviceId src, DeviceId dest) const noexcept override;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

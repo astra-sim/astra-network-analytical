@@ -4,19 +4,19 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "congestion_aware/network/Chunk.hh"
+#include "congestion_aware/network/Device.hh"
 #include "congestion_aware/network/Link.hh"
-#include "congestion_aware/network/Node.hh"
 
 using namespace NetworkAnalyticalCongestionAware;
 
-void Chunk::chunk_arrived_next_node(void* chunk_ptr) noexcept {
+void Chunk::chunk_arrived_next_device(void* const chunk_ptr) noexcept {
   assert(chunk_ptr != nullptr);
 
   // cast to unique_ptr<Chunk>
   auto chunk = std::unique_ptr<Chunk>(static_cast<Chunk*>(chunk_ptr));
 
   // mark chunk arrived next node
-  chunk->arrived_next_node();
+  chunk->mark_arrived_next_device();
 
   if (chunk->arrived_dest()) {
     // chunk arrived dest, invoke callback
@@ -24,26 +24,26 @@ void Chunk::chunk_arrived_next_node(void* chunk_ptr) noexcept {
     chunk->invoke_callback();
   } else {
     // send this chunk to next dest
-    auto current_node = chunk->current_node();
+    const auto current_node = chunk->current_device();
     current_node->send(std::move(chunk)); // send chunk to next des
   }
 }
 
 Chunk::Chunk(
-    ChunkSize size,
-    Route route,
-    Callback callback,
-    CallbackArg callback_arg) noexcept
-    : chunk_size(size),
+    const ChunkSize chunk_size,
+    const Route route,
+    const Callback callback,
+    const CallbackArg callback_arg) noexcept
+    : chunk_size(chunk_size),
       route(std::move(route)),
       callback(callback),
       callback_arg(callback_arg) {
-  assert(size > 0);
+  assert(chunk_size > 0);
   assert(!this->route.empty());
   assert(callback != nullptr);
 }
 
-std::shared_ptr<Node> Chunk::current_node() const noexcept {
+std::shared_ptr<Device> Chunk::current_device() const noexcept {
   // assert the route is not empty
   assert(!route.empty());
 
@@ -51,16 +51,16 @@ std::shared_ptr<Node> Chunk::current_node() const noexcept {
   return route.front();
 }
 
-std::shared_ptr<Node> Chunk::next_node() const noexcept {
+std::shared_ptr<Device> Chunk::next_device() const noexcept {
   // assert the chunk has next dest
   assert(!arrived_dest());
 
   // return next dest
-  auto next_dest = std::next(route.begin(), 1);
+  const auto next_dest = std::next(route.begin(), 1);
   return *next_dest;
 }
 
-void Chunk::arrived_next_node() noexcept {
+void Chunk::mark_arrived_next_device() noexcept {
   // if this method is being called,
   // it means the chunk hasn't arrived its final dest yet
   assert(!arrived_dest());
@@ -77,6 +77,8 @@ bool Chunk::arrived_dest() const noexcept {
 }
 
 ChunkSize Chunk::get_size() const noexcept {
+  assert(chunk_size > 0);
+
   // return chunk size
   return chunk_size;
 }

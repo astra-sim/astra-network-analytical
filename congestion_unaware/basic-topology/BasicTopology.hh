@@ -24,6 +24,8 @@ class BasicTopology : public Topology {
       DeviceId dest,
       ChunkSize chunk_size) const noexcept override;
 
+  [[nodiscard]] TopologyBuildingBlock get_basic_topology_type() const noexcept;
+
  protected:
   [[nodiscard]] virtual int compute_hops_count(DeviceId src, DeviceId dest)
       const noexcept = 0;

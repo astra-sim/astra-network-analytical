@@ -14,53 +14,53 @@ using namespace NetworkAnalytical;
 namespace NetworkAnalyticalCongestionAware {
 
 /**
- * Chunk class
+ * Chunk class represents a chunk.
  */
 class Chunk {
  public:
   /**
-   * Callback to be invoked when a chunk arrives at the next node.
+   * Callback to be invoked when a chunk arrives at the next device.
    *   - if the chunk arrived at its destination, the callback is invoked
-   *   - if not, the chunk is sent to the next node
+   *   - if not, the chunk is sent to the next device
    *
    * @param chunk_ptr: raw pointer to the chunk
    */
-  static void chunk_arrived_next_node(void* chunk_ptr) noexcept;
+  static void chunk_arrived_next_device(void* chunk_ptr) noexcept;
 
   /**
    * Constructor
    *
-   * @param size: size of the chunk
+   * @param chunk_size: size of the chunk
    * @param route: route of the chunk to its destination
    * @param callback: callback to be invoked when the chunk arrives at its
    * destination
    * @param callback_arg: argument to be passed to the callback
    */
   Chunk(
-      ChunkSize size,
+      ChunkSize chunk_size,
       Route route,
       Callback callback,
       CallbackArg callback_arg) noexcept;
 
   /**
-   * Get the current node of the chunk
+   * Get the current device of the chunk
    *
-   * @return current node of the chunk
+   * @return current device of the chunk
    */
-  [[nodiscard]] std::shared_ptr<Node> current_node() const noexcept;
+  [[nodiscard]] std::shared_ptr<Device> current_device() const noexcept;
 
   /**
-   * Get the next node of the chunk
+   * Get the next device of the chunk
    *
-   * @return next node of the chunk
+   * @return next device of the chunk
    */
-  [[nodiscard]] std::shared_ptr<Node> next_node() const noexcept;
+  [[nodiscard]] std::shared_ptr<Device> next_device() const noexcept;
 
   /**
-   * Mark the chunk arrived next node
-   * i.e., drop the current node from the route
+   * Mark the chunk arrived next device
+   * i.e., drop the current device from the route
    */
-  void arrived_next_node() noexcept;
+  void mark_arrived_next_device() noexcept;
 
   /**
    * Check if the chunk arrived at its destination
@@ -89,8 +89,8 @@ class Chunk {
   ChunkSize chunk_size;
 
   /// route of the chunk to its destination
-  // Route has the structure of [current Node, next Node, ..., dest Node]
-  // e.g., if a chunk starts from node 5, then reaches destination 3,
+  // Route has the structure of [current device, next device, ..., dest device]
+  // e.g., if a chunk starts from device 5, then reaches destination 3,
   // the route would be e.g., [5, 1, 6, 2, 3]
   Route route;
 

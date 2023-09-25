@@ -8,15 +8,13 @@ LICENSE file in the root directory of this source tree.
 using namespace NetworkAnalyticalCongestionAware;
 
 Ring::Ring(
-    int npus_count,
-    Bandwidth bandwidth,
-    Latency latency,
-    bool bidirectional) noexcept
-    : bidirectional(bidirectional), Topology(npus_count) {
-  // assert npus_count is valid
+    const int npus_count,
+    const Bandwidth bandwidth,
+    const Latency latency,
+    const bool bidirectional) noexcept
+    : bidirectional(bidirectional),
+      BasicTopology(npus_count, npus_count, bandwidth, latency) {
   assert(npus_count > 0);
-
-  // assert bandwidth and latency are valid
   assert(bandwidth > 0);
   assert(latency >= 0);
 
@@ -42,7 +40,7 @@ Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
     if (clockwise_dist < 0) {
       clockwise_dist += npus_count;
     }
-    auto anticlockwise_dist = npus_count - clockwise_dist;
+    const auto anticlockwise_dist = npus_count - clockwise_dist;
 
     if (anticlockwise_dist < clockwise_dist) {
       // traverse the ring anticlockwise
@@ -54,7 +52,7 @@ Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
   auto current = src;
   while (current != dest) {
     // traverse the ring until reaches dest
-    route.push_back(npus[current]);
+    route.push_back(devices[current]);
     current = (current + step);
 
     if (current < 0) {
@@ -65,7 +63,7 @@ Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
   }
 
   // arrives at dest
-  route.push_back(npus[dest]);
+  route.push_back(devices[dest]);
 
   return route;
 }

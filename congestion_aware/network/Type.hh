@@ -12,12 +12,9 @@ namespace NetworkAnalyticalCongestionAware {
 /// Declaring Network Components
 class Chunk;
 class Link;
-class Node;
-
-/// Node
-using DeviceId = int;
+class Device;
 
 /// Route
-using Route = std::list<std::shared_ptr<Node>>;
+using Route = std::list<std::shared_ptr<Device>>;
 
 } // namespace NetworkAnalyticalCongestionAware

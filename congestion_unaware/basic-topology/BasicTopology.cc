@@ -68,3 +68,9 @@ EventTime BasicTopology::compute_communication_delay(
   // return EventTime type of comms_delay
   return static_cast<EventTime>(comms_delay);
 }
+
+TopologyBuildingBlock BasicTopology::get_basic_topology_type() const noexcept {
+  assert(basic_topology_type != TopologyBuildingBlock::Undefined);
+
+  return basic_topology_type;
+}

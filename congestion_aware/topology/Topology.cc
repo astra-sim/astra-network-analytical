@@ -4,6 +4,7 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "congestion_aware/topology/Topology.hh"
+#include "congestion_aware/network/Link.hh"
 
 using namespace NetworkAnalyticalCongestionAware;
 
@@ -15,17 +16,20 @@ void Topology::set_event_queue(
   Link::set_event_queue(std::move(event_queue));
 }
 
-Topology::Topology(int npus_count) noexcept : npus_count(npus_count) {
-  assert(npus_count > 0);
+Topology::Topology() noexcept : npus_count(-1), devices_count(-1) {}
 
-  // instantiate npus
-  for (auto i = 0; i < npus_count; i++) {
-    npus.push_back(std::make_shared<Node>(i));
-  }
+int Topology::get_devices_count() const noexcept {
+  assert(devices_count > 0);
+  assert(npus_count > 0);
+  assert(devices_count >= npus_count);
+
+  return devices_count;
 }
 
-int Topology::get_nodes_count() const noexcept {
+int Topology::get_npus_count() const noexcept {
+  assert(devices_count > 0);
   assert(npus_count > 0);
+  assert(devices_count >= npus_count);
 
   return npus_count;
 }
@@ -34,34 +38,41 @@ void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {
   assert(chunk != nullptr);
 
   // get src npu node_id
-  auto src = chunk->current_node()->get_id();
+  const auto src = chunk->current_device()->get_id();
 
   // assert src is valid
-  assert(0 <= src && src < npus_count);
+  assert(0 <= src && src < devices_count);
 
   // initiate transmission from src
-  npus[src]->send(std::move(chunk));
+  devices[src]->send(std::move(chunk));
 }
 
 void Topology::connect(
-    DeviceId src,
-    DeviceId dest,
-    Bandwidth bandwidth,
-    Latency latency,
-    bool bidirectional) noexcept {
+    const DeviceId src,
+    const DeviceId dest,
+    const Bandwidth bandwidth,
+    const Latency latency,
+    const bool bidirectional) noexcept {
   // assert the src and dest are valid
-  assert(0 <= src && src < npus_count);
-  assert(0 <= dest && dest < npus_count);
+  assert(0 <= src && src < devices_count);
+  assert(0 <= dest && dest < devices_count);
 
   // assert bandwidth and latency are valid
   assert(bandwidth > 0);
   assert(latency >= 0);
 
   // connect src -> dest
-  npus[src]->connect(dest, bandwidth, latency);
+  devices[src]->connect(dest, bandwidth, latency);
 
   // if bidirectional, connect dest -> src
   if (bidirectional) {
-    npus[dest]->connect(src, bandwidth, latency);
+    devices[dest]->connect(src, bandwidth, latency);
+  }
+}
+
+void Topology::instantiate_devices() noexcept {
+  // instantiate npus
+  for (auto i = 0; i < devices_count; i++) {
+    devices.push_back(std::make_shared<Device>(i));
   }
 }
