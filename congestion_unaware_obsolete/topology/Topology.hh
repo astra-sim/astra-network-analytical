@@ -50,7 +50,7 @@ class Topology {
   virtual NpuId npuAddressToId(NpuAddress npu_address) const noexcept;
 
   TopologyConfigs& configs; // TopologyConfigs for each dimension
-  int npus_count; // NPUs count of the topology
+  int npus_count; // NPUs count of the basic-topology
   CostModel cost_model;
 };
 } // namespace Analytical

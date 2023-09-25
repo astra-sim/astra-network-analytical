@@ -69,12 +69,12 @@ Topology::Latency Topology::criticalLatency(
 }
 
 Topology::NpuAddress Topology::npuIdToAddress(NpuId npu_id) const noexcept {
-  // Baseline implementation: assume 1d topology
+  // Baseline implementation: assume 1d basic-topology
   return NpuAddress(1, npu_id);
 }
 
 Topology::NpuId Topology::npuAddressToId(
     NpuAddress npu_address) const noexcept {
-  // Baseline implementation: assume 1d topology
+  // Baseline implementation: assume 1d basic-topology
   return npu_address[0];
 }

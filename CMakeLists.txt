@@ -33,9 +33,9 @@ file(GLOB congestion_unaware_srcs
 )
 
 file(GLOB congestion_aware_srcs
-#        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/helper/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/network/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/topology/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/basic-topology/*.cc
 )
 
 # Compile Congestion Unaware Backend
@@ -66,7 +66,6 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     # Common properties
     set_target_properties(Analytical_Congestion_Unaware PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
-
     # Link libraries
     target_link_libraries(Analytical_Congestion_Unaware LINK_PUBLIC Boost::program_options)
     target_link_libraries(Analytical_Congestion_Unaware LINK_PUBLIC yaml-cpp)
@@ -74,7 +73,6 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     # Include directories
     target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
-    target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../../)  # TODO: remove this
     target_include_directories(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern/)
 endif ()
 
@@ -111,7 +109,7 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
     target_link_libraries(Analytical_Congestion_Aware LINK_PUBLIC yaml-cpp)
 
     # Include directories
-    target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
     target_include_directories(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
     target_include_directories(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern/)
 endif ()

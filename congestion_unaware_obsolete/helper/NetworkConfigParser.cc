@@ -37,7 +37,7 @@ vector<NetworkConfigParser::TopologyList> NetworkConfigParser::
     } else if (topology == "Switch") {
       topologies_per_dim.emplace_back(TopologyList::Switch);
     } else {
-      cout << "[NetworkConfigParser] Given topology " << topology
+      cout << "[NetworkConfigParser] Given basic-topology " << topology
            << " is not supported." << endl;
       exit(-1);
     }

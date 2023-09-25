@@ -1,0 +1,13 @@
+# Network Configuration
+
+# 3D basic-topology, Ring_FullyConnected_Switch
+topology: [ Ring ]  # Ring, Switch, FullyConnected
+
+# Ring with 16 NPUs
+npus_count: [ 16 ]  # number of NPUs
+
+# Bandwidth per each dimension
+bandwidth: [ 50.0 ]  # GB/s
+
+# Latency per each dimension
+latency: [ 500.0 ]  # ns

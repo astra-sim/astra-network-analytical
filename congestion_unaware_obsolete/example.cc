@@ -14,7 +14,7 @@ using TopologyList = HierarchicalTopologyConfig::TopologyList;
 using DimensionType = HierarchicalTopologyConfig::DimensionType;
 
 int main(int argc, char* argv[]) {
-  // topology configs
+  // basic-topology configs
   auto dimensions_count = 3;
   auto npus_count_per_dim = 4;
   auto link_bandwidth = 1; //  GB/s
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
   auto nic_latency = 0;
   auto router_latency = 0;
 
-  // topology
+  // basic-topology
   auto topology_configs = Analytical::Topology::TopologyConfigs();
 
   for (int i = 0; i < dimensions_count; i++) {

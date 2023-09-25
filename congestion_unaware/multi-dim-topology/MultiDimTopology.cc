@@ -46,7 +46,7 @@ void MultiDimTopology::add_dim(
   auto topology_size = topology->get_nodes_count();
   nodes_count *= topology_size;
 
-  // push back topology and nodes_count
+  // push back basic-topology and nodes_count
   topologies_per_dim.push_back(std::move(topology));
   nodes_count_per_dim.push_back(topology_size);
 }

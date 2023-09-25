@@ -24,9 +24,9 @@ class Topology {
   static void set_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept;
 
   /**
-   * Construct a topology with the given number of npus.
+   * Construct a basic-topology with the given number of npus.
    *
-   * @param npus_count number of npus in the topology
+   * @param npus_count number of npus in the basic-topology
    */
   explicit Topology(int npus_count) noexcept;
 
@@ -50,11 +50,13 @@ class Topology {
    */
   void send(std::unique_ptr<Chunk> chunk) noexcept;
 
+  [[nodiscard]] int get_nodes_count() const noexcept;
+
  protected:
-  /// number of npus in the topology
+  /// number of npus in the basic-topology
   int npus_count;
 
-  /// vector of Node instances in the topology
+  /// vector of Node instances in the basic-topology
   std::vector<std::shared_ptr<Node>> npus;
 
   /**

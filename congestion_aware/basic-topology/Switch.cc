@@ -3,15 +3,15 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "congestion_aware/topology/FullyConnected.hh"
+#include "congestion_aware/basic-topology/Switch.hh"
 
 using namespace NetworkAnalyticalCongestionAware;
 
-FullyConnected::FullyConnected(
-    int npus_count,
-    Bandwidth bandwidth,
-    Latency latency) noexcept
-    : Topology(npus_count) {
+Switch::Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept
+    : switch_id(npus_count), Topology(npus_count + 1) {
+  // e.g., if npus_count=8, then
+  // there are total 9 nodes, where ordinary npus are 0-7, and switch is 8
+
   // assert npus_count is valid
   assert(npus_count > 0);
 
@@ -19,25 +19,22 @@ FullyConnected::FullyConnected(
   assert(bandwidth > 0);
   assert(latency >= 0);
 
-  // fully-connect every src-dest pairs
-  for (auto src = 0; src < npus_count; src++) {
-    for (auto dest = 0; dest < npus_count; dest++) {
-      if (src != dest) {
-        connect(src, dest, bandwidth, latency, false);
-      }
-    }
+  // connect npus and switches, the link should be bidirectional
+  for (auto i = 0; i < npus_count; i++) {
+    connect(i, switch_id, bandwidth, latency, true);
   }
 }
 
-Route FullyConnected::route(NodeId src, NodeId dest) const noexcept {
+Route Switch::route(NodeId src, NodeId dest) const noexcept {
   // assert npus are in valid range
   assert(0 <= src && src < npus_count);
   assert(0 <= dest && dest < npus_count);
 
   // construct route
-  // directly connected
+  // start at source, and go to switch, then go to destination
   auto route = Route();
   route.push_back(npus[src]);
+  route.push_back(npus[switch_id]);
   route.push_back(npus[dest]);
 
   return route;

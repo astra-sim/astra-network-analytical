@@ -1,6 +1,6 @@
 # Network Configuration
 
-# 3D topology, Ring_FullyConnected_Switch
+# 3D basic-topology, Ring_FullyConnected_Switch
 topology: [ Ring, FullyConnected, Switch ]  # Ring, Switch, FullyConnected
 
 # 2 x 8 x 4 = 64 NPUs

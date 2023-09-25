@@ -10,14 +10,14 @@ LICENSE file in the root directory of this source tree.
 namespace NetworkAnalyticalCongestionAware {
 
 /**
- * A FullyConnected topology.
+ * A FullyConnected basic-topology.
  */
 class FullyConnected final : public Topology {
  public:
   /**
    * Constructor.
    *
-   * @param npus_count number of npus in the topology
+   * @param npus_count number of npus in the basic-topology
    * @param bandwidth bandwidth of link
    * @param latency latency of link
    */

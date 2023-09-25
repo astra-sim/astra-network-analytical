@@ -24,7 +24,7 @@ int Ring::compute_hops_count(NodeId src, NodeId dest) const noexcept {
   assert(0 <= dest && dest < nodes_count);
   assert(src != dest);
 
-  // for Ring topology
+  // for Ring basic-topology
   // 1. compute clockwise and anti-clockwise distance
   // 2. if uni-directional, use clockwise one
   // 3. if bi-directional, use the shorter one

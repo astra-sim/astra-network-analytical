@@ -24,6 +24,12 @@ Topology::Topology(int npus_count) noexcept : npus_count(npus_count) {
   }
 }
 
+int Topology::get_nodes_count() const noexcept {
+  assert(npus_count > 0);
+
+  return npus_count;
+}
+
 void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {
   assert(chunk != nullptr);
 

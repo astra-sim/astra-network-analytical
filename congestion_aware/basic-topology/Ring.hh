@@ -12,18 +12,23 @@ using namespace NetworkAnalytical;
 namespace NetworkAnalyticalCongestionAware {
 
 /**
- * A switch topology.
+ * A ring basic-topology.
  */
-class Switch final : public Topology {
+class Ring final : public Topology {
  public:
   /**
    * Constructor.
    *
-   * @param npus_count number of npus in a switch
+   * @param npus_count number of npus in a ring
    * @param bandwidth bandwidth of link
    * @param latency latency of link
+   * @param bidirectional true if ring is bidirectional, false otherwise
    */
-  Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
+  Ring(
+      int npus_count,
+      Bandwidth bandwidth,
+      Latency latency,
+      bool bidirectional = true) noexcept;
 
   /**
    * Implementation of route function.
@@ -31,8 +36,8 @@ class Switch final : public Topology {
   Route route(NodeId src, NodeId dest) const noexcept override;
 
  private:
-  /// node_id of the switch node
-  NodeId switch_id;
+  /// mark whether the ring is bidirectional.
+  bool bidirectional;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

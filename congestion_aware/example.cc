@@ -5,8 +5,9 @@ LICENSE file in the root directory of this source tree.
 
 #include "common/Common.hh"
 #include "common/event-queue/EventQueue.hh"
-#include "network/Chunk.hh"
-#include "topology/Ring.hh"
+#include "common/network-parser/NetworkParser.hh"
+#include "congestion_aware/network/Chunk.hh"
+#include "congestion_aware/topology/Helper.hh"
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionAware;
@@ -23,24 +24,16 @@ void chunk_arrived_callback(void* event_queue_ptr) {
 
 int main() {
   /// Instantiate shared resources
-  auto event_queue = std::make_shared<EventQueue>();
+  const auto event_queue = std::make_shared<EventQueue>();
   Topology::set_event_queue(event_queue);
 
-  /// Setup topology
-  // topology configuration
-  auto npus_count = 16;
-  auto bandwidth = 50; // GB/s ~ B/ns
-  auto latency = 500; // ns
-  auto chunk_size = 1048576; // Bytes
+  /// Parse network config and create topology
+  const auto network_parser = NetworkParser("../congestion_aware/example_network.yml");
+  const auto topology = construct_topology(network_parser);
+  const auto npus_count = topology->get_nodes_count();
 
-  // instantiate nodes
-  auto nodes = std::vector<std::shared_ptr<Node>>();
-  for (auto i = 0; i < npus_count; i++) {
-    nodes.push_back(std::make_shared<Node>(i));
-  }
-
-  // instantiate Ring topology
-  auto topology = std::make_shared<Ring>(npus_count, bandwidth, latency, true);
+  /// message settings
+  const auto chunk_size = 1'048'576; // 1 MB
 
   /// Run All-Gather
   for (int i = 0; i < npus_count; i++) {
@@ -50,7 +43,7 @@ int main() {
       }
 
       // crate a chunk
-      auto route = std::move(topology->route(i, j));
+      auto route = topology->route(i, j);
       auto* event_queue_ptr = static_cast<void*>(event_queue.get());
       auto chunk = std::make_unique<Chunk>(
           chunk_size, route, chunk_arrived_callback, event_queue_ptr);
@@ -66,7 +59,7 @@ int main() {
   }
 
   /// Print simulation result
-  auto finish_time = event_queue->get_current_time();
+  const auto finish_time = event_queue->get_current_time();
   std::cout << "Simulation finished at time: " << finish_time << " ns"
             << std::endl;
 

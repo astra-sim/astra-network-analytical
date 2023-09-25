@@ -141,7 +141,7 @@ HierarchicalTopology::Bandwidth HierarchicalTopology::
     // pass
   } else {
     cout
-        << "[HierarchicalTopology, method getNpuTotalBandwidthPerDim] Given topology for dimension "
+        << "[HierarchicalTopology, method getNpuTotalBandwidthPerDim] Given basic-topology for dimension "
         << dimension << " not defined." << endl;
     exit(-1);
   }
@@ -216,7 +216,7 @@ HierarchicalTopology::Latency HierarchicalTopology::linkLatency(
 HierarchicalTopology::NpuAddress HierarchicalTopology::npuIdToAddress(
     NpuId npu_id) const noexcept {
   // If units-count if [2, 8, 4], and the given id is 47, then the id should be
-  // (id % (topology size of current dim)) / (topology size of last dim)
+  // (id % (basic-topology size of current dim)) / (basic-topology size of last dim)
   //       1 = 47 % (2) / (1)
   //       7 = 47 % (2 * 8) / (1 * 2)
   //       2 = 47 % (2 * 8 * 4) / (1 * 2 * 8)
@@ -241,7 +241,7 @@ HierarchicalTopology::NpuAddress HierarchicalTopology::npuIdToAddress(
 HierarchicalTopology::NpuId HierarchicalTopology::npuAddressToId(
     NpuAddress npu_address) const noexcept {
   // If units-count if [2, 8, 4], and the address is [1, 7, 3], then the id
-  // should be address * (topology size up to the dimension)
+  // should be address * (basic-topology size up to the dimension)
   //       1 * (1)
   //     + 7 * (1 * 2)
   //     + 3 * (1 * 2 * 8)
