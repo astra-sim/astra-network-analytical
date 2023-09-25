@@ -44,8 +44,8 @@ void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {
 }
 
 void Topology::connect(
-    NodeId src,
-    NodeId dest,
+    DeviceId src,
+    DeviceId dest,
     Bandwidth bandwidth,
     Latency latency,
     bool bidirectional) noexcept {

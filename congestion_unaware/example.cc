@@ -12,14 +12,15 @@ using namespace NetworkAnalyticalCongestionUnaware;
 
 int main() {
   /// Parse network config and create topology
-  const auto network_parser = NetworkParser("../congestion_unaware/example_network.yml");
+  const auto network_parser =
+      NetworkParser("../congestion_unaware/example_network.yml");
   const auto topology = construct_topology(network_parser);
 
   /// message settings
   const auto chunk_size = 1'048'576; // 1 MB
 
   /// Print basic-topology information
-  std::cout << "Nodes Count: " << topology->get_nodes_count() << std::endl;
+  std::cout << "Total NPUs Count: " << topology->get_npus_count() << std::endl;
 
   /// Run sample send-recv
   const auto comm_delay = topology->send(3, 19, chunk_size);

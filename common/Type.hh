@@ -12,7 +12,7 @@ using Callback = void (*)(void*);
 using CallbackArg = void*;
 
 /// Node
-using NodeId = int; // starting from 0
+using DeviceId = int; // starting from 0
 
 /// Chunk and route
 using ChunkSize = double; // in Bytes
@@ -25,6 +25,6 @@ using Latency = double; // in ns
 using EventTime = uint64_t; // in ns
 
 /// Topology Building Blocks
-enum class TopologyBuildingBlock { Ring, FullyConnected, Switch };
+enum class TopologyBuildingBlock { Undefined, Ring, FullyConnected, Switch };
 
 } // namespace NetworkAnalytical

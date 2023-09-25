@@ -27,7 +27,7 @@ Ring::Ring(
   connect(npus_count - 1, 0, bandwidth, latency, bidirectional);
 }
 
-Route Ring::route(NodeId src, NodeId dest) const noexcept {
+Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
   // assert npus are in valid range
   assert(0 <= src && src < npus_count);
   assert(0 <= dest && dest < npus_count);

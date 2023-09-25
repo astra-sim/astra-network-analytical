@@ -26,7 +26,7 @@ class FullyConnected final : public Topology {
   /**
    * Implementation of route function.
    */
-  Route route(NodeId src, NodeId dest) const noexcept override;
+  Route route(DeviceId src, DeviceId dest) const noexcept override;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

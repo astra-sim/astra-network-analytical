@@ -16,14 +16,13 @@ namespace NetworkAnalyticalCongestionUnaware {
 class Ring final : public BasicTopology {
  public:
   explicit Ring(
-      int nodes_count,
+      int npus_count,
       Bandwidth bandwidth,
       Latency latency,
       bool bidirectional = true) noexcept;
 
-  [[nodiscard]] int compute_hops_count(
-      NodeId src,
-      NodeId dest) const noexcept override;
+  [[nodiscard]] int compute_hops_count(DeviceId src, DeviceId dest)
+      const noexcept override;
 
  private:
   bool bidirectional;

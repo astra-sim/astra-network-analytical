@@ -28,11 +28,11 @@ class Switch final : public Topology {
   /**
    * Implementation of route function.
    */
-  Route route(NodeId src, NodeId dest) const noexcept override;
+  Route route(DeviceId src, DeviceId dest) const noexcept override;
 
  private:
   /// node_id of the switch node
-  NodeId switch_id;
+  DeviceId switch_id;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

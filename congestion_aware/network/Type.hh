@@ -15,7 +15,7 @@ class Link;
 class Node;
 
 /// Node
-using NodeId = int;
+using DeviceId = int;
 
 /// Route
 using Route = std::list<std::shared_ptr<Node>>;

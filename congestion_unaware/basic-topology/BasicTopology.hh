@@ -15,16 +15,20 @@ namespace NetworkAnalyticalCongestionUnaware {
 
 class BasicTopology : public Topology {
  public:
-  BasicTopology(int nodes_count, Bandwidth bandwidth, Latency latency) noexcept;
+  BasicTopology(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
   virtual ~BasicTopology() noexcept;
 
-  [[nodiscard]] EventTime send(NodeId src, NodeId dest, ChunkSize size)
-      const noexcept override;
+  [[nodiscard]] EventTime send(
+      DeviceId src,
+      DeviceId dest,
+      ChunkSize chunk_size) const noexcept override;
 
  protected:
-  [[nodiscard]] virtual int compute_hops_count(NodeId src, NodeId dest)
+  [[nodiscard]] virtual int compute_hops_count(DeviceId src, DeviceId dest)
       const noexcept = 0;
+
+  TopologyBuildingBlock basic_topology_type;
 
  private:
   [[nodiscard]] static Bandwidth bw_GBps_to_Bpns(Bandwidth bw_GBps) noexcept;

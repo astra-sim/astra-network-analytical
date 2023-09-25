@@ -18,24 +18,26 @@ class MultiDimTopology : public Topology {
  public:
   MultiDimTopology() noexcept;
 
-  [[nodiscard]] EventTime send(NodeId src, NodeId dest, ChunkSize size)
-      const noexcept override;
+  [[nodiscard]] EventTime send(
+      DeviceId src,
+      DeviceId dest,
+      ChunkSize chunk_size) const noexcept override;
 
   void add_dim(std::unique_ptr<BasicTopology> topology) noexcept;
 
  private:
-  using MultiDimAddress = std::vector<NodeId>;
+  using MultiDimAddress = std::vector<DeviceId>;
 
   int dims_count;
   std::vector<std::unique_ptr<BasicTopology>> topologies_per_dim;
-  std::vector<int> nodes_count_per_dim;
+  std::vector<int> npus_count_per_dim;
 
   [[nodiscard]] MultiDimAddress translate_address(
-      NodeId node_id) const noexcept;
+      DeviceId npu_id) const noexcept;
 
   [[nodiscard]] int get_dim_to_transfer(
-      MultiDimAddress src_address,
-      MultiDimAddress dest_address) const noexcept;
+      const MultiDimAddress& src_address,
+      const MultiDimAddress& dest_address) const noexcept;
 };
 
 } // namespace NetworkAnalyticalCongestionUnaware

@@ -16,15 +16,15 @@ class Topology {
  public:
   Topology() noexcept;
 
-  [[nodiscard]] virtual EventTime send(NodeId src, NodeId dest, ChunkSize size)
-      const noexcept = 0;
+  [[nodiscard]] virtual EventTime send(
+      DeviceId src,
+      DeviceId dest,
+      ChunkSize chunk_size) const noexcept = 0;
 
-  [[nodiscard]] int get_nodes_count() const noexcept;
+  [[nodiscard]] int get_npus_count() const noexcept;
 
  protected:
-  int nodes_count;
-
-  void set_nodes_count(int new_nodes_count) noexcept;
+  int npus_count;
 };
 
 } // namespace NetworkAnalyticalCongestionUnaware

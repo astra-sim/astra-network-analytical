@@ -44,4 +44,4 @@ class NetworkParser {
   std::vector<T> parse_vector(const YAML::Node& node) const noexcept;
 };
 
-} // namespace NetworkAnalyticalCongestionUnaware
+} // namespace NetworkAnalytical

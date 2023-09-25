@@ -23,14 +23,14 @@ class Node {
    *
    * @param id node_id of the node
    */
-  explicit Node(NodeId id) noexcept;
+  explicit Node(DeviceId id) noexcept;
 
   /**
    * Get node_id of the node.
    *
    * @return node_id of the node
    */
-  [[nodiscard]] NodeId get_id() const noexcept;
+  [[nodiscard]] DeviceId get_id() const noexcept;
 
   /**
    * Initiate a chunk transmission.
@@ -47,15 +47,15 @@ class Node {
    * @param bandwidth bandwidth of the link
    * @param latency latency of the link
    */
-  void connect(NodeId id, Bandwidth bandwidth, Latency latency) noexcept;
+  void connect(DeviceId id, Bandwidth bandwidth, Latency latency) noexcept;
 
  private:
   /// node node_id
-  NodeId node_id;
+  DeviceId node_id;
 
   /// links to other nodes
   /// map[dest node node_id] -> link
-  std::map<NodeId, std::shared_ptr<Link>> links;
+  std::map<DeviceId, std::shared_ptr<Link>> links;
 
   /**
    * Check if this node is connected to another node.
@@ -63,7 +63,7 @@ class Node {
    * @param dest node_id of the node to check
    * @return true if connected, false otherwise
    */
-  [[nodiscard]] bool connected(NodeId dest) const noexcept;
+  [[nodiscard]] bool connected(DeviceId dest) const noexcept;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

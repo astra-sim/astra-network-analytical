@@ -9,11 +9,11 @@ LICENSE file in the root directory of this source tree.
 
 using namespace NetworkAnalyticalCongestionAware;
 
-Node::Node(NodeId id) noexcept : node_id(id) {
+Node::Node(DeviceId id) noexcept : node_id(id) {
   assert(id >= 0);
 }
 
-NodeId Node::get_id() const noexcept {
+DeviceId Node::get_id() const noexcept {
   return node_id;
 }
 
@@ -38,7 +38,7 @@ void Node::send(std::unique_ptr<Chunk> chunk) noexcept {
   links[next_dest_id]->send(std::move(chunk));
 }
 
-void Node::connect(NodeId id, Bandwidth bandwidth, Latency latency) noexcept {
+void Node::connect(DeviceId id, Bandwidth bandwidth, Latency latency) noexcept {
   assert(id >= 0);
   assert(bandwidth > 0);
   assert(latency >= 0);
@@ -50,7 +50,7 @@ void Node::connect(NodeId id, Bandwidth bandwidth, Latency latency) noexcept {
   links[id] = std::make_shared<Link>(bandwidth, latency);
 }
 
-bool Node::connected(NodeId dest) const noexcept {
+bool Node::connected(DeviceId dest) const noexcept {
   assert(dest >= 0);
 
   // check whether the connection exists

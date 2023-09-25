@@ -16,11 +16,11 @@ namespace NetworkAnalyticalCongestionUnaware {
 class Switch final : public BasicTopology {
  public:
   explicit Switch(
-      int nodes_count,
+      int npus_count,
       Bandwidth bandwidth,
       Latency latency) noexcept;
 
-  [[nodiscard]] int compute_hops_count(NodeId src, NodeId dest)
+  [[nodiscard]] int compute_hops_count(DeviceId src, DeviceId dest)
       const noexcept override;
 };
 

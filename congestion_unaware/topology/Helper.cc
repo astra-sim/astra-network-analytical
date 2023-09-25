@@ -38,14 +38,14 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::
         return std::make_shared<FullyConnected>(npus_count, bandwidth, latency);
       default:
         // shouldn't reaach here
-        std::cerr << "[analytical/congestion_unaware] not supported basic-topology"
-                  << std::endl;
+        std::cerr << "[Error] (network/analytical/congestion_unaware)"
+                  << "Not supported basic-topology" << std::endl;
         std::exit(-1);
     }
   }
 
   // otherwise, create multi-dim basic-topology
-  auto multi_dim_topology = std::make_shared<MultiDimTopology>();
+  const auto multi_dim_topology = std::make_shared<MultiDimTopology>();
 
   // create and append dims
   for (auto dim = 0; dim < dims_count; dim++) {
@@ -69,9 +69,9 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::
             std::make_unique<FullyConnected>(npus_count, bandwidth, latency);
         break;
       default:
-        // shouldn't reaach here
-        std::cerr << "[analytical/congestion_unaware] not supported basic-topology"
-                  << std::endl;
+        // shouldn't reach here
+        std::cerr << "[Error] (network/analytical/congestion_unaware)"
+                  << "Not supported basic-topology" << std::endl;
         std::exit(-1);
     }
     multi_dim_topology->add_dim(std::move(dim_topology));

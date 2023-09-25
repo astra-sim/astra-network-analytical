@@ -25,7 +25,7 @@ Switch::Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept
   }
 }
 
-Route Switch::route(NodeId src, NodeId dest) const noexcept {
+Route Switch::route(DeviceId src, DeviceId dest) const noexcept {
   // assert npus are in valid range
   assert(0 <= src && src < npus_count);
   assert(0 <= dest && dest < npus_count);

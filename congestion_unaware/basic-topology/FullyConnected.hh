@@ -15,12 +15,9 @@ namespace NetworkAnalyticalCongestionUnaware {
 
 class FullyConnected final : public BasicTopology {
  public:
-  explicit FullyConnected(
-      int nodes_count,
-      Bandwidth bandwidth,
-      Latency latency) noexcept;
+  FullyConnected(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
-  [[nodiscard]] int compute_hops_count(NodeId src, NodeId dest)
+  [[nodiscard]] int compute_hops_count(DeviceId src, DeviceId dest)
       const noexcept override;
 };
 

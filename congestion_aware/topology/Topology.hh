@@ -41,7 +41,7 @@ class Topology {
    *
    * @return route from src to dest
    */
-  [[nodiscard]] virtual Route route(NodeId src, NodeId dest) const noexcept = 0;
+  [[nodiscard]] virtual Route route(DeviceId src, DeviceId dest) const noexcept = 0;
 
   /**
    * Initiate the transmission of a chunk.
@@ -72,8 +72,8 @@ class Topology {
    * @param bidirectional true if connection is bidirectional, false otherwise
    */
   void connect(
-      NodeId src,
-      NodeId dest,
+      DeviceId src,
+      DeviceId dest,
       Bandwidth bandwidth,
       Latency latency,
       bool bidirectional = true) noexcept;

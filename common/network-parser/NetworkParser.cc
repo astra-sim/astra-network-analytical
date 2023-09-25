@@ -23,7 +23,7 @@ NetworkParser::NetworkParser(const std::string& path) noexcept
     parse_network_config_yml(network_config);
   } catch (const YAML::BadFile& e) {
     // loading network config file failed
-    std::cerr << e.what() << std::endl;
+    std::cerr << "[Error] (network/analytical) " << e.what() << std::endl;
     std::exit(-1);
   }
 }
@@ -69,11 +69,16 @@ void NetworkParser::parse_network_config_yml(
   const auto read_topology = network_config["topology"];
   for (const auto& topology : read_topology) {
     try {
-      auto topology_name = topology.as<std::string>();
-      auto topology_dim = NetworkParser::parse_topology_name(topology_name);
+      // read and parse topology name
+      const auto topology_name = topology.as<std::string>();
+      const auto topology_dim =
+          NetworkParser::parse_topology_name(topology_name);
+
+      // update topologies_per_dim vector
       topologies_per_dim.push_back(topology_dim);
     } catch (const YAML::BadConversion& e) {
-      std::cerr << "[analytical network] " << e.what() << std::endl;
+      // error in parsing topology name
+      std::cerr << "[Error] (network/analytical) " << e.what() << std::endl;
       std::exit(-1);
     }
   }
@@ -107,41 +112,44 @@ TopologyBuildingBlock NetworkParser::parse_topology_name(
   }
 
   // shouldn't reach here
-  std::cerr << "[analytical network] Topology name " << topology_name
-            << " not supported" << std::endl;
+  std::cerr << "[Error] (network/analytical) "
+            << "Topology name " << topology_name << " not supported"
+            << std::endl;
   std::exit(-1);
 }
 
 void NetworkParser::check_validity() const noexcept {
   // dims_count should match
   if (dims_count != npus_counts_per_dim.size()) {
-    std::cerr << "[analytical network] length of npus_count ("
-              << npus_counts_per_dim.size()
+    std::cerr << "[Error] (network/analytical) "
+              << "length of npus_count (" << npus_counts_per_dim.size()
               << ") doesn't match with dimensions (" << dims_count << ")"
               << std::endl;
     std::exit(-1);
   }
 
   if (dims_count != bandwidths_per_dim.size()) {
-    std::cerr << "[analytical network] length of bandwidth ("
-              << bandwidths_per_dim.size()
+    std::cerr << "[Error] (network/analytical) "
+              << "length of bandwidth (" << bandwidths_per_dim.size()
               << ") doesn't match with dims_count (" << dims_count << ")"
               << std::endl;
     std::exit(-1);
   }
 
   if (dims_count != latencies_per_dim.size()) {
-    std::cerr << "[analytical network] length of latency ("
-              << latencies_per_dim.size() << ") doesn't match with dims_count ("
-              << dims_count << ")" << std::endl;
+    std::cerr << "[Error] (network/analytical) "
+              << "length of latency (" << latencies_per_dim.size()
+              << ") doesn't match with dims_count (" << dims_count << ")"
+              << std::endl;
     std::exit(-1);
   }
 
   // npus_count should be all positive
   for (const auto& npus_count : npus_counts_per_dim) {
     if (npus_count <= 1) {
-      std::cerr << "[analytical network] npus_count (" << npus_count
-                << ") should be larger than 1" << std::endl;
+      std::cerr << "[Error] (network/analytical) "
+                << "npus_count (" << npus_count << ") should be larger than 1"
+                << std::endl;
       std::exit(-1);
     }
   }
@@ -149,8 +157,9 @@ void NetworkParser::check_validity() const noexcept {
   // bandwidths should be all positive
   for (const auto& bandwidth : bandwidths_per_dim) {
     if (bandwidth <= 0) {
-      std::cerr << "[analytical network] bandwidth (" << bandwidth
-                << ") should be larger than 0" << std::endl;
+      std::cerr << "[Error] (network/analytical) "
+                << "bandwidth (" << bandwidth << ") should be larger than 0"
+                << std::endl;
       std::exit(-1);
     }
   }
@@ -158,8 +167,9 @@ void NetworkParser::check_validity() const noexcept {
   // latency should be non-negative
   for (const auto& latency : latencies_per_dim) {
     if (latency < 0) {
-      std::cerr << "[analytical network] latency (" << latency
-                << ") should be non-negative" << std::endl;
+      std::cerr << "[Error] (network/analytical) "
+                << "latency (" << latency << ") should be non-negative"
+                << std::endl;
       std::exit(-1);
     }
   }
@@ -168,16 +178,23 @@ void NetworkParser::check_validity() const noexcept {
 template <typename T>
 std::vector<T> NetworkParser::parse_vector(
     const YAML::Node& node) const noexcept {
+  // create empty vector
   auto parsed_vector = std::vector<T>();
 
   for (const auto& element : node) {
     try {
-      auto element_value = element.as<T>();
+      // read an element
+      const auto element_value = element.as<T>();
+
+      // push to the resulting vector
       parsed_vector.push_back(element_value);
     } catch (const YAML::BadConversion& e) {
-      std::cerr << "[analytical network] " << e.what() << std::endl;
+      // error reading an element from the yaml file
+      std::cerr << "[Error] (network/analytical) " << e.what() << std::endl;
       std::exit(-1);
     }
   }
+
+  // return parsed vector
   return parsed_vector;
 }
