@@ -52,12 +52,18 @@ class Topology {
 
   [[nodiscard]] int get_devices_count() const noexcept;
 
+  [[nodiscard]] virtual int get_dims_count() const noexcept = 0;
+  [[nodiscard]] virtual std::vector<int> get_npus_count_per_dim() const noexcept = 0;
+
  protected:
   /// number of total devices (including switches) in the topology
   int devices_count;
 
   /// number of NPUs in the topology
   int npus_count;
+
+  /// number of network dimensions
+  int dims_count;
 
   /// vector of Device instances in the topology
   std::vector<std::shared_ptr<Device>> devices;

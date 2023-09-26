@@ -16,7 +16,8 @@ void Topology::set_event_queue(
   Link::set_event_queue(std::move(event_queue));
 }
 
-Topology::Topology() noexcept : npus_count(-1), devices_count(-1) {}
+Topology::Topology() noexcept : npus_count(-1), devices_count(-1), dims_count(-1) {
+}
 
 int Topology::get_devices_count() const noexcept {
   assert(devices_count > 0);

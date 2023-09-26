@@ -25,6 +25,10 @@ class BasicTopology : public Topology {
 
   [[nodiscard]] TopologyBuildingBlock get_basic_topology_type() const noexcept;
 
+  [[nodiscard]] int get_dims_count() const noexcept override;
+
+  [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept override;
+
  protected:
   Bandwidth bandwidth;
   Latency latency;

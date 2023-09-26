@@ -67,8 +67,8 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     set_target_properties(Analytical_Congestion_Unaware PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
     # Link libraries
-    target_link_libraries(Analytical_Congestion_Unaware LINK_PUBLIC Boost::program_options)
-    target_link_libraries(Analytical_Congestion_Unaware LINK_PUBLIC yaml-cpp)
+    target_link_libraries(Analytical_Congestion_Unaware PUBLIC Boost::program_options)
+    target_link_libraries(Analytical_Congestion_Unaware PUBLIC yaml-cpp)
 
     # Include directories
     target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -105,11 +105,11 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
     set_target_properties(Analytical_Congestion_Aware PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
     # Link libraries
-    target_link_libraries(Analytical_Congestion_Aware LINK_PUBLIC Boost::program_options)
-    target_link_libraries(Analytical_Congestion_Aware LINK_PUBLIC yaml-cpp)
+    target_link_libraries(Analytical_Congestion_Aware PUBLIC Boost::program_options)
+    target_link_libraries(Analytical_Congestion_Aware PUBLIC yaml-cpp)
 
     # Include directories
-    target_include_directories(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
     target_include_directories(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern/)
 endif ()

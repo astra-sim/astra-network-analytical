@@ -26,6 +26,7 @@ BasicTopology::BasicTopology(
   // setup npus and devices count
   this->npus_count = npus_count;
   this->devices_count = devices_count;
+  this->dims_count = 1;
 
   // instantiate devices
   instantiate_devices();
@@ -38,3 +39,18 @@ TopologyBuildingBlock BasicTopology::get_basic_topology_type() const noexcept {
 
   return basic_topology_type;
 }
+
+int BasicTopology::get_dims_count() const noexcept {
+  assert(dims_count > 0);
+
+  return dims_count;
+}
+
+std::vector<int> BasicTopology::get_npus_count_per_dim() const noexcept {
+  assert(npus_count > 0);
+  assert(devices_count > 0);
+  assert(devices_count >= npus_count);
+
+  return {npus_count};
+}
+
