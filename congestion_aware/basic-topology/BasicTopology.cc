@@ -3,7 +3,8 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "congestion_aware/basic-topology/BasicTopology.hh"
+#include "congestion_aware/BasicTopology.hh"
+#include <cassert>
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionAware;
@@ -27,6 +28,7 @@ BasicTopology::BasicTopology(
   this->npus_count = npus_count;
   this->devices_count = devices_count;
   this->dims_count = 1;
+  this->npus_count_per_dim.push_back(npus_count);
 
   // instantiate devices
   instantiate_devices();
@@ -39,18 +41,3 @@ TopologyBuildingBlock BasicTopology::get_basic_topology_type() const noexcept {
 
   return basic_topology_type;
 }
-
-int BasicTopology::get_dims_count() const noexcept {
-  assert(dims_count > 0);
-
-  return dims_count;
-}
-
-std::vector<int> BasicTopology::get_npus_count_per_dim() const noexcept {
-  assert(npus_count > 0);
-  assert(devices_count > 0);
-  assert(devices_count >= npus_count);
-
-  return {npus_count};
-}
-

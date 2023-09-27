@@ -5,9 +5,8 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "common/Common.hh"
 #include "common/Type.hh"
-#include "common/event-queue/EventList.hh"
+#include "common/EventList.hh"
 
 namespace NetworkAnalytical {
 

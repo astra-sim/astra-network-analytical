@@ -5,26 +5,19 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "common/Common.hh"
 #include "common/Type.hh"
+#include "congestion_unaware/BasicTopology.hh"
 
 using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionUnaware {
 
-class Topology {
+class FullyConnected final : public BasicTopology {
  public:
-  Topology() noexcept;
+  FullyConnected(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
-  [[nodiscard]] virtual EventTime send(
-      DeviceId src,
-      DeviceId dest,
-      ChunkSize chunk_size) const noexcept = 0;
-
-  [[nodiscard]] int get_npus_count() const noexcept;
-
- protected:
-  int npus_count;
+  [[nodiscard]] int compute_hops_count(DeviceId src, DeviceId dest)
+      const noexcept override;
 };
 
 } // namespace NetworkAnalyticalCongestionUnaware

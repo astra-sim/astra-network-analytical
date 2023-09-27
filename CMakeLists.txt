@@ -21,18 +21,18 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extern/yaml-cpp yaml-cpp)
 
 # Include src files to compile
-file(GLOB common_srcs
+file(GLOB srcs_common
         ${CMAKE_CURRENT_SOURCE_DIR}/common/event-queue/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/common/network-parser/*.cc
 )
 
-file(GLOB congestion_unaware_srcs
+file(GLOB srcs_congestion_unaware
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/topology/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/basic-topology/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/multi-dim-topology/*.cc
 )
 
-file(GLOB congestion_aware_srcs
+file(GLOB srcs_congestion_aware
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/network/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/topology/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/basic-topology/*.cc
@@ -41,7 +41,7 @@ file(GLOB congestion_aware_srcs
 # Compile Congestion Unaware Backend
 if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     if (NETWORK_BACKEND_BUILD_AS_LIBRARY)
-        add_library(Analytical_Congestion_Unaware STATIC ${congestion_unaware_srcs} ${common_srcs})
+        add_library(Analytical_Congestion_Unaware STATIC ${srcs_congestion_unaware} ${srcs_common})
 
         # Properties
         set_target_properties(Analytical_Congestion_Unaware
@@ -51,7 +51,7 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
                 ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
         )
     else ()
-        add_executable(Analytical_Congestion_Unaware ${congestion_unaware_srcs} ${common_srcs})
+        add_executable(Analytical_Congestion_Unaware ${srcs_congestion_unaware} ${srcs_common})
         target_sources(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/example.cc)
 
         # Properties
@@ -71,15 +71,15 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     target_link_libraries(Analytical_Congestion_Unaware PUBLIC yaml-cpp)
 
     # Include directories
-    target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-    target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+    target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+    target_include_directories(Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/astra-network-analytical/)
     target_include_directories(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern/)
 endif ()
 
 # Compile Congestion Aware Backend
 if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
     if (NETWORK_BACKEND_BUILD_AS_LIBRARY)
-        add_library(Analytical_Congestion_Aware STATIC ${congestion_aware_srcs} ${common_srcs})
+        add_library(Analytical_Congestion_Aware STATIC ${srcs_congestion_aware} ${srcs_common})
 
         # Properties
         set_target_properties(Analytical_Congestion_Aware
@@ -89,7 +89,7 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
                 ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
         )
     else ()
-        add_executable(Analytical_Congestion_Aware ${congestion_aware_srcs} ${common_srcs})
+        add_executable(Analytical_Congestion_Aware ${srcs_congestion_aware} ${srcs_common})
         target_sources(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/example.cc)
 
         # Properties
@@ -109,7 +109,7 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
     target_link_libraries(Analytical_Congestion_Aware PUBLIC yaml-cpp)
 
     # Include directories
-    target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-    target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+    target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+    target_include_directories(Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/astra-network-analytical/)
     target_include_directories(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/extern/)
 endif ()

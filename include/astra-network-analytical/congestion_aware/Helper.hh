@@ -5,10 +5,9 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "common/Common.hh"
-#include "common/Type.hh"
-#include "common/network-parser/NetworkParser.hh"
-#include "congestion_aware/topology/Topology.hh"
+#include <memory>
+#include "common/NetworkParser.hh"
+#include "congestion_aware/Topology.hh"
 
 using namespace NetworkAnalytical;
 

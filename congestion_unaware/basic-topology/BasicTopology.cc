@@ -3,7 +3,8 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "congestion_unaware/basic-topology/BasicTopology.hh"
+#include "congestion_unaware/BasicTopology.hh"
+#include <cassert>
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
@@ -19,8 +20,10 @@ BasicTopology::BasicTopology(
   assert(bandwidth > 0);
   assert(latency >= 0);
 
-  // set npus_count
+  // set topology shape
   this->npus_count = npus_count;
+  this->npus_count_per_dim.push_back(npus_count);
+  this->dims_count = 1;
 
   // set bandwidth
   this->bandwidth = bw_GBps_to_Bpns(bandwidth);
@@ -60,7 +63,7 @@ EventTime BasicTopology::compute_communication_delay(
 
   // compute link and serialization delay
   auto link_delay = hops_count * latency;
-  auto serialization_delay = chunk_size / bandwidth;
+  auto serialization_delay = static_cast<double>(chunk_size) / bandwidth;
 
   // comms_delay is the summation of the two
   auto comms_delay = link_delay + serialization_delay;

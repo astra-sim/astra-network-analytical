@@ -5,6 +5,8 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
+#include <cstdint>
+
 namespace NetworkAnalytical {
 
 /// Callback function type
@@ -15,7 +17,7 @@ using CallbackArg = void*;
 using DeviceId = int; // starting from 0
 
 /// Chunk and route
-using ChunkSize = double; // in Bytes
+using ChunkSize = uint64_t; // in Bytes
 
 /// Network
 using Bandwidth = double; // in GB/s

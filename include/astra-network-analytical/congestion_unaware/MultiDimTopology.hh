@@ -5,10 +5,9 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "common/Common.hh"
 #include "common/Type.hh"
-#include "congestion_unaware/basic-topology/BasicTopology.hh"
-#include "congestion_unaware/topology/Topology.hh"
+#include "congestion_unaware/BasicTopology.hh"
+#include "congestion_unaware/Topology.hh"
 
 using namespace NetworkAnalytical;
 
@@ -28,9 +27,7 @@ class MultiDimTopology : public Topology {
  private:
   using MultiDimAddress = std::vector<DeviceId>;
 
-  int dims_count;
   std::vector<std::unique_ptr<BasicTopology>> topologies_per_dim;
-  std::vector<int> npus_count_per_dim;
 
   [[nodiscard]] MultiDimAddress translate_address(
       DeviceId npu_id) const noexcept;

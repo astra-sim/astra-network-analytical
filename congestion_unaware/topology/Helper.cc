@@ -3,11 +3,14 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "congestion_unaware/topology/Helper.hh"
-#include "congestion_unaware/basic-topology/FullyConnected.hh"
-#include "congestion_unaware/basic-topology/Ring.hh"
-#include "congestion_unaware/basic-topology/Switch.hh"
-#include "congestion_unaware/multi-dim-topology/MultiDimTopology.hh"
+#include "congestion_unaware/Helper.hh"
+#include <cstdlib>
+#include <iostream>
+#include "congestion_unaware/BasicTopology.hh"
+#include "congestion_unaware/FullyConnected.hh"
+#include "congestion_unaware/MultiDimTopology.hh"
+#include "congestion_unaware/Ring.hh"
+#include "congestion_unaware/Switch.hh"
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;

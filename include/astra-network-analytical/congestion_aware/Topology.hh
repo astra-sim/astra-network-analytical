@@ -5,9 +5,10 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "common/event-queue/EventQueue.hh"
-#include "congestion_aware/network/Chunk.hh"
-#include "congestion_aware/network/Device.hh"
+#include <memory>
+#include "common/EventQueue.hh"
+#include "congestion_aware/Chunk.hh"
+#include "congestion_aware/Device.hh"
 
 using namespace NetworkAnalytical;
 
@@ -52,8 +53,9 @@ class Topology {
 
   [[nodiscard]] int get_devices_count() const noexcept;
 
-  [[nodiscard]] virtual int get_dims_count() const noexcept = 0;
-  [[nodiscard]] virtual std::vector<int> get_npus_count_per_dim() const noexcept = 0;
+  [[nodiscard]] int get_dims_count() const noexcept;
+
+  [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept;
 
  protected:
   /// number of total devices (including switches) in the topology
@@ -64,6 +66,9 @@ class Topology {
 
   /// number of network dimensions
   int dims_count;
+
+  /// number of NPUs per each dimension
+  std::vector<int> npus_count_per_dim;
 
   /// vector of Device instances in the topology
   std::vector<std::shared_ptr<Device>> devices;

@@ -5,16 +5,22 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "common/Common.hh"
 #include "common/Type.hh"
-#include "common/network-parser/NetworkParser.hh"
-#include "congestion_unaware/topology/Topology.hh"
+#include "congestion_unaware/BasicTopology.hh"
 
 using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionUnaware {
 
-[[nodiscard]] std::shared_ptr<Topology> construct_topology(
-    const NetworkParser& network_parser) noexcept;
+class Switch final : public BasicTopology {
+ public:
+  explicit Switch(
+      int npus_count,
+      Bandwidth bandwidth,
+      Latency latency) noexcept;
+
+  [[nodiscard]] int compute_hops_count(DeviceId src, DeviceId dest)
+      const noexcept override;
+};
 
 } // namespace NetworkAnalyticalCongestionUnaware

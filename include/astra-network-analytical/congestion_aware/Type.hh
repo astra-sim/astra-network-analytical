@@ -5,12 +5,17 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <cassert>
-#include <cstdlib>
-#include <iostream>
 #include <list>
-#include <map>
 #include <memory>
-#include <optional>
-#include <string>
-#include <vector>
+
+namespace NetworkAnalyticalCongestionAware {
+
+/// Declaring Network Components
+class Chunk;
+class Link;
+class Device;
+
+/// Route
+using Route = std::list<std::shared_ptr<Device>>;
+
+} // namespace NetworkAnalyticalCongestionAware

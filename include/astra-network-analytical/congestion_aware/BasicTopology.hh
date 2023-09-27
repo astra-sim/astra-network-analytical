@@ -5,9 +5,8 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "common/Common.hh"
 #include "common/Type.hh"
-#include "congestion_aware/topology/Topology.hh"
+#include "congestion_aware/Topology.hh"
 
 using namespace NetworkAnalytical;
 
@@ -24,10 +23,6 @@ class BasicTopology : public Topology {
   virtual ~BasicTopology() noexcept;
 
   [[nodiscard]] TopologyBuildingBlock get_basic_topology_type() const noexcept;
-
-  [[nodiscard]] int get_dims_count() const noexcept override;
-
-  [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept override;
 
  protected:
   Bandwidth bandwidth;

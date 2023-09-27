@@ -3,17 +3,21 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "congestion_unaware/multi-dim-topology/MultiDimTopology.hh"
+#include "congestion_unaware/MultiDimTopology.hh"
+#include <cassert>
+#include <cstdlib>
+#include <iostream>
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
 
-MultiDimTopology::MultiDimTopology() noexcept : dims_count(0), Topology() {
+MultiDimTopology::MultiDimTopology() noexcept : Topology() {
   topologies_per_dim.clear();
   npus_count_per_dim = {};
 
-  // initialize npus_count
+  // initialize topology shape
   npus_count = 1;
+  dims_count = 0;
 }
 
 EventTime MultiDimTopology::send(

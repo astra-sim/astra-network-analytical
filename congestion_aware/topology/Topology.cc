@@ -3,8 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "congestion_aware/topology/Topology.hh"
-#include "congestion_aware/network/Link.hh"
+#include "congestion_aware/Topology.hh"
+#include <cassert>
+#include "congestion_aware/Link.hh"
 
 using namespace NetworkAnalyticalCongestionAware;
 
@@ -16,7 +17,9 @@ void Topology::set_event_queue(
   Link::set_event_queue(std::move(event_queue));
 }
 
-Topology::Topology() noexcept : npus_count(-1), devices_count(-1), dims_count(-1) {
+Topology::Topology() noexcept
+    : npus_count(-1), devices_count(-1), dims_count(-1) {
+  npus_count_per_dim = {};
 }
 
 int Topology::get_devices_count() const noexcept {
@@ -33,6 +36,18 @@ int Topology::get_npus_count() const noexcept {
   assert(devices_count >= npus_count);
 
   return npus_count;
+}
+
+int Topology::get_dims_count() const noexcept {
+  assert(dims_count > 0);
+
+  return dims_count;
+}
+
+std::vector<int> Topology::get_npus_count_per_dim() const noexcept {
+  assert(npus_count_per_dim.size() == dims_count);
+
+  return npus_count_per_dim;
 }
 
 void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {

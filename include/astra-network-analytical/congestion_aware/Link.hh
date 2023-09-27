@@ -5,10 +5,10 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "common/Common.hh"
+#include <memory>
+#include "common/EventQueue.hh"
 #include "common/Type.hh"
-#include "common/event-queue/EventQueue.hh"
-#include "congestion_aware/network/Type.hh"
+#include "congestion_aware/Type.hh"
 
 using namespace NetworkAnalytical;
 
@@ -95,7 +95,8 @@ class Link {
    * @param chunk_size size of the target chunk
    * @return serialization delay of the chunk
    */
-  [[nodiscard]] EventTime serialization_delay(ChunkSize chunk_size) const noexcept;
+  [[nodiscard]] EventTime serialization_delay(
+      ChunkSize chunk_size) const noexcept;
 
   /**
    * Compute the communication delay of a chunk.
@@ -104,7 +105,8 @@ class Link {
    * @param chunk_size size of the target chunk
    * @return communication delay of the chunk
    */
-  [[nodiscard]] EventTime communication_delay(ChunkSize chunk_size) const noexcept;
+  [[nodiscard]] EventTime communication_delay(
+      ChunkSize chunk_size) const noexcept;
 
   /**
    * Schedule the transmission of a chunk.

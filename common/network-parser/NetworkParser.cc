@@ -3,7 +3,9 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "NetworkParser.hh"
+#include "common/NetworkParser.hh"
+#include <cassert>
+#include <iostream>
 
 using namespace NetworkAnalytical;
 

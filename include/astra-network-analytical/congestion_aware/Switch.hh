@@ -5,30 +5,27 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "congestion_aware/basic-topology/BasicTopology.hh"
+#include <cassert>
+#include "common/Type.hh"
+#include "congestion_aware/BasicTopology.hh"
 
 using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionAware {
 
 /**
- * A ring basic-topology.
+ * A switch basic-topology.
  */
-class Ring final : public BasicTopology {
+class Switch final : public BasicTopology {
  public:
   /**
    * Constructor.
    *
-   * @param npus_count number of npus in a ring
+   * @param npus_count number of npus in a switch
    * @param bandwidth bandwidth of link
    * @param latency latency of link
-   * @param bidirectional true if ring is bidirectional, false otherwise
    */
-  Ring(
-      int npus_count,
-      Bandwidth bandwidth,
-      Latency latency,
-      bool bidirectional = true) noexcept;
+  Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
   /**
    * Implementation of route function.
@@ -37,8 +34,8 @@ class Ring final : public BasicTopology {
       const noexcept override;
 
  private:
-  /// mark whether the ring is bidirectional.
-  bool bidirectional;
+  /// node_id of the switch node
+  DeviceId switch_id;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

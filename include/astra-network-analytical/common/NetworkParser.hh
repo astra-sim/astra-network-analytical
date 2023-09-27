@@ -6,7 +6,6 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <yaml-cpp/yaml.h>
-#include "common/Common.hh"
 #include "common/Type.hh"
 
 namespace NetworkAnalytical {

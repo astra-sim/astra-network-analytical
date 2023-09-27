@@ -5,35 +5,30 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include "congestion_aware/basic-topology/BasicTopology.hh"
-
-using namespace NetworkAnalytical;
+#include "common/Type.hh"
+#include "congestion_aware/BasicTopology.hh"
 
 namespace NetworkAnalyticalCongestionAware {
 
 /**
- * A switch basic-topology.
+ * A FullyConnected basic-topology.
  */
-class Switch final : public BasicTopology {
+class FullyConnected final : public BasicTopology {
  public:
   /**
    * Constructor.
    *
-   * @param npus_count number of npus in a switch
+   * @param npus_count number of npus in the basic-topology
    * @param bandwidth bandwidth of link
    * @param latency latency of link
    */
-  Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
+  FullyConnected(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
   /**
    * Implementation of route function.
    */
   [[nodiscard]] Route route(DeviceId src, DeviceId dest)
       const noexcept override;
-
- private:
-  /// node_id of the switch node
-  DeviceId switch_id;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

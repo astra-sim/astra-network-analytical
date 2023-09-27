@@ -3,7 +3,8 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "common/event-queue/EventQueue.hh"
+#include "common/EventQueue.hh"
+#include <cassert>
 
 using namespace NetworkAnalytical;
 
@@ -40,9 +41,9 @@ void EventQueue::proceed() noexcept {
 }
 
 void EventQueue::schedule_event(
-    EventTime event_time,
-    Callback callback,
-    CallbackArg callback_arg) noexcept {
+    const EventTime event_time,
+    const Callback callback,
+    const CallbackArg callback_arg) noexcept {
   // time should be at least larger than current time
   assert(event_time >= current_time);
 

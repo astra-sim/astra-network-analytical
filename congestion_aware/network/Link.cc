@@ -3,9 +3,10 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "congestion_aware/network/Link.hh"
-#include "congestion_aware/network/Chunk.hh"
-#include "congestion_aware/network/Device.hh"
+#include "congestion_aware/Link.hh"
+#include <cassert>
+#include "congestion_aware/Chunk.hh"
+#include "congestion_aware/Device.hh"
 
 using namespace NetworkAnalyticalCongestionAware;
 
@@ -84,7 +85,7 @@ EventTime Link::serialization_delay(const ChunkSize chunk_size) const noexcept {
   assert(chunk_size > 0);
 
   // calculate serialization delay
-  const auto delay = chunk_size / bandwidth;
+  const auto delay = static_cast<Bandwidth>(chunk_size) / bandwidth;
 
   // return serialization delay in EventTime type
   return static_cast<EventTime>(delay);
@@ -94,7 +95,7 @@ EventTime Link::communication_delay(const ChunkSize chunk_size) const noexcept {
   assert(chunk_size > 0);
 
   // calculate communication delay
-  const auto delay = latency + (chunk_size / bandwidth);
+  const auto delay = latency + (static_cast<Bandwidth>(chunk_size) / bandwidth);
 
   // return communication delay in EventTime type
   return static_cast<EventTime>(delay);
