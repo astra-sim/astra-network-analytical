@@ -99,8 +99,6 @@ void Analytical::SendRecvTrackingMap::insert_send(
     int dest,
     PayloadSize count,
     AstraSim::timespec_t send_finish_time) noexcept {
-  bool duplicate_found = false;
-
   Key key = make_tuple(tag, src, dest, count);
 
   send_recv_tracking_map.emplace(

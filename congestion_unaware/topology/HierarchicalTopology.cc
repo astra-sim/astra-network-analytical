@@ -174,7 +174,7 @@ pair<double, int> HierarchicalTopology::send(
   }
 
   // use that dimension
-  auto communication_latency = 0;
+  auto communication_latency = 0ul;
   auto topology = hierarchy_config.getTopologyForDim(dim);
 
   if (topology == TopologyList::Ring) {
