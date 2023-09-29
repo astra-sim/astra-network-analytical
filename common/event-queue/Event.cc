@@ -20,3 +20,7 @@ void Event::invoke_event() noexcept {
   // invoke the callback function
   (*callback)(callback_arg);
 }
+
+std::pair<Callback, CallbackArg> Event::get_handler_arg() const noexcept {
+  return {callback, callback_arg};
+}

@@ -27,6 +27,8 @@ class Topology {
 
   [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept;
 
+  [[nodiscard]] std::vector<Bandwidth> get_bandwidth_per_dim() const noexcept;
+
  protected:
   /// number of NPUs
   int npus_count;
@@ -36,6 +38,9 @@ class Topology {
 
   /// number of NPUs per dimension
   std::vector<int> npus_count_per_dim;
+
+  /// bandwidth (GB/s) per dimension
+  std::vector<Bandwidth> bandwidth_per_dim;
 };
 
 } // namespace NetworkAnalyticalCongestionUnaware

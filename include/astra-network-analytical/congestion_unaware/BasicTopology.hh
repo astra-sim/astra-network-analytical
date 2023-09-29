@@ -32,13 +32,12 @@ class BasicTopology : public Topology {
   TopologyBuildingBlock basic_topology_type;
 
  private:
-  [[nodiscard]] static Bandwidth bw_GBps_to_Bpns(Bandwidth bw_GBps) noexcept;
-
   [[nodiscard]] EventTime compute_communication_delay(
       int hops_count,
       ChunkSize size) const noexcept;
 
-  Bandwidth bandwidth;
+  Bandwidth bandwidth; // GB/s
+  Bandwidth bandwidth_Bpns; // B/ns
   Latency latency;
 };
 

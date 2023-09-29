@@ -81,6 +81,7 @@ class Link {
 
   /// bandwidth and latency of the link
   Bandwidth bandwidth;
+  Bandwidth bandwidth_Bpns;
   Latency latency;
 
   /// queue of pending chunks

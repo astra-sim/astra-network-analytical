@@ -5,9 +5,11 @@ LICENSE file in the root directory of this source tree.
 
 #include "congestion_aware/Link.hh"
 #include <cassert>
+#include "common/NetworkFunction.hh"
 #include "congestion_aware/Chunk.hh"
 #include "congestion_aware/Device.hh"
 
+using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionAware;
 
 // declaring static event_queue
@@ -40,6 +42,8 @@ Link::Link(const Bandwidth bandwidth, const Latency latency) noexcept
     : bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {
   assert(bandwidth > 0);
   assert(latency >= 0);
+
+  bandwidth_Bpns = bw_GBps_to_Bpns(bandwidth);
 }
 
 void Link::send(std::unique_ptr<Chunk> chunk) noexcept {
@@ -85,7 +89,7 @@ EventTime Link::serialization_delay(const ChunkSize chunk_size) const noexcept {
   assert(chunk_size > 0);
 
   // calculate serialization delay
-  const auto delay = static_cast<Bandwidth>(chunk_size) / bandwidth;
+  const auto delay = static_cast<Bandwidth>(chunk_size) / bandwidth_Bpns;
 
   // return serialization delay in EventTime type
   return static_cast<EventTime>(delay);
@@ -95,7 +99,8 @@ EventTime Link::communication_delay(const ChunkSize chunk_size) const noexcept {
   assert(chunk_size > 0);
 
   // calculate communication delay
-  const auto delay = latency + (static_cast<Bandwidth>(chunk_size) / bandwidth);
+  const auto delay =
+      latency + (static_cast<Bandwidth>(chunk_size) / bandwidth_Bpns);
 
   // return communication delay in EventTime type
   return static_cast<EventTime>(delay);

@@ -22,6 +22,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extern/yaml-cpp yaml-cpp)
 
 # Include src files to compile
 file(GLOB srcs_common
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/common/event-queue/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/common/network-parser/*.cc
 )

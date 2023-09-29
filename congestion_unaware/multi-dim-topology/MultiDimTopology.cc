@@ -53,6 +53,10 @@ void MultiDimTopology::add_dim(
   const auto topology_size = topology->get_npus_count();
   npus_count *= topology_size;
 
+  // add bandwidth
+  const auto bandwidth = topology->get_bandwidth_per_dim()[0];
+  bandwidth_per_dim.push_back(bandwidth);
+
   // push back basic-topology and npus_count
   topologies_per_dim.push_back(std::move(topology));
   npus_count_per_dim.push_back(topology_size);

@@ -57,6 +57,8 @@ class Topology {
 
   [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept;
 
+  [[nodiscard]] std::vector<Bandwidth> get_bandwidth_per_dim() const noexcept;
+
  protected:
   /// number of total devices (including switches) in the topology
   int devices_count;
@@ -72,6 +74,9 @@ class Topology {
 
   /// vector of Device instances in the topology
   std::vector<std::shared_ptr<Device>> devices;
+
+  /// bandwidth (GB/s) per dimension
+  std::vector<Bandwidth> bandwidth_per_dim;
 
   void instantiate_devices() noexcept;
 

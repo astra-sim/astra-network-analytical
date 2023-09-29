@@ -27,8 +27,9 @@ BasicTopology::BasicTopology(
   // setup npus and devices count
   this->npus_count = npus_count;
   this->devices_count = devices_count;
-  this->dims_count = 1;
-  this->npus_count_per_dim.push_back(npus_count);
+  dims_count = 1;
+  npus_count_per_dim.push_back(npus_count);
+  bandwidth_per_dim.push_back(bandwidth);
 
   // instantiate devices
   instantiate_devices();

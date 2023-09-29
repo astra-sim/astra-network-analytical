@@ -50,6 +50,12 @@ std::vector<int> Topology::get_npus_count_per_dim() const noexcept {
   return npus_count_per_dim;
 }
 
+std::vector<Bandwidth> Topology::get_bandwidth_per_dim() const noexcept {
+  assert(bandwidth_per_dim.size() == dims_count);
+
+  return bandwidth_per_dim;
+}
+
 void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {
   assert(chunk != nullptr);
 

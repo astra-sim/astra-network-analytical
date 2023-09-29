@@ -5,6 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #include "congestion_unaware/BasicTopology.hh"
 #include <cassert>
+#include "common/NetworkFunction.hh"
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
@@ -22,11 +23,13 @@ BasicTopology::BasicTopology(
 
   // set topology shape
   this->npus_count = npus_count;
-  this->npus_count_per_dim.push_back(npus_count);
-  this->dims_count = 1;
+  npus_count_per_dim.push_back(npus_count);
+  dims_count = 1;
+  this->bandwidth = bandwidth;
+  bandwidth_per_dim.push_back(bandwidth);
 
   // set bandwidth
-  this->bandwidth = bw_GBps_to_Bpns(bandwidth);
+  bandwidth_Bpns = bw_GBps_to_Bpns(bandwidth);
 }
 
 BasicTopology::~BasicTopology() noexcept = default;
@@ -47,14 +50,6 @@ EventTime BasicTopology::send(
   return compute_communication_delay(hops_count, chunk_size);
 }
 
-Bandwidth BasicTopology::bw_GBps_to_Bpns(const Bandwidth bw_GBps) noexcept {
-  assert(bw_GBps > 0);
-
-  // 1 GB is 2^30 B
-  // 1 s is 10^9 ns
-  return bw_GBps * (1 << 30) / (1'000'000'000); // GB/s to B/ns
-}
-
 EventTime BasicTopology::compute_communication_delay(
     const int hops_count,
     const ChunkSize chunk_size) const noexcept {
@@ -63,7 +58,7 @@ EventTime BasicTopology::compute_communication_delay(
 
   // compute link and serialization delay
   auto link_delay = hops_count * latency;
-  auto serialization_delay = static_cast<double>(chunk_size) / bandwidth;
+  auto serialization_delay = static_cast<double>(chunk_size) / bandwidth_Bpns;
 
   // comms_delay is the summation of the two
   auto comms_delay = link_delay + serialization_delay;
