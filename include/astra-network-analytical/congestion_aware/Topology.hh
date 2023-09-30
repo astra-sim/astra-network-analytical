@@ -6,6 +6,7 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <memory>
+#include <vector>
 #include "common/EventQueue.hh"
 #include "congestion_aware/Chunk.hh"
 #include "congestion_aware/Device.hh"

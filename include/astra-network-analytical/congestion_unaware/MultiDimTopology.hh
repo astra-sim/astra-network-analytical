@@ -5,6 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
+#include <memory>
 #include "common/Type.hh"
 #include "congestion_unaware/BasicTopology.hh"
 #include "congestion_unaware/Topology.hh"
