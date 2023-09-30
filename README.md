@@ -1,5 +1,10 @@
 # Analytical
 
+| main branch | macOS | Ubuntu |
+|:---:|:---:|:---:|
+| congestion_unaware | [![build](https://github.com/astra-sim/astra-network-analytical/actions/workflows/test_congestion_unaware_macos.yml/badge.svg?branch=main)](https://github.com/astra-sim/astra-network-analytical/actions/workflows/test_congestion_unaware_macos.yml) | [![build](https://github.com/astra-sim/astra-network-analytical/actions/workflows/test_congestion_unaware_ubuntu.yml/badge.svg?branch=main)](https://github.com/astra-sim/astra-network-analytical/actions/workflows/test_congestion_unaware_ubuntu.yml) |
+| congestion_aware | [![build](https://github.com/astra-sim/astra-network-analytical/actions/workflows/test_congestion_aware_macos.yml/badge.svg?branch=main)](https://github.com/astra-sim/astra-network-analytical/actions/workflows/test_congestion_aware_macos.yml) | [![build](https://github.com/astra-sim/astra-network-analytical/actions/workflows/test_congestion_aware_ubuntu.yml/badge.svg?branch=main)](https://github.com/astra-sim/astra-network-analytical/actions/workflows/test_congestion_aware_ubuntu.yml) |
+
 ## What is this repository for?
 This repository serves the role of an analytical network backend for [ASTRA-sim](https://github.com/astra-sim/astra-sim).
 It models the latency and bandwidth for various network topologies.
