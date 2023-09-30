@@ -29,7 +29,7 @@ int main() {
 
   /// Parse network config and create topology
   const auto network_parser =
-      NetworkParser("../congestion_aware/example_network.yml");
+      NetworkParser("../input/Ring.yml");
   const auto topology = construct_topology(network_parser);
   const auto npus_count = topology->get_npus_count();
   const auto devices_count = topology->get_devices_count();

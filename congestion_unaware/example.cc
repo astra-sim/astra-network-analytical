@@ -13,7 +13,7 @@ using namespace NetworkAnalyticalCongestionUnaware;
 int main() {
   /// Parse network config and create topology
   const auto network_parser =
-      NetworkParser("../congestion_unaware/example_network.yml");
+      NetworkParser("../input/Ring_FullyConnected_Switch.yml");
   const auto topology = construct_topology(network_parser);
 
   /// message settings
