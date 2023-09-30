@@ -19,9 +19,6 @@ set(BUILDTARGET "all" CACHE STRING "Compilation target ([all]/congestion_unaware
 # Can be compiled into either library or executable
 option(NETWORK_BACKEND_BUILD_AS_LIBRARY "Build as a library" OFF)
 
-# Find required packages
-find_package(Boost REQUIRED COMPONENTS program_options)
-
 # Compile external libraries
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extern/yaml-cpp yaml-cpp)
 
@@ -73,7 +70,6 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     set_target_properties(Analytical_Congestion_Unaware PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
     # Link libraries
-    target_link_libraries(Analytical_Congestion_Unaware PUBLIC Boost::program_options)
     target_link_libraries(Analytical_Congestion_Unaware PUBLIC yaml-cpp)
 
     # Include directories
@@ -111,7 +107,6 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
     set_target_properties(Analytical_Congestion_Aware PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
     # Link libraries
-    target_link_libraries(Analytical_Congestion_Aware PUBLIC Boost::program_options)
     target_link_libraries(Analytical_Congestion_Aware PUBLIC yaml-cpp)
 
     # Include directories
