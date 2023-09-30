@@ -23,7 +23,7 @@ jobs:
       - name: Build Congestion Unaware Test
         run: |
           cd test
-          cmake -S . -B build -DBUILDTARET="congestion_unaware" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON
+          cmake -S . -B build -DBUILDTARGET="congestion_unaware" -DCMAKE_BUILD_TYPE=Debug
           cmake --build build --config Debug -j $(nproc)
 
       - name: Test
