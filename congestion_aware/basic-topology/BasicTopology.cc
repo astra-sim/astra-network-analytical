@@ -35,6 +35,7 @@ BasicTopology::BasicTopology(
   instantiate_devices();
 }
 
+// default destructor
 BasicTopology::~BasicTopology() noexcept = default;
 
 TopologyBuildingBlock BasicTopology::get_basic_topology_type() const noexcept {

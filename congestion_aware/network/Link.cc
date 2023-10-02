@@ -43,6 +43,7 @@ Link::Link(const Bandwidth bandwidth, const Latency latency) noexcept
   assert(bandwidth > 0);
   assert(latency >= 0);
 
+  // convert bandwidth from GB/s to B/ns
   bandwidth_Bpns = bw_GBps_to_Bpns(bandwidth);
 }
 
@@ -50,7 +51,7 @@ void Link::send(std::unique_ptr<Chunk> chunk) noexcept {
   assert(chunk != nullptr);
 
   if (busy) {
-    // add to pending chunks
+    // link is busy, add to pending chunks
     pending_chunks.push_back(std::move(chunk));
   } else {
     // service this chunk immediately

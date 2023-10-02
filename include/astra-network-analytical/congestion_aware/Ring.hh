@@ -13,7 +13,21 @@ using namespace NetworkAnalytical;
 namespace NetworkAnalyticalCongestionAware {
 
 /**
- * A ring basic-topology.
+ * Implements a ring topology.
+ *
+ * Ring(8) example:
+ * 0 - 1 - 2 - 3
+ * |           |
+ * 7 - 6 - 5 - 4
+ *
+ * Therefore, the number of NPUs and devices are both 8.
+ *
+ * If ring is uni-directional, then each chunk can flow through:
+ * 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 0
+ *
+ * If the ring is bi-directional, then each chunk can flow through:
+ * 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 0
+ * 0 <- 1 <- 2 <- 3 <- 4 <- 5 <- 6 <- 7 <- 0
  */
 class Ring final : public BasicTopology {
  public:
@@ -32,13 +46,13 @@ class Ring final : public BasicTopology {
       bool bidirectional = true) noexcept;
 
   /**
-   * Implementation of route function.
+   * Implementation of route function in Topology.
    */
   [[nodiscard]] Route route(DeviceId src, DeviceId dest)
       const noexcept override;
 
  private:
-  /// mark whether the ring is bidirectional.
+  /// true if the ring is bidirectional, false otherwise
   bool bidirectional;
 };
 

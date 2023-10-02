@@ -24,14 +24,15 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::
   const auto bandwidths_per_dim = network_parser.get_bandwidths_per_dim();
   const auto latencies_per_dim = network_parser.get_latencies_per_dim();
 
-  // if dims_count is 1, just create basic basic-topology
+  // if dims_count is 1, just create basic topology
   if (dims_count == 1) {
-    // retrieve basic basic-topology info
+    // retrieve basic topology info
     const auto topology_type = topologies_per_dim[0];
     const auto npus_count = npus_counts_per_dim[0];
     const auto bandwidth = bandwidths_per_dim[0];
     const auto latency = latencies_per_dim[0];
 
+    // create and return basic topology
     switch (topology_type) {
       case TopologyBuildingBlock::Ring:
         return std::make_shared<Ring>(npus_count, bandwidth, latency);
@@ -40,9 +41,9 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::
       case TopologyBuildingBlock::FullyConnected:
         return std::make_shared<FullyConnected>(npus_count, bandwidth, latency);
       default:
-        // shouldn't reaach here
+        // shouldn't reach here
         std::cerr << "[Error] (network/analytical/congestion_unaware)"
-                  << "Not supported basic-topology" << std::endl;
+                  << "Not supported topology" << std::endl;
         std::exit(-1);
     }
   }
@@ -58,7 +59,7 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::
     const auto bandwidth = bandwidths_per_dim[dim];
     const auto latency = latencies_per_dim[dim];
 
-    // create dim
+    // create a network dim
     std::unique_ptr<BasicTopology> dim_topology;
     switch (topology_type) {
       case TopologyBuildingBlock::Ring:
@@ -77,9 +78,11 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::
                   << "Not supported basic-topology" << std::endl;
         std::exit(-1);
     }
-    multi_dim_topology->add_dim(std::move(dim_topology));
+
+    // append network dimension
+    multi_dim_topology->append_dimension(std::move(dim_topology));
   }
 
-  // return created basic-topology
+  // return created multi-dimensional topology
   return multi_dim_topology;
 }

@@ -31,10 +31,10 @@ Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
   assert(0 <= src && src < npus_count);
   assert(0 <= dest && dest < npus_count);
 
-  // construct route, starting with src
+  // construct empty route
   auto route = Route();
 
-  auto step = 1; // default: clockwise
+  auto step = 1; // default direction: clockwise
   if (bidirectional) {
     // check whether going anticlockwise is shorter
     auto clockwise_dist = dest - src;
@@ -56,6 +56,7 @@ Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
     route.push_back(devices[current]);
     current = (current + step);
 
+    // wrap around
     if (current < 0) {
       current += npus_count;
     } else if (current >= npus_count) {
@@ -66,5 +67,6 @@ Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
   // arrives at dest
   route.push_back(devices[dest]);
 
+  // return the constructed route
   return route;
 }

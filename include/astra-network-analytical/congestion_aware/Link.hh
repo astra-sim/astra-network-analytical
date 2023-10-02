@@ -15,29 +15,29 @@ using namespace NetworkAnalytical;
 namespace NetworkAnalyticalCongestionAware {
 
 /**
- * Link models physical links between two nodes.
- * Chunks are being queued to this class instances.
+ * Link models physical links between two devices.
  */
 class Link {
  public:
   /**
    * Callback to be called when a link becomes free.
-   *   - If the link has pending chunks, process the first one.
+   *  - If the link has pending chunks, process the first one.
+   *  - If the link has no pending chunks, set the link as free.
    *
-   * @param link_ptr raw pointer to the link
+   * @param link_ptr pointer to the link that becomes free
    */
   static void link_become_free(void* link_ptr) noexcept;
 
   /**
-   * Link event queue to the Link class.
+   * Set the event queue to be used by the link.
    *
-   * @param event_queue (shared) pointer to the event queue
+   * @param event_queue_ptr pointer to the event queue
    */
   static void set_event_queue(
       std::shared_ptr<EventQueue> event_queue_ptr) noexcept;
 
   /**
-   * Constructor
+   * Constructor.
    *
    * @param bandwidth bandwidth of the link
    * @param latency latency of the link
@@ -45,16 +45,17 @@ class Link {
   Link(Bandwidth bandwidth, Latency latency) noexcept;
 
   /**
-   * Send a chunk through the link.
+   * Try to send a chunk through the link.
    * - If the link is free, service the chunk immediately.
    * - If the link is busy, add the chunk to the pending chunks list.
    *
-   * @param chunk (unique) pointer to the chunk
+   * @param chunk the chunk to be served by the link
    */
   void send(std::unique_ptr<Chunk> chunk) noexcept;
 
   /**
-   * Process the first pending chunk.
+   * Dequeue and try to send the first pending chunk
+   * in the pending chunks list.
    */
   void process_pending_transmission() noexcept;
 
@@ -76,12 +77,16 @@ class Link {
   void set_free() noexcept;
 
  private:
-  /// Pointer to the shared event queue
+  /// event queue Link uses to schedule events
   static std::shared_ptr<EventQueue> event_queue;
 
-  /// bandwidth and latency of the link
+  /// bandwidth of the link in GB/s
   Bandwidth bandwidth;
+
+  /// bandwidth of the link in B/ns, used in actual computation
   Bandwidth bandwidth_Bpns;
+
+  /// latency of the link in ns
   Latency latency;
 
   /// queue of pending chunks
@@ -91,7 +96,8 @@ class Link {
   bool busy;
 
   /**
-   * Compute the serialization delay of a chunk.
+   * Compute the serialization delay of a chunk on the link.
+   * i.e., serialization delay = (chunk size) / (link bandwidth)
    *
    * @param chunk_size size of the target chunk
    * @return serialization delay of the chunk
@@ -115,7 +121,7 @@ class Link {
    * - Link becomes free after the serialization delay.
    * - Chunk arrives next node after the communication delay.
    *
-   * @param chunk (unique) pointer to the chunk
+   * @param chunk chunk to be transmitted
    */
   void schedule_chunk_transmission(std::unique_ptr<Chunk> chunk) noexcept;
 };

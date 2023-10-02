@@ -13,7 +13,7 @@ void Topology::set_event_queue(
     std::shared_ptr<EventQueue> event_queue) noexcept {
   assert(event_queue != nullptr);
 
-  // link this event_queue with Link class.
+  // pass the given event_queue to Link
   Link::set_event_queue(std::move(event_queue));
 }
 
@@ -93,7 +93,7 @@ void Topology::connect(
 }
 
 void Topology::instantiate_devices() noexcept {
-  // instantiate npus
+  // instantiate all devices
   for (auto i = 0; i < devices_count; i++) {
     devices.push_back(std::make_shared<Device>(i));
   }

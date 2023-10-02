@@ -30,25 +30,26 @@ int Ring::compute_hops_count(const DeviceId src, const DeviceId dest)
   assert(0 <= dest && dest < npus_count);
   assert(src != dest);
 
-  // for Ring basic-topology
+  // for Ring topology
   // 1. compute clockwise and anti-clockwise distance
-  // 2. if uni-directional, use clockwise one
-  // 3. if bi-directional, use the shorter one
+  // 2. if unidirectional, use clockwise one
+  // 3. if bidirectional, use the shorter one
 
-  // compute dist
+  // compute clockwise distance
   auto clockwise_distance = (dest - src);
   if (clockwise_distance < 0) {
     clockwise_distance += npus_count;
   }
-  const auto anti_clockwise_distance = npus_count - clockwise_distance;
 
+  // compute anticlockwise distance
+  const auto anticlockwise_distance = npus_count - clockwise_distance;
+
+  // unidirectional: return clockwise distance
   if (!bidirectional) {
-    // uni-directional: return clockwise distance
     return clockwise_distance;
   }
 
-  // bi-directional: return shorter distance
-  return (clockwise_distance < anti_clockwise_distance)
-      ? clockwise_distance
-      : anti_clockwise_distance;
+  // bidirectional: return shorter distance
+  return (clockwise_distance < anticlockwise_distance) ? clockwise_distance
+                                                       : anticlockwise_distance;
 }

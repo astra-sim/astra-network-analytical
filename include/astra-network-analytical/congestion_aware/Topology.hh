@@ -15,56 +15,89 @@ using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionAware {
 
+/**
+ * Topology abstracts a network topology.
+ */
 class Topology {
  public:
   /**
-   * Set the event queue of the Link class.
+   * Set the event queue to be used by the topology.
    *
-   * @param event_queue The event queue to be linked.
+   * @param event_queue pointer to the event queue
    */
   static void set_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept;
 
   /**
-   * Instantiate a topology object.
+   * Constructor.
    */
   Topology() noexcept;
 
   /**
    * Construct the route from src to dest.
-   * Route is a list of std::shared_ptr<e>, includinDevice both src and dest.
+   * Route is a list of devices (pointers) that the chunk should traverse,
+   * including the src and dest devices themselves.
    *
-   * e.g., route(0, 3) = [0, 1, 2, 3]
+   * e.g., route(0, 3) = [0, 5, 7, 2, 3]
    *
-   * @param src src device id
-   * @param dest dest device id
+   * @param src src NPU id
+   * @param dest dest NPU id
    *
-   * @return route from src to dest
+   * @return route from src NPU to dest NPU
    */
   [[nodiscard]] virtual Route route(DeviceId src, DeviceId dest)
       const noexcept = 0;
 
   /**
-   * Initiate the transmission of a chunk.
+   * Initiate a transmission of a chunk.
    *
    * @param chunk chunk to be transmitted
    */
   void send(std::unique_ptr<Chunk> chunk) noexcept;
 
+  /**
+   * Get the number of NPUs in the topology.
+   * NPU excludes non-NPU devices such as switches.
+   *
+   * @return number of NPUs in the topology
+   */
   [[nodiscard]] int get_npus_count() const noexcept;
 
+  /**
+   * Get the number of devices in the topology.
+   * Device includes non-NPU devices such as switches.
+   *
+   * @return number of devices in the topology
+   */
   [[nodiscard]] int get_devices_count() const noexcept;
 
+  /**
+   * Get the number of network dimensions.
+   *
+   * @return number of network dimensions
+   */
   [[nodiscard]] int get_dims_count() const noexcept;
 
+  /**
+   * Get the number of NPUs per each dimension.
+   *
+   * @return number of NPUs per each dimension
+   */
   [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept;
 
+  /**
+   * Get the bandwidth per each network dimension.
+   *
+   * @return bandwidth per each dimension
+   */
   [[nodiscard]] std::vector<Bandwidth> get_bandwidth_per_dim() const noexcept;
 
  protected:
-  /// number of total devices (including switches) in the topology
+  /// number of total devices in the topology
+  /// device includes non-NPU devices such as switches
   int devices_count;
 
   /// number of NPUs in the topology
+  /// NPU excludes non-NPU devices such as switches
   int npus_count;
 
   /// number of network dimensions
@@ -73,12 +106,15 @@ class Topology {
   /// number of NPUs per each dimension
   std::vector<int> npus_count_per_dim;
 
-  /// vector of Device instances in the topology
+  /// holds the entire device instances in the topology
   std::vector<std::shared_ptr<Device>> devices;
 
-  /// bandwidth (GB/s) per dimension
+  /// bandwidth per each network dimension
   std::vector<Bandwidth> bandwidth_per_dim;
 
+  /**
+   * Instantiate Device objects in the topology.
+   */
   void instantiate_devices() noexcept;
 
   /**

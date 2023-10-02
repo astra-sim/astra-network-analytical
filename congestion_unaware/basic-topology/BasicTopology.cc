@@ -28,10 +28,11 @@ BasicTopology::BasicTopology(
   this->bandwidth = bandwidth;
   bandwidth_per_dim.push_back(bandwidth);
 
-  // set bandwidth
+  // translate bandwidth from GB/s to B/ns
   bandwidth_Bpns = bw_GBps_to_Bpns(bandwidth);
 }
 
+// default destructor
 BasicTopology::~BasicTopology() noexcept = default;
 
 EventTime BasicTopology::send(
@@ -56,7 +57,7 @@ EventTime BasicTopology::compute_communication_delay(
   assert(hops_count > 0);
   assert(chunk_size > 0);
 
-  // compute link and serialization delay
+  // compute link delay and serialization delay
   auto link_delay = hops_count * latency;
   auto serialization_delay = static_cast<double>(chunk_size) / bandwidth_Bpns;
 

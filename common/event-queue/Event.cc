@@ -22,5 +22,8 @@ void Event::invoke_event() noexcept {
 }
 
 std::pair<Callback, CallbackArg> Event::get_handler_arg() const noexcept {
+  // check the validity of the event
+  assert(callback != nullptr);
+
   return {callback, callback_arg};
 }

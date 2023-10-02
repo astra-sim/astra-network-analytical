@@ -32,7 +32,7 @@ void Chunk::chunk_arrived_next_device(void* const chunk_ptr) noexcept {
 
 Chunk::Chunk(
     const ChunkSize chunk_size,
-    const Route route,
+    Route route,
     const Callback callback,
     const CallbackArg callback_arg) noexcept
     : chunk_size(chunk_size),

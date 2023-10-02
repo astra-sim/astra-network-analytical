@@ -9,24 +9,28 @@ LICENSE file in the root directory of this source tree.
 
 namespace NetworkAnalytical {
 
-/// Callback function type
+/// Callback function pointer: "void func(void*)"
 using Callback = void (*)(void*);
+
+/// Callback function argument: void*
 using CallbackArg = void*;
 
-/// Node
-using DeviceId = int; // starting from 0
+/// Device ID which starts from 0
+using DeviceId = int;
 
-/// Chunk and route
-using ChunkSize = uint64_t; // in Bytes
+/// Chunk size in Bytes
+using ChunkSize = uint64_t;
 
-/// Network
-using Bandwidth = double; // in GB/s
-using Latency = double; // in ns
+/// Bandwidth in GB/s
+using Bandwidth = double;
 
-/// Event Time resolution
-using EventTime = uint64_t; // in ns
+/// Latency in ns
+using Latency = double;
 
-/// Topology Building Blocks
+/// Event time in ns
+using EventTime = uint64_t;
+
+/// Basic multi-dimensional topology building blocks
 enum class TopologyBuildingBlock { Undefined, Ring, FullyConnected, Switch };
 
 } // namespace NetworkAnalytical

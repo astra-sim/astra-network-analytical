@@ -63,8 +63,7 @@ class Device {
    * Check if this device is connected to another device.
    *
    * @param dest id of the device to check te connectivity
-   * @return true if this device is connected to the given device,
-   * false otherwise
+   * @return true if connected to the given device, false otherwise
    */
   [[nodiscard]] bool connected(DeviceId dest) const noexcept;
 };

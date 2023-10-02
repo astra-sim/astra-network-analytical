@@ -12,7 +12,8 @@ using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
 
 MultiDimTopology::MultiDimTopology() noexcept : Topology() {
-  topologies_per_dim.clear();
+  // initialize values
+  topology_per_dim.clear();
   npus_count_per_dim = {};
 
   // initialize topology shape
@@ -30,13 +31,13 @@ EventTime MultiDimTopology::send(
 
   // get dim to transfer
   const auto dim_to_transfer = get_dim_to_transfer(src_address, dest_address);
-
-  // communication information
-  auto* const topology = topologies_per_dim[dim_to_transfer].get();
+  
+  // prepare localized topology and address info
+  auto* const topology = topology_per_dim[dim_to_transfer].get();
   const auto src_local_id = src_address[dim_to_transfer];
   const auto dest_local_id = dest_address[dim_to_transfer];
 
-  // run communication
+  // run localized communication
   const auto comms_delay =
       topology->send(src_local_id, dest_local_id, chunk_size);
 
@@ -44,7 +45,7 @@ EventTime MultiDimTopology::send(
   return comms_delay;
 }
 
-void MultiDimTopology::add_dim(
+void MultiDimTopology::append_dimension(
     std::unique_ptr<BasicTopology> topology) noexcept {
   // increment dims_count
   dims_count++;
@@ -53,12 +54,12 @@ void MultiDimTopology::add_dim(
   const auto topology_size = topology->get_npus_count();
   npus_count *= topology_size;
 
-  // add bandwidth
+  // append bandwidth
   const auto bandwidth = topology->get_bandwidth_per_dim()[0];
   bandwidth_per_dim.push_back(bandwidth);
 
-  // push back basic-topology and npus_count
-  topologies_per_dim.push_back(std::move(topology));
+  // push back topology and npus_count
+  topology_per_dim.push_back(std::move(topology));
   npus_count_per_dim.push_back(topology_size);
 }
 

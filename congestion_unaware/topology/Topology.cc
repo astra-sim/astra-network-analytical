@@ -14,7 +14,6 @@ Topology::Topology() noexcept : npus_count(-1), dims_count(-1) {}
 int Topology::get_npus_count() const noexcept {
   assert(npus_count > 0);
 
-  // return npus_count
   return npus_count;
 }
 

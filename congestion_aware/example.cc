@@ -13,7 +13,7 @@ using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionAware;
 
 void chunk_arrived_callback(void* const event_queue_ptr) {
-  //  typecast event_queue_ptr
+  // typecast event_queue_ptr
   auto* const event_queue = static_cast<EventQueue*>(event_queue_ptr);
 
   // print chunk arrival time
@@ -23,21 +23,20 @@ void chunk_arrived_callback(void* const event_queue_ptr) {
 }
 
 int main() {
-  /// Instantiate shared resources
+  // Instantiate shared resources
   const auto event_queue = std::make_shared<EventQueue>();
   Topology::set_event_queue(event_queue);
 
-  /// Parse network config and create topology
-  const auto network_parser =
-      NetworkParser("../input/Ring.yml");
+  // Parse network config and create topology
+  const auto network_parser = NetworkParser("../input/Ring.yml");
   const auto topology = construct_topology(network_parser);
   const auto npus_count = topology->get_npus_count();
   const auto devices_count = topology->get_devices_count();
 
-  /// message settings
+  // message settings
   const auto chunk_size = 1'048'576; // 1 MB
 
-  /// Run All-Gather
+  // Run All-Gather
   for (int i = 0; i < npus_count; i++) {
     for (int j = 0; j < npus_count; j++) {
       if (i == j) {
@@ -55,12 +54,12 @@ int main() {
     }
   }
 
-  /// Run simulation
+  // Run simulation
   while (!event_queue->finished()) {
     event_queue->proceed();
   }
 
-  /// Print simulation result
+  // Print simulation result
   const auto finish_time = event_queue->get_current_time();
   std::cout << "Total NPUs Count: " << npus_count << std::endl;
   std::cout << "Total devices Count: " << devices_count << std::endl;

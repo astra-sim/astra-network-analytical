@@ -18,23 +18,29 @@ class Event {
   /**
    * Constructor.
    *
-   * @param callback callback function pointer
-   * @param callback_arg argument for the callback function
+   * @param callback function pointer
+   * @param callback_arg argument of the callback function
    */
   Event(Callback callback, CallbackArg callback_arg) noexcept;
 
   /**
-   * Invoke the callback function with the argument.
+   * Invoke the callback function.
    */
   void invoke_event() noexcept;
 
-  [[nodiscard]] std::pair<Callback, CallbackArg> get_handler_arg() const noexcept;
+  /**
+   * Get the callback function and the argument.
+   *
+   * @return callback function and its argument
+   */
+  [[nodiscard]] std::pair<Callback, CallbackArg> get_handler_arg()
+      const noexcept;
 
  private:
   /// pointer to the callback function
   Callback callback;
 
-  /// argument for the callback function
+  /// argument of the callback function
   CallbackArg callback_arg;
 };
 

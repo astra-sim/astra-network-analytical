@@ -11,7 +11,7 @@ LICENSE file in the root directory of this source tree.
 namespace NetworkAnalytical {
 
 /**
- * EventQueue stores all events and invoke them in order.
+ * EventQueue manages scheduled EventLists.
  */
 class EventQueue {
  public:
@@ -21,30 +21,33 @@ class EventQueue {
   EventQueue() noexcept;
 
   /**
-   * Get current time the event_queue is processing.
+   * Get current event time of the event queue.
    *
-   * @return current time of the event_queue
+   * @return current event time
    */
   [[nodiscard]] EventTime get_current_time() const noexcept;
 
   /**
-   * Check whether all events scheduled are invoked.
+   * Check all registered events are invoked.
+   * i.e., check if the event queue is empty.
    *
-   * @return true if all events are invoked, false otherwise
+   * @return true if the event queue is empty, false otherwise
    */
   [[nodiscard]] bool finished() const noexcept;
 
   /**
-   * Proceed to the next event time slot
-   * and invoke all events scheduled at that event time.
+   * Proceed the event queue.
+   * i.e., first update the current event time to the next registered event time,
+   * and then invoke all events registered at the current updated event time.
    */
   void proceed() noexcept;
 
   /**
-   * Schedule an event at a specific time.
-   * @param event_time event time to schedule the event
+   * Schedule an event with a given event time.
+   *
+   * @param event_time time of event
    * @param callback callback function pointer
-   * @param callback_arg callback function argument
+   * @param callback_arg argument of the callback function
    */
   void schedule_event(
       EventTime event_time,
@@ -55,7 +58,7 @@ class EventQueue {
   /// current time of the event queue
   EventTime current_time;
 
-  /// list of events (EventList) scheduled
+  /// list of EventLists
   std::list<EventList> event_queue;
 };
 

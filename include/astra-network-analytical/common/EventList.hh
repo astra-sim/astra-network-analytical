@@ -12,43 +12,42 @@ LICENSE file in the root directory of this source tree.
 namespace NetworkAnalytical {
 
 /**
- * EventList represents a list of events
- * that are scheduled to be happening at the same time.
+ * EventList encapsulates a number of Events along with its event time.
  */
 class EventList {
  public:
   /**
    * Constructor.
    *
-   * @param event_time the time the list of events will take place
+   * @param event_time event time of the event list
    */
   explicit EventList(EventTime event_time) noexcept;
 
   /**
-   * Get the event time of the event list.
+   * Get the registered event time.
    *
-   * @return scheduled event time
+   * @return event time
    */
   [[nodiscard]] EventTime get_event_time() const noexcept;
 
   /**
-   * Add an event to the event list.
+   * Register an event into the event list.
    *
    * @param callback callback function pointer
-   * @param callback_arg argument for the callback function
+   * @param callback_arg argument of the callback function
    */
   void add_event(Callback callback, CallbackArg callback_arg) noexcept;
 
   /**
-   * invoke all events in the event list.
+   * Invoke all events in the event list.
    */
   void invoke_events() noexcept;
 
  private:
-  /// scheduled event time
+  /// event time of the event list
   EventTime event_time;
 
-  /// list of events
+  /// list of registered events
   std::list<Event> events;
 };
 

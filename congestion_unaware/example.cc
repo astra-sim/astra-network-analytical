@@ -11,21 +11,21 @@ using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
 
 int main() {
-  /// Parse network config and create topology
+  // Parse network config and create topology
   const auto network_parser =
       NetworkParser("../input/Ring_FullyConnected_Switch.yml");
   const auto topology = construct_topology(network_parser);
 
-  /// message settings
+  // message settings
   const auto chunk_size = 1'048'576; // 1 MB
 
-  /// Print basic-topology information
+  // Print basic-topology information
   std::cout << "Total NPUs Count: " << topology->get_npus_count() << std::endl;
 
-  /// Run sample send-recv
+  // Run sample send-recv
   const auto comm_delay = topology->send(3, 19, chunk_size);
   std::cout << "comm_delay: " << comm_delay << std::endl;
 
-  /// terminate
+  // terminate
   return 0;
 }
