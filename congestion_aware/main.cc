@@ -5,7 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <iostream> // Divya: to port congestion backend to Chakra
 #include <vector>
-#include "api/AstraCongestionApi.hh"
+#include "AstraCongestionApi.hh"
 #include "astra-sim/system/Sys.hh"
 // #include "astra-sim/system/memory/SimpleMemory.hh"
 #include "astra-sim/json.hpp"

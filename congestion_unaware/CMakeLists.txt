@@ -21,6 +21,7 @@ file(GLOB srcs
         "${CMAKE_CURRENT_SOURCE_DIR}/helper/*.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/topology/*.hh"
         "${CMAKE_CURRENT_SOURCE_DIR}/topology/*.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../../../astra-sim/network_frontend/analytical/congestion_unaware/*.cc"
 )
 
 # Compile Congestion Unaware Backend
@@ -33,6 +34,7 @@ target_link_libraries(AstraSim_Analytical_Congestion_Unaware LINK_PUBLIC Boost::
 
 # Properties
 target_include_directories(AstraSim_Analytical_Congestion_Unaware PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(AstraSim_Analytical_Congestion_Unaware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../../../astra-sim/network_frontend/analytical/congestion_unaware)
 set_target_properties(AstraSim_Analytical_Congestion_Unaware
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../bin/"

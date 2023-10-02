@@ -26,6 +26,7 @@ file(GLOB srcs
         "${CMAKE_CURRENT_SOURCE_DIR}/network/*.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/topology/*.hh"
         "${CMAKE_CURRENT_SOURCE_DIR}/topology/*.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../../../astra-sim/network_frontend/analytical/congestion_aware/*.cc"
 )
 
 # Compile Congestion Aware Backend
@@ -39,6 +40,8 @@ target_link_libraries(AstraSim_Analytical_Congestion_Aware LINK_PUBLIC yaml-cpp)
 
 # Properties
 target_include_directories(AstraSim_Analytical_Congestion_Aware PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(AstraSim_Analytical_Congestion_Aware PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../../../astra-sim/network_frontend/analytical/congestion_aware)
+
 set_target_properties(AstraSim_Analytical_Congestion_Aware
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../bin/"

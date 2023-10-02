@@ -5,7 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #include <iostream>
 
-#include "api/AnalyticalNetwork.hh"
+#include "AnalyticalNetwork.hh"
 #include "astra-sim/json.hpp"
 #include "astra-sim/system/Sys.hh"
 #include "event-queue/EventQueue.hh"
