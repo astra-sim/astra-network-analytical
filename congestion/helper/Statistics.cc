@@ -15,7 +15,7 @@ Statistics::Statistics() {}
 Statistics::~Statistics() {}
 
 void Statistics::recordEntry(LinkId link, std::tuple<Time, Time> entry) {
-  std::cout<<"Link: "<<link<<std::endl;
+  //std::cout<<"Link: "<<link<<std::endl;
   link_activity[link].push_back(entry);
 }
 
@@ -37,11 +37,11 @@ int Statistics::report() {
     LinkId link = pair.first;
     const std::list<std::tuple<double, double>>& activityBlocks = pair.second;
 
-    outputFile << "<" << link << ">";
+    outputFile << link;
     for (const auto& tuple : activityBlocks) {
       Time startTime = std::get<0>(tuple);
       Time endTime = std::get<1>(tuple);
-      outputFile << ",(" << startTime << "," << endTime<< ")";
+      outputFile << ",(" << startTime << ":" << endTime<< ")";
     }
     outputFile<<std::endl;
   }

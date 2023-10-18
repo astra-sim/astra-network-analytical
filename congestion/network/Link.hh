@@ -110,8 +110,11 @@ class Link {
 
  private:
 
+  /// Link id counter
+  static LinkId linkIdCtr;
+
   /// unique identifier for a link
-  static LinkId id;
+  LinkId id;
 
   /// Source and Destionation information
   NodeId srcId = -1;

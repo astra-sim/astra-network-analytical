@@ -14,7 +14,7 @@ using namespace Congestion;
 std::shared_ptr<EventQueue> Link::event_queue;
 
 // declaring static link-id member and setting it to -1
-LinkId Link::id = -1;
+LinkId Link::linkIdCtr = -1;
 
 void Link::link_become_free(void* link_ptr) noexcept {
   // cast to Link*
@@ -42,7 +42,8 @@ Link::Link(NodeId src, NodeId dest, Bandwidth bandwidth, Latency latency) noexce
       bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {
 
     // generate an unique link-id
-    this->id = ++id;
+    ++linkIdCtr;
+    this->id = linkIdCtr;
 
     // Initialize the activity block
     activityBlock = std::make_tuple(-1,-1);
@@ -77,6 +78,7 @@ bool Link::pending_chunk_exists() const noexcept {
 }
 
 void Link::set_busy() noexcept {
+  //std::cout<<"From inside the set_busy(): Link: "<<this->id<<std::endl;
   busy = true;
   std::get<0>(activityBlock)=this->event_queue->get_current_time();
 }
@@ -99,6 +101,7 @@ void Link::schedule_chunk_transmission(std::unique_ptr<Chunk> chunk) noexcept {
   // link should be free
   assert(!busy);
 
+  // std::cout<<"From inside the schedule_chunk_transmission: Link: "<<this->id<<std::endl;
   // set link busy
   set_busy();
 
