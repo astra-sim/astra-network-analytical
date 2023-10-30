@@ -55,6 +55,8 @@ class Topology {
    */
   void send(std::unique_ptr<Chunk> chunk) noexcept;
 
+  int get_npus_count() const noexcept;
+
  protected:
   /// number of npus in the topology
   int npus_count;

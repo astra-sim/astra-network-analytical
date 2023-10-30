@@ -7,9 +7,11 @@ LICENSE file in the root directory of this source tree.
 #define __TOPOLOGY_HH__
 
 #include <vector>
+#include <memory>
 
 #include "topology/CostModel.hh"
 #include "topology/TopologyConfig.hh"
+#include "event-queue/EventQueue.hh"
 
 namespace Analytical {
 class Topology {
@@ -33,7 +35,11 @@ class Topology {
 
   virtual Bandwidth getNpuTotalBandwidthPerDim(int dimension) const noexcept;
 
+  static void set_event_queue(
+      const std::shared_ptr<EventQueue>& event_queue_ptr) noexcept;
+
   CostModel& getCostModel() noexcept;
+
 
  protected:
   void checkNpuIdBound(NpuId npu_id) const noexcept;
@@ -52,6 +58,9 @@ class Topology {
   TopologyConfigs& configs; // TopologyConfigs for each dimension
   int npus_count; // NPUs count of the topology
   CostModel cost_model;
+
+  // Link the shared event Queue
+  static std::shared_ptr<EventQueue> event_queue;
 };
 } // namespace Analytical
 

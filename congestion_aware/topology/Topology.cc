@@ -57,3 +57,7 @@ void Topology::connect(
     npus[dest]->connect(src, bandwidth, latency);
   }
 }
+
+int Topology::get_npus_count() const noexcept {
+  return npus_count;
+}

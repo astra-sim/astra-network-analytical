@@ -22,6 +22,8 @@ file(GLOB srcs
         "${CMAKE_CURRENT_SOURCE_DIR}/topology/*.hh"
         "${CMAKE_CURRENT_SOURCE_DIR}/topology/*.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../../../astra-sim/network_frontend/analytical/congestion_unaware/*.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../../statistics/*.hh"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../../statistics/*.cc"
 )
 
 # Compile Congestion Unaware Backend

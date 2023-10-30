@@ -9,6 +9,9 @@ LICENSE file in the root directory of this source tree.
 
 using namespace Analytical;
 
+// Defining the shared pointer to the static member event_queue.
+std::shared_ptr<EventQueue> Topology::event_queue;
+
 Topology::Topology(TopologyConfigs& configs) noexcept : configs(configs) {
   // create cost model
   cost_model = CostModel();
@@ -77,4 +80,9 @@ Topology::NpuId Topology::npuAddressToId(
     NpuAddress npu_address) const noexcept {
   // Baseline implementation: assume 1d topology
   return npu_address[0];
+}
+
+void Topology::set_event_queue(
+    const std::shared_ptr<EventQueue>& event_queue_ptr) noexcept {
+  Analytical::Topology::event_queue = event_queue_ptr;
 }

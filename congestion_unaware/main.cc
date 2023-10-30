@@ -15,6 +15,9 @@ LICENSE file in the root directory of this source tree.
 #include "helper/cxxopts.hpp"
 #include "topology/HierarchicalTopology.hh"
 #include "topology/HierarchicalTopologyConfig.hh"
+#include "topology/Link.hh"
+#include "extern/statistics/GStats.hh"
+
 
 using namespace std;
 using json = nlohmann::json;
@@ -149,6 +152,9 @@ int main(int argc, char* argv[]) {
     //-------------------------------------------------------------------------
     auto event_queue = make_shared<Analytical::EventQueue>();
     //-------------------------------------------------------------------------
+    // Topology and Link
+    Analytical::Topology::set_event_queue(event_queue);
+    Analytical::Link::set_event_queue(event_queue);
 
     //-------------------------------------------------------------------------
     // System
@@ -221,6 +227,10 @@ int main(int argc, char* argv[]) {
     cout << "error parsing options: " << e.what() << endl;
     return 1;
   }
+
+  // report the final stats here.
+  printf("Report the stats here: ");
+  GStats::report();
 
   return 0;
 }

@@ -9,6 +9,7 @@ LICENSE file in the root directory of this source tree.
 #include <memory>
 #include "event-queue/EventQueue.hh"
 #include "type/Type.hh"
+#include "../../../statistics/GStatsIoActivity.hh"
 
 namespace Congestion {
 
@@ -43,7 +44,7 @@ class Link {
    * @param bandwidth bandwidth of the link
    * @param latency latency of the link
    */
-  Link(Bandwidth bandwidth, Latency latency) noexcept;
+  Link(unsigned src, unsigned dest, Bandwidth bandwidth, Latency latency) noexcept;
 
   /**
    * Destructor
@@ -81,7 +82,23 @@ class Link {
    */
   void set_free() noexcept;
 
+  static GStatsIoActivity nwIoActivity;
+  std::pair<Time_t,Time_t> activityBlock;
+
  private:
+
+  /// Link id counter
+  static unsigned genLinkId;
+
+  /// unique identifier for a link
+  unsigned id;
+
+  /// Source and Destionation information
+  unsigned src = -1;
+  unsigned dest = -1;
+
+
+
   /// Pointer to the shared event queue
   static std::shared_ptr<EventQueue> event_queue;
 

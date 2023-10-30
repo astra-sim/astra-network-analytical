@@ -24285,7 +24285,7 @@ class basic_json
     undefined       | 0x06             | still unsupported
     ObjectId        | 0x07             | still unsupported
     boolean         | 0x08             | boolean
-    UTC Date-Time   | 0x09             | still unsupported
+    UTC Date-Time_t   | 0x09             | still unsupported
     null            | 0x0A             | null
     Regular Expr.   | 0x0B             | still unsupported
     DB Pointer      | 0x0C             | still unsupported

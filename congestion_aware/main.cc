@@ -17,6 +17,8 @@ LICENSE file in the root directory of this source tree.
 #include "topology/Ring.hh"
 #include "topology/Switch.hh"
 #include "topology/Topology.hh"
+#include "extern/statistics/GStats.hh"
+
 
 using namespace Congestion;
 using json = nlohmann::json;
@@ -28,6 +30,7 @@ int get_num_npus(std::vector<int> units_counts) {
   }
   return num_npus;
 }
+
 
 int main(int argc, char* argv[]) {
   /// Create command line parser
@@ -280,6 +283,10 @@ int main(int argc, char* argv[]) {
   while (!event_queue->finished()) {
     event_queue->proceed();
   }
+
+  // report the final stats here.
+  printf("Report the stats here: ");
+  GStats::report();
 
   /// terminate simulation
   return 0;

@@ -41,7 +41,7 @@ void Node::connect(NodeId id, Bandwidth bandwidth, Latency latency) noexcept {
   assert(!connected(id));
 
   // create link
-  links[id] = std::make_shared<Link>(bandwidth, latency);
+  links[id] = std::make_shared<Link>(this->id, id, bandwidth, latency);
 }
 
 bool Node::connected(NodeId dest) const noexcept {

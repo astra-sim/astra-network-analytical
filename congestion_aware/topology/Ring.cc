@@ -4,7 +4,7 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "Ring.hh"
-
+#include <iostream>
 using namespace Congestion;
 
 Ring::Ring(

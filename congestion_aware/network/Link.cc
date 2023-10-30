@@ -7,11 +7,14 @@ LICENSE file in the root directory of this source tree.
 #include <cassert>
 #include "network/Chunk.hh"
 #include "network/Node.hh"
+#include <string>
 
 using namespace Congestion;
 
 // declaring static event_queue
 std::shared_ptr<EventQueue> Link::event_queue;
+GStatsIoActivity Congestion::Link::nwIoActivity("congestion_nw_io_activity");
+unsigned Congestion::Link::genLinkId = -1;
 
 void Link::link_become_free(void* link_ptr) noexcept {
   // cast to Link*
@@ -31,8 +34,19 @@ void Link::link_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept {
   Link::event_queue = event_queue;
 }
 
-Link::Link(Bandwidth bandwidth, Latency latency) noexcept
-    : bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {}
+Link::Link(unsigned src, unsigned dest, Bandwidth bandwidth, Latency latency) noexcept
+    : src(src),
+      dest(dest),
+      bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {
+
+    // generate an unique link-id
+    ++genLinkId;
+    this->id = genLinkId;
+
+    // Initialize the activity block
+    activityBlock.first.time_val = -1;
+    activityBlock.second.time_val = -1;
+}
 
 Link::~Link() noexcept = default;
 
@@ -64,10 +78,14 @@ bool Link::pending_chunk_exists() const noexcept {
 
 void Link::set_busy() noexcept {
   busy = true;
+  activityBlock.first.time_val = this->event_queue->get_current_time();
 }
 
 void Link::set_free() noexcept {
   busy = false;
+  activityBlock.second.time_val = this->event_queue->get_current_time();
+  std::string key = std::to_string(this->id);
+  nwIoActivity.recordEntry(key,activityBlock);
 }
 
 Time Link::serialization_delay(ChunkSize size) const noexcept {

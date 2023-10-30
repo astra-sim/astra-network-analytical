@@ -28,7 +28,7 @@ using Route = std::list<std::shared_ptr<Node>>;
 using Bandwidth = double;
 using Latency = double;
 
-/// Time configuration
+/// Time_t configuration
 using Time = double;
 
 /// Parser

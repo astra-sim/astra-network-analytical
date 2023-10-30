@@ -153,9 +153,12 @@ pair<double, int> HierarchicalTopology::send(
     NpuId src,
     NpuId dest,
     PayloadSize payload_size) noexcept {
+
+  // Verify if the given source and dest pair is valid
   checkNpuIdBound(src);
   checkNpuIdBound(dest);
 
+  // If src and dest are same, no transmission.
   if (src == dest) {
     return make_pair(0, -1);
   }
@@ -213,6 +216,11 @@ HierarchicalTopology::Latency HierarchicalTopology::linkLatency(
   return hops_count * configs[dimension].getLinkLatency();
 }
 
+/**
+ *
+ * @param npu_id
+ * @return NpuAddress. A Vector holding address of the NPU in each dimension.
+ */
 HierarchicalTopology::NpuAddress HierarchicalTopology::npuIdToAddress(
     NpuId npu_id) const noexcept {
   // If units-count if [2, 8, 4], and the given id is 47, then the id should be
