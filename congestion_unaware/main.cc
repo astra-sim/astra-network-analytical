@@ -15,7 +15,6 @@ LICENSE file in the root directory of this source tree.
 #include "helper/cxxopts.hpp"
 #include "topology/HierarchicalTopology.hh"
 #include "topology/HierarchicalTopologyConfig.hh"
-#include "topology/Link.hh"
 #include "extern/statistics/GStats.hh"
 
 
@@ -154,7 +153,6 @@ int main(int argc, char* argv[]) {
     //-------------------------------------------------------------------------
     // Topology and Link
     Analytical::Topology::set_event_queue(event_queue);
-    Analytical::Link::set_event_queue(event_queue);
 
     //-------------------------------------------------------------------------
     // System
