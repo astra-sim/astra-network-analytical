@@ -3,78 +3,34 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
-#include "topology/Topology.hh"
-
+#include "congestion_unaware/Topology.hh"
 #include <cassert>
 
-using namespace Analytical;
+using namespace NetworkAnalytical;
+using namespace NetworkAnalyticalCongestionUnaware;
 
-Topology::Topology(TopologyConfigs& configs) noexcept : configs(configs) {
-  // create cost model
-  cost_model = CostModel();
+Topology::Topology() noexcept : npus_count(-1), dims_count(-1) {}
 
-  // get total npus_count by multiplying npus_count of each dimension
-  npus_count = 1;
-  for (const auto& config : configs) {
-    npus_count *= config.getNpusCount();
-  }
+int Topology::get_npus_count() const noexcept {
+  assert(npus_count > 0);
+
+  return npus_count;
 }
 
-Topology::~Topology() noexcept = default;
+int Topology::get_dims_count() const noexcept {
+  assert(dims_count > 0);
 
-Topology::Bandwidth Topology::getNpuTotalBandwidthPerDim(
-    int dimension) const noexcept {
-  return configs[dimension].getLinkBandwidth();
+  return dims_count;
 }
 
-CostModel& Topology::getCostModel() noexcept {
-  return cost_model;
+std::vector<int> Topology::get_npus_count_per_dim() const noexcept {
+  assert(npus_count_per_dim.size() == dims_count);
+
+  return npus_count_per_dim;
 }
 
-void Topology::checkNpuIdBound(NpuId npu_id) const noexcept {
-  assert(
-      npu_id < npus_count &&
-      "[Topology, method checkNpuIdBound] NPU ID out of bounds");
-}
+std::vector<Bandwidth> Topology::get_bandwidth_per_dim() const noexcept {
+  assert(bandwidth_per_dim.size() == dims_count);
 
-Topology::Latency Topology::serializationLatency(
-    int dimension,
-    PayloadSize payload_size) const noexcept {
-  return payload_size / configs[dimension].getLinkBandwidth();
-}
-
-Topology::Latency Topology::nicLatency(int dimension) const noexcept {
-  return configs[dimension].getNicLatency();
-}
-
-Topology::Latency Topology::routerLatency(int dimension) const noexcept {
-  return configs[dimension].getRouterLatency();
-}
-
-Topology::Latency Topology::hbmLatency(int dimension, PayloadSize payload_size)
-    const noexcept {
-  auto hbm_latency = configs[dimension].getHbmLatency(); // HBM baseline latency
-  hbm_latency += payload_size /
-      configs[dimension].getHbmBandwidth(); // HBM serialization latency
-  return hbm_latency *
-      configs[dimension].getHbmScale(); // return scaled HBM latency
-}
-
-Topology::Latency Topology::criticalLatency(
-    Latency communication_latency,
-    Latency hbm_latency) const noexcept {
-  // return larger latency
-  return (communication_latency > hbm_latency) ? communication_latency
-                                               : hbm_latency;
-}
-
-Topology::NpuAddress Topology::npuIdToAddress(NpuId npu_id) const noexcept {
-  // Baseline implementation: assume 1d topology
-  return NpuAddress(1, npu_id);
-}
-
-Topology::NpuId Topology::npuAddressToId(
-    NpuAddress npu_address) const noexcept {
-  // Baseline implementation: assume 1d topology
-  return npu_address[0];
+  return bandwidth_per_dim;
 }

@@ -17,3 +17,6 @@ _deps
 
 # JetBrains
 .idea/
+
+# build
+build/
