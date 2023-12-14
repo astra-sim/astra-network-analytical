@@ -44,7 +44,11 @@ file(GLOB srcs_congestion_aware
 # Compile Congestion Unaware Backend
 if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
     if (NETWORK_BACKEND_BUILD_AS_LIBRARY)
-        add_library(Analytical_Congestion_Unaware STATIC ${srcs_congestion_unaware} ${srcs_common})
+        add_library(Analytical_Congestion_Unaware STATIC ${srcs_congestion_unaware} ${srcs_common}
+                ../../../astra-sim/statistics/GStats.cc
+                ../../../astra-sim/statistics/GStats.hh
+                ../../../astra-sim/statistics/GStatsIoActivity.cc
+                ../../../astra-sim/statistics/GStatsIoActivity.hh)
 
         # Properties
         set_target_properties(Analytical_Congestion_Unaware
@@ -54,7 +58,11 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
                 ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
         )
     else ()
-        add_executable(Analytical_Congestion_Unaware ${srcs_congestion_unaware} ${srcs_common})
+        add_executable(Analytical_Congestion_Unaware ${srcs_congestion_unaware} ${srcs_common}
+                ../../../astra-sim/statistics/GStats.cc
+                ../../../astra-sim/statistics/GStats.hh
+                ../../../astra-sim/statistics/GStatsIoActivity.cc
+                ../../../astra-sim/statistics/GStatsIoActivity.hh)
         target_sources(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/example.cc)
 
         # Properties
@@ -81,7 +89,11 @@ endif ()
 # Compile Congestion Aware Backend
 if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
     if (NETWORK_BACKEND_BUILD_AS_LIBRARY)
-        add_library(Analytical_Congestion_Aware STATIC ${srcs_congestion_aware} ${srcs_common})
+        add_library(Analytical_Congestion_Aware STATIC ${srcs_congestion_aware} ${srcs_common}
+                ../../../astra-sim/statistics/GStats.cc
+                ../../../astra-sim/statistics/GStats.hh
+                ../../../astra-sim/statistics/GStatsIoActivity.cc
+                ../../../astra-sim/statistics/GStatsIoActivity.hh)
 
         # Properties
         set_target_properties(Analytical_Congestion_Aware
@@ -91,7 +103,11 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
                 ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib/
         )
     else ()
-        add_executable(Analytical_Congestion_Aware ${srcs_congestion_aware} ${srcs_common})
+        add_executable(Analytical_Congestion_Aware ${srcs_congestion_aware} ${srcs_common}
+                ../../../astra-sim/statistics/GStats.cc
+                ../../../astra-sim/statistics/GStats.hh
+                ../../../astra-sim/statistics/GStatsIoActivity.cc
+                ../../../astra-sim/statistics/GStatsIoActivity.hh)
         target_sources(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/example.cc)
 
         # Properties
