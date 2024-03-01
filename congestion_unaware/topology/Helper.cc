@@ -19,18 +19,18 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::
     construct_topology(const NetworkParser& network_parser) noexcept {
   // get network_parser info
   const auto dims_count = network_parser.get_dims_count();
-  const auto topologies_per_dim = network_parser.get_topologies_per_dim();
-  const auto npus_counts_per_dim = network_parser.get_npus_counts_per_dim();
-  const auto bandwidths_per_dim = network_parser.get_bandwidths_per_dim();
-  const auto latencies_per_dim = network_parser.get_latencies_per_dim();
+  const auto topology_per_dim = network_parser.get_topology_per_dim();
+  const auto npus_count_per_dim = network_parser.get_npus_count_per_dim();
+  const auto bandwidth_per_dim = network_parser.get_bandwidth_per_dim();
+  const auto latency_per_dim = network_parser.get_latency_per_dim();
 
   // if dims_count is 1, just create basic topology
   if (dims_count == 1) {
     // retrieve basic topology info
-    const auto topology_type = topologies_per_dim[0];
-    const auto npus_count = npus_counts_per_dim[0];
-    const auto bandwidth = bandwidths_per_dim[0];
-    const auto latency = latencies_per_dim[0];
+    const auto topology_type = topology_per_dim[0];
+    const auto npus_count = npus_count_per_dim[0];
+    const auto bandwidth = bandwidth_per_dim[0];
+    const auto latency = latency_per_dim[0];
 
     // create and return basic topology
     switch (topology_type) {
@@ -54,10 +54,10 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::
   // create and append dims
   for (auto dim = 0; dim < dims_count; dim++) {
     // retrieve info
-    const auto topology_type = topologies_per_dim[dim];
-    const auto npus_count = npus_counts_per_dim[dim];
-    const auto bandwidth = bandwidths_per_dim[dim];
-    const auto latency = latencies_per_dim[dim];
+    const auto topology_type = topology_per_dim[dim];
+    const auto npus_count = npus_count_per_dim[dim];
+    const auto bandwidth = bandwidth_per_dim[dim];
+    const auto latency = latency_per_dim[dim];
 
     // create a network dim
     std::unique_ptr<BasicTopology> dim_topology;

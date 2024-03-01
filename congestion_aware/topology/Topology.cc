@@ -20,6 +20,9 @@ void Topology::set_event_queue(
 Topology::Topology() noexcept
     : npus_count(-1), devices_count(-1), dims_count(-1) {
   npus_count_per_dim = {};
+  devices = {};
+  bandwidth_per_dim = {};
+  latency_per_dim = {};
 }
 
 int Topology::get_devices_count() const noexcept {
@@ -44,16 +47,29 @@ int Topology::get_dims_count() const noexcept {
   return dims_count;
 }
 
-std::vector<int> Topology::get_npus_count_per_dim() const noexcept {
-  assert(npus_count_per_dim.size() == dims_count);
+TopologyBuildingBlock Topology::get_topology_of_dim(
+    const int dim) const noexcept {
+  assert(0 <= dim && dim < dims_count);
 
-  return npus_count_per_dim;
+  return topology_per_dim[dim];
 }
 
-std::vector<Bandwidth> Topology::get_bandwidth_per_dim() const noexcept {
-  assert(bandwidth_per_dim.size() == dims_count);
+int Topology::get_npus_count_of_dim(const int dim) const noexcept {
+  assert(0 <= dim && dim < dims_count);
 
-  return bandwidth_per_dim;
+  return npus_count_per_dim[dim];
+}
+
+Bandwidth Topology::get_bandwidth_of_dim(const int dim) const noexcept {
+  assert(0 <= dim && dim < dims_count);
+
+  return bandwidth_per_dim[dim];
+}
+
+Latency Topology::get_latency_of_dim(const int dim) const noexcept {
+  assert(0 <= dim && dim < dims_count);
+
+  return latency_per_dim[dim];
 }
 
 void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {

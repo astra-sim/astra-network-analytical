@@ -19,6 +19,9 @@ Switch::Switch(
   assert(bandwidth > 0);
   assert(latency >= 0);
 
+  // set topology type
+  topology_per_dim.push_back(TopologyBuildingBlock::Switch);
+
   // set switch id
   switch_id = npus_count;
 

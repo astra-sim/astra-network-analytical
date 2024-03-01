@@ -19,6 +19,9 @@ Ring::Ring(
   assert(bandwidth > 0);
   assert(latency >= 0);
 
+  // set topology type
+  topology_per_dim.push_back(TopologyBuildingBlock::Ring);
+
   // connect npus in a ring
   for (auto i = 0; i < npus_count - 1; i++) {
     connect(i, i + 1, bandwidth, latency, bidirectional);

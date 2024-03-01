@@ -52,9 +52,6 @@ class BasicTopology : public Topology {
 
   /// latency of each link
   Latency latency;
-
-  /// basic topology type
-  TopologyBuildingBlock basic_topology_type;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

@@ -16,7 +16,6 @@ BasicTopology::BasicTopology(
     const Latency latency) noexcept
     : bandwidth(bandwidth),
       latency(latency),
-      basic_topology_type(TopologyBuildingBlock::Undefined),
       Topology() {
   assert(npus_count > 0);
   assert(devices_count > 0);
@@ -30,6 +29,7 @@ BasicTopology::BasicTopology(
   dims_count = 1;
   npus_count_per_dim.push_back(npus_count);
   bandwidth_per_dim.push_back(bandwidth);
+  latency_per_dim.push_back(latency);
 
   // instantiate devices
   instantiate_devices();
@@ -39,6 +39,10 @@ BasicTopology::BasicTopology(
 BasicTopology::~BasicTopology() noexcept = default;
 
 TopologyBuildingBlock BasicTopology::get_basic_topology_type() const noexcept {
+  assert(topology_per_dim.size() == 1);
+
+  // get basic topology type
+  const auto basic_topology_type = topology_per_dim[0];
   assert(basic_topology_type != TopologyBuildingBlock::Undefined);
 
   return basic_topology_type;

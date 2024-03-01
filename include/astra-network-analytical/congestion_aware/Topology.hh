@@ -78,18 +78,37 @@ class Topology {
   [[nodiscard]] int get_dims_count() const noexcept;
 
   /**
-   * Get the number of NPUs per each dimension.
+   * Get the topology shape of the given dimension.
+   * @param dim dimension to query
    *
-   * @return number of NPUs per each dimension
+   * @return topology shape of the dimension
    */
-  [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept;
+  [[nodiscard]] TopologyBuildingBlock get_topology_of_dim(
+      int dim) const noexcept;
 
   /**
-   * Get the bandwidth per each network dimension.
+   * Get the number of NPUs of the given dimension.
+   * @param dim dimension to query
    *
-   * @return bandwidth per each dimension
+   * @return number of NPUs of the dimension
    */
-  [[nodiscard]] std::vector<Bandwidth> get_bandwidth_per_dim() const noexcept;
+  [[nodiscard]] int get_npus_count_of_dim(int dim) const noexcept;
+
+  /**
+   * Get the link bandwidth of the given dimension.
+   * @param dim dimension to query
+   *
+   * @return bandwidth of the dimension
+   */
+  [[nodiscard]] Bandwidth get_bandwidth_of_dim(int dim) const noexcept;
+
+  /**
+   * Get the link latency of the given dimension.
+   * @param dim dimension to query
+   *
+   * @return bandwidth of the dimension
+   */
+  [[nodiscard]] Latency get_latency_of_dim(int dim) const noexcept;
 
  protected:
   /// number of total devices in the topology
@@ -109,8 +128,14 @@ class Topology {
   /// holds the entire device instances in the topology
   std::vector<std::shared_ptr<Device>> devices;
 
+  /// topology shape per each network dimension
+  std::vector<TopologyBuildingBlock> topology_per_dim;
+
   /// bandwidth per each network dimension
   std::vector<Bandwidth> bandwidth_per_dim;
+
+  /// network latency (ns) per each network dimension
+  std::vector<Latency> latency_per_dim;
 
   /**
    * Instantiate Device objects in the topology.

@@ -36,21 +36,21 @@ class NetworkParser {
    *
    * @return number of NPUs per each demension.
    */
-  [[nodiscard]] std::vector<int> get_npus_counts_per_dim() const noexcept;
+  [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept;
 
   /**
    * Read "bandwidth" value
    *
    * @return bandwidth per each dimension
    */
-  [[nodiscard]] std::vector<Bandwidth> get_bandwidths_per_dim() const noexcept;
+  [[nodiscard]] std::vector<Bandwidth> get_bandwidth_per_dim() const noexcept;
 
   /**
    * Read "latency" value
    *
    * @return link latency per each dimension
    */
-  [[nodiscard]] std::vector<Latency> get_latencies_per_dim() const noexcept;
+  [[nodiscard]] std::vector<Latency> get_latency_per_dim() const noexcept;
 
   /**
    * Read "topology" value and translate it into TopologyBuildingBlock
@@ -58,7 +58,7 @@ class NetworkParser {
    *
    * @return topology building block per each dimension
    */
-  [[nodiscard]] std::vector<TopologyBuildingBlock> get_topologies_per_dim()
+  [[nodiscard]] std::vector<TopologyBuildingBlock> get_topology_per_dim()
       const noexcept;
 
  private:

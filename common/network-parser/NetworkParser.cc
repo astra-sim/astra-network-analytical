@@ -36,28 +36,28 @@ int NetworkParser::get_dims_count() const noexcept {
   return dims_count;
 }
 
-std::vector<int> NetworkParser::get_npus_counts_per_dim() const noexcept {
+std::vector<int> NetworkParser::get_npus_count_per_dim() const noexcept {
   assert(dims_count > 0);
   assert(npus_count_per_dim.size() == dims_count);
 
   return npus_count_per_dim;
 }
 
-std::vector<Bandwidth> NetworkParser::get_bandwidths_per_dim() const noexcept {
+std::vector<Bandwidth> NetworkParser::get_bandwidth_per_dim() const noexcept {
   assert(dims_count > 0);
   assert(bandwidth_per_dim.size() == dims_count);
 
   return bandwidth_per_dim;
 }
 
-std::vector<Latency> NetworkParser::get_latencies_per_dim() const noexcept {
+std::vector<Latency> NetworkParser::get_latency_per_dim() const noexcept {
   assert(dims_count > 0);
   assert(latency_per_dim.size() == dims_count);
 
   return latency_per_dim;
 }
 
-std::vector<TopologyBuildingBlock> NetworkParser::get_topologies_per_dim()
+std::vector<TopologyBuildingBlock> NetworkParser::get_topology_per_dim()
     const noexcept {
   assert(dims_count > 0);
   assert(topology_per_dim.size() == dims_count);

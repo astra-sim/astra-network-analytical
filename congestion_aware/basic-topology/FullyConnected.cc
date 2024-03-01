@@ -18,7 +18,7 @@ FullyConnected::FullyConnected(
   assert(latency >= 0);
 
   // set topology type
-  basic_topology_type = TopologyBuildingBlock::FullyConnected;
+  topology_per_dim.push_back(TopologyBuildingBlock::FullyConnected);
 
   // fully-connect every src-dest pairs
   for (auto src = 0; src < npus_count; src++) {
