@@ -1,9 +1,9 @@
 # Network Configuration
 
-# 3D basic-topology, Ring_FullyConnected_Switch
-topology: [ Switch ]  # Ring, Switch, FullyConnected
+# 1D basic topology (Switch)
+topology: [ Switch ]  # Switch
 
-# Ring with 16 NPUs
+# Switch with 16 NPUs
 npus_count: [ 16 ]  # number of NPUs
 
 # Bandwidth per each dimension
