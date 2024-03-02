@@ -39,6 +39,7 @@ file(GLOB srcs_congestion_aware
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/network/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/topology/*.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/basic-topology/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/multi-dim-topology/*.cc
 )
 
 # Compile Congestion Unaware Backend
