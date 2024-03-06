@@ -5,7 +5,9 @@ LICENSE file in the root directory of this source tree.
 
 #pragma once
 
+#include <memory>
 #include "common/Type.hh"
+#include "congestion_aware/BasicTopology.hh"
 #include "congestion_aware/Topology.hh"
 
 using namespace NetworkAnalytical;
@@ -28,6 +30,11 @@ class MultiDimTopology : public Topology {
       const noexcept override;
 
  private:
+  using MultiDimAddress = std::vector<DeviceId>;
+
+  /// store pointer to the basic_topology[of which NPU][of which network dim].
+  std::vector<std::vector<std::shared_ptr<BasicTopology>>> basic_topology_map;
+
   /**
    * Construct the multi-dimensional network topology
    * including the instantiation of devices
@@ -117,6 +124,17 @@ class MultiDimTopology : public Topology {
       int* basic_topologies_count,
       int* group_stride,
       int* groups_count) noexcept;
+
+  // TODO: comment
+  [[nodiscard]] MultiDimAddress translate_id_to_address(
+      DeviceId npu_id) const noexcept;
+
+  // TODO: comment
+  [[nodiscard]] DeviceId translate_address_to_id(
+      const MultiDimAddress& address) const noexcept;
+
+  // TODO: comment
+  void initialize_basic_topology_map() noexcept;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

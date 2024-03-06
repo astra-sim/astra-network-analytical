@@ -21,6 +21,7 @@ Topology::Topology() noexcept
     : npus_count(-1), devices_count(-1), dims_count(-1) {
   npus_count_per_dim = {};
   devices = {};
+  topology_per_dim = {};
   bandwidth_per_dim = {};
   latency_per_dim = {};
 }
@@ -72,45 +73,52 @@ Latency Topology::get_latency_of_dim(const int dim) const noexcept {
   return latency_per_dim[dim];
 }
 
-void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {
+void Topology::send(std::unique_ptr<Chunk> chunk) const noexcept {
   assert(chunk != nullptr);
 
   // get src npu node_id
-  const auto src = chunk->current_device()->get_id();
+  const auto src = chunk->current_device();
+  const auto src_id = chunk->current_device()->get_id();
 
   // assert src is valid
-  assert(0 <= src && src < devices_count);
+  assert(0 <= src_id && src_id < devices_count);
 
   // initiate transmission from src
-  devices[src]->send(std::move(chunk));
+  src->send(std::move(chunk));
 }
 
 void Topology::connect(
-    const DeviceId src,
-    const DeviceId dest,
+    const std::shared_ptr<Device>& src,
+    const std::shared_ptr<Device>& dest,
     const Bandwidth bandwidth,
     const Latency latency,
     const bool bidirectional) noexcept {
-  // assert the src and dest are valid
-  assert(0 <= src && src < devices_count);
-  assert(0 <= dest && dest < devices_count);
-
   // assert bandwidth and latency are valid
   assert(bandwidth > 0);
   assert(latency >= 0);
 
+  const auto src_id = src->get_id();
+  const auto dest_id = dest->get_id();
+
   // connect src -> dest
-  devices[src]->connect(dest, bandwidth, latency);
+  src->connect(dest_id, bandwidth, latency);
 
   // if bidirectional, connect dest -> src
   if (bidirectional) {
-    devices[dest]->connect(src, bandwidth, latency);
+    dest->connect(src_id, bandwidth, latency);
   }
 }
 
-void Topology::instantiate_devices() noexcept {
-  // instantiate all devices
-  for (auto i = 0; i < devices_count; i++) {
-    devices.push_back(std::make_shared<Device>(i));
+std::shared_ptr<Device> Topology::create_device(const DeviceId id) noexcept {
+  // check whether a device with id already exists
+  for (const auto& device : devices) {
+    assert(device->get_id() != id);
   }
+
+  // create new device
+  const auto new_device = std::make_shared<Device>(id);
+  devices.push_back(new_device);
+
+  // return the pointer
+  return new_device;
 }

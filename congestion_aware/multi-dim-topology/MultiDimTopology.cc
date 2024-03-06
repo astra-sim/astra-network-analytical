@@ -6,6 +6,9 @@ LICENSE file in the root directory of this source tree.
 #include "congestion_aware/MultiDimTopology.hh"
 #include <cassert>
 #include <iostream>
+#include "congestion_aware/FullyConnected.hh"
+#include "congestion_aware/Ring.hh"
+#include "congestion_aware/Switch.hh"
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionAware;
@@ -16,7 +19,7 @@ MultiDimTopology::MultiDimTopology(
     std::vector<int>&& npus_count_per_dim,
     std::vector<Bandwidth>&& bandwidth_per_dim,
     std::vector<Latency>&& latency_per_dim) noexcept
-    : Topology() {
+    : basic_topology_map(), Topology() {
   // assert value validity
   assert(dims_count > 0);
   assert(topology_per_dim.size() == dims_count);
@@ -44,8 +47,49 @@ MultiDimTopology::MultiDimTopology(
 
 Route MultiDimTopology::route(const DeviceId src, const DeviceId dest)
     const noexcept {
-  // TODO: implement
+  // assert validity
+  assert(0 <= src && src < npus_count);
+  assert(0 <= dest && dest < npus_count);
+
+  // assert src and dest differs
+  assert(src != dest);
+
+  // full route to return
   auto route = Route();
+
+  // insert src to the route
+  route.push_back(devices[src]);
+
+  // translate src and dest to multi-dim address
+  auto current_address = translate_id_to_address(src);
+  const auto dest_address = translate_id_to_address(dest);
+
+  // check which dims have different address
+  for (auto dim = 0; dim < dims_count; dim++) {
+    const auto current_addr_dim = current_address[dim];
+    const auto dest_addr_dim = dest_address[dim];
+
+    if (current_addr_dim == dest_addr_dim) {
+      continue;
+    }
+
+    // should route over this basic topology
+    const auto current_id = translate_address_to_id(current_address);
+    const auto basic_topology = basic_topology_map[current_id][dim];
+    auto sub_route = basic_topology->route(current_addr_dim, dest_addr_dim);
+
+    // append this sub_route to the full route
+    auto sub_route_it = std::next(sub_route.begin());
+    while (sub_route_it != sub_route.end()) {
+      route.push_back(*sub_route_it);
+      sub_route_it = std::next(sub_route_it);
+    }
+
+    // update current addr
+    current_address[dim] = dest_address[dim];
+  }
+
+  // return full route
   return route;
 }
 
@@ -55,9 +99,15 @@ void MultiDimTopology::construct_topology() noexcept {
   for (const auto basic_topology_npus_count : npus_count_per_dim) {
     npus_count *= basic_topology_npus_count;
   }
+  devices_count = npus_count; // switches will be added as required
 
   // instantiate devices
-  instantiate_devices();
+  for (auto id = 0; id < npus_count; id++) {
+    std::ignore = create_device(id);
+  }
+
+  // initialize basic topology map
+  initialize_basic_topology_map();
 
   // initialize map storing intra/inter-group strides and repetitions count
   auto basic_topology_stride = 1;
@@ -107,8 +157,8 @@ void MultiDimTopology::construct_dimension(
          basic_topology_iter++) {
       // here, a "basic topology" is being constructed
 
-      // first compute the list of NPUs within this basic topology
-      auto basic_topology_npus = std::vector<int>();
+      // we will create a vector with target NPUs in this basic topology
+      auto basic_topology_npus = Devices();
 
       // which has <basic_topology_npus_count> number of NPUs
       // starting from basic_topology_base_idx
@@ -118,8 +168,51 @@ void MultiDimTopology::construct_dimension(
       for (auto basic_topo_npus_iter = 0;
            basic_topo_npus_iter < basic_topology_npus_count;
            basic_topo_npus_iter++) {
-        basic_topology_npus.push_back(topology_npu_idx);
+        basic_topology_npus.push_back(devices[topology_npu_idx]);
         topology_npu_idx += *basic_topology_stride;
+      }
+
+      // instantiate basic topology
+      const auto topology_type = topology_per_dim[dim];
+      const auto bandwidth = bandwidth_per_dim[dim];
+      const auto latency = latency_per_dim[dim];
+      std::shared_ptr<Device> switch_device = nullptr;
+      std::shared_ptr<BasicTopology> basic_topology = nullptr;
+
+      switch (topology_type) {
+        case TopologyBuildingBlock::Ring:
+          // create ring topology
+          basic_topology =
+              std::make_shared<Ring>(basic_topology_npus, bandwidth, latency);
+          break;
+
+        case TopologyBuildingBlock::Switch:
+          // create a new switch device
+          switch_device = create_device(devices_count);
+          devices_count++;
+
+          // create switch topology
+          basic_topology = std::make_shared<Switch>(
+              basic_topology_npus, switch_device, bandwidth, latency);
+          break;
+
+        case TopologyBuildingBlock::FullyConnected:
+          // create FC topology
+          basic_topology = std::make_shared<FullyConnected>(
+              basic_topology_npus, bandwidth, latency);
+          break;
+
+        default:
+          // shouldn't reach here
+          std::cerr << "[Error] (network/analytical/congestion_aware) "
+                    << "not supported basic-topology" << std::endl;
+          std::exit(-1);
+      }
+
+      // assign this created basic topology to the map
+      for (const auto& npu : basic_topology_npus) {
+        const auto npu_id = npu->get_id();
+        basic_topology_map[npu_id][dim] = basic_topology;
       }
 
       // process next basic topology
@@ -133,4 +226,74 @@ void MultiDimTopology::construct_dimension(
   // update basic topology stride/repetition after processing
   *basic_topology_stride *= basic_topology_npus_count;
   *basic_topologies_count *= basic_topology_npus_count;
+}
+
+MultiDimTopology::MultiDimAddress MultiDimTopology::translate_id_to_address(
+    const DeviceId npu_id) const noexcept {
+  // If units-count if [2, 8, 4], and the given id is 47, then the id should be
+  // 47 // 16 = 2, leftover = 47 % 16 = 15
+  // 15 // 2 = 7, leftover = 15 % 2 = 1
+  // 1 // 1 = 1, leftover = 0
+  // therefore the address is [1, 7, 2]
+
+  // create empty address
+  auto multi_dim_address = MultiDimAddress();
+  for (auto i = 0; i < dims_count; i++) {
+    multi_dim_address.push_back(-1);
+  }
+
+  auto leftover = npu_id;
+  auto denominator = npus_count;
+
+  for (auto dim = dims_count - 1; dim >= 0; dim--) {
+    // change denominator
+    denominator /= npus_count_per_dim[dim];
+
+    // get and update address
+    const auto quotient = leftover / denominator;
+    leftover %= denominator;
+
+    // update address
+    multi_dim_address[dim] = quotient;
+  }
+
+  // check address translation
+  for (auto i = 0; i < dims_count; i++) {
+    assert(0 <= multi_dim_address[i]);
+    assert(multi_dim_address[i] < npus_count_per_dim[i]);
+  }
+
+  // return retrieved address
+  return multi_dim_address;
+}
+
+DeviceId MultiDimTopology::translate_address_to_id(
+    const MultiDimAddress& address) const noexcept {
+  // If units-count if [2, 8, 4], and the given address is [1, 7, 2],
+  // then the id should be
+  //       ('1' * 1) --> 1
+  //   1 + ('2' * 7) --> 15
+  //   15 + ('16' * 2) --> 47
+  // ID = 47.
+
+  // NPUs up to the current dimension
+  auto scalar = 1;
+
+  // device id to compute and return
+  auto id = 0;
+
+  // translate address to device id
+  for (auto dim = 0; dim < dims_count; dim++) {
+    id += (scalar * address[dim]);
+    scalar *= npus_count_per_dim[dim];
+  }
+
+  // return device id
+  return id;
+}
+
+void MultiDimTopology::initialize_basic_topology_map() noexcept {
+  for (auto i = 0; i < npus_count; i++) {
+    basic_topology_map.emplace_back(dims_count, nullptr);
+  }
 }

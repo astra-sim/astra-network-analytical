@@ -28,7 +28,8 @@ int main() {
   Topology::set_event_queue(event_queue);
 
   // Parse network config and create topology
-  const auto network_parser = NetworkParser("../input/Ring.yml");
+  const auto network_parser =
+      NetworkParser("../input/Ring_FullyConnected_Switch.yml");
   const auto topology = construct_topology(network_parser);
   const auto npus_count = topology->get_npus_count();
   const auto devices_count = topology->get_devices_count();

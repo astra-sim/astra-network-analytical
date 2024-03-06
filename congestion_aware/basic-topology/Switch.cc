@@ -20,15 +20,34 @@ Switch::Switch(
   assert(latency >= 0);
 
   // set topology type
-  topology_per_dim.push_back(TopologyBuildingBlock::Switch);
+  set_basic_topology_type(TopologyBuildingBlock::Switch);
 
-  // set switch id
-  switch_id = npus_count;
+  // set switch
+  this->switch_device = devices[npus_count];
 
-  // connect npus and switches, the link should be bidirectional
-  for (auto i = 0; i < npus_count; i++) {
-    connect(i, switch_id, bandwidth, latency, true);
-  }
+  // construct connectivity
+  construct_connections();
+}
+
+Switch::Switch(
+    const Devices& npus,
+    std::shared_ptr<Device> switch_device,
+    const Bandwidth bandwidth,
+    const Latency latency) noexcept
+    : switch_device(nullptr),
+      BasicTopology(npus, Devices({switch_device}), bandwidth, latency) {
+  assert(!npus.empty());
+  assert(bandwidth > 0);
+  assert(latency >= 0);
+
+  // set topology type
+  set_basic_topology_type(TopologyBuildingBlock::Switch);
+
+  // set switch
+  this->switch_device = std::move(switch_device);
+
+  // construct connectivity
+  construct_connections();
 }
 
 Route Switch::route(DeviceId src, DeviceId dest) const noexcept {
@@ -40,8 +59,16 @@ Route Switch::route(DeviceId src, DeviceId dest) const noexcept {
   // start at source, and go to switch, then go to destination
   auto route = Route();
   route.push_back(devices[src]);
-  route.push_back(devices[switch_id]);
+  route.push_back(switch_device);
   route.push_back(devices[dest]);
 
   return route;
+}
+
+void Switch::construct_connections() noexcept {
+  // connect npus and switches, the link should be bidirectional
+  for (auto i = 0; i < npus_count; i++) {
+    auto npu = devices[i];
+    connect(devices[i], switch_device, bandwidth, latency, true);
+  }
 }

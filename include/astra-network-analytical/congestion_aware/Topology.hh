@@ -52,7 +52,7 @@ class Topology {
    *
    * @param chunk chunk to be transmitted
    */
-  void send(std::unique_ptr<Chunk> chunk) noexcept;
+  void send(std::unique_ptr<Chunk> chunk) const noexcept;
 
   /**
    * Get the number of NPUs in the topology.
@@ -111,6 +111,25 @@ class Topology {
   [[nodiscard]] Latency get_latency_of_dim(int dim) const noexcept;
 
  protected:
+  /**
+   * Connect src -> dest with the given bandwidth and latency.
+   * (i.e., a `Link` gets constructed between the two npus)
+   *
+   * if bidirectional=true, dest -> src connection is also established.
+   *
+   * @param src src device pointer
+   * @param dest dest device pointer
+   * @param bandwidth bandwidth of link
+   * @param latency latency of link
+   * @param bidirectional true if connection is bidirectional, false otherwise
+   */
+  static void connect(
+      const std::shared_ptr<Device>& src,
+      const std::shared_ptr<Device>& dest,
+      Bandwidth bandwidth,
+      Latency latency,
+      bool bidirectional = true) noexcept;
+
   /// number of total devices in the topology
   /// device includes non-NPU devices such as switches
   int devices_count;
@@ -126,7 +145,7 @@ class Topology {
   std::vector<int> npus_count_per_dim;
 
   /// holds the entire device instances in the topology
-  std::vector<std::shared_ptr<Device>> devices;
+  Devices devices;
 
   /// topology shape per each network dimension
   std::vector<TopologyBuildingBlock> topology_per_dim;
@@ -138,28 +157,12 @@ class Topology {
   std::vector<Latency> latency_per_dim;
 
   /**
-   * Instantiate Device objects in the topology.
-   */
-  void instantiate_devices() noexcept;
-
-  /**
-   * Connect src -> dest with the given bandwidth and latency.
-   * (i.e., a `Link` gets constructed between the two npus)
+   * Create a new Device object with the given ID.
+   * @param id id of the new device
    *
-   * if bidirectional=true, dest -> src connection is also established.
-   *
-   * @param src src device id
-   * @param dest dest device id
-   * @param bandwidth bandwidth of link
-   * @param latency latency of link
-   * @param bidirectional true if connection is bidirectional, false otherwise
+   * @return pointer to the created device
    */
-  void connect(
-      DeviceId src,
-      DeviceId dest,
-      Bandwidth bandwidth,
-      Latency latency,
-      bool bidirectional = true) noexcept;
+  [[nodiscard]] std::shared_ptr<Device> create_device(DeviceId id) noexcept;
 };
 
 } // namespace NetworkAnalyticalCongestionAware

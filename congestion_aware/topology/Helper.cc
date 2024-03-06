@@ -47,13 +47,10 @@ std::shared_ptr<Topology> NetworkAnalyticalCongestionAware::construct_topology(
   }
 
   // Multi-dimensional topology
-  auto topology = std::make_shared<MultiDimTopology>(
+  return std::make_shared<MultiDimTopology>(
       dims_count,
       std::move(topology_per_dim),
       std::move(npus_count_per_dim),
       std::move(bandwidth_per_dim),
       std::move(latency_per_dim));
-
-  std::cerr << "[Error] MultiDim" << std::endl;
-  std::exit(-1);
 }

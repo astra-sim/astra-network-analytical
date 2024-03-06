@@ -18,4 +18,7 @@ class Device;
 /// Route is a list of devices
 using Route = std::list<std::shared_ptr<Device>>;
 
+/// Collection of Devices
+using Devices = std::vector<std::shared_ptr<Device>>;
+
 } // namespace NetworkAnalyticalCongestionAware

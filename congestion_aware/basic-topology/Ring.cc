@@ -5,6 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #include "congestion_aware/Ring.hh"
 #include <cassert>
+#include <optional>
 
 using namespace NetworkAnalyticalCongestionAware;
 
@@ -20,16 +21,31 @@ Ring::Ring(
   assert(latency >= 0);
 
   // set topology type
-  topology_per_dim.push_back(TopologyBuildingBlock::Ring);
+  set_basic_topology_type(TopologyBuildingBlock::Ring);
 
-  // connect npus in a ring
-  for (auto i = 0; i < npus_count - 1; i++) {
-    connect(i, i + 1, bandwidth, latency, bidirectional);
-  }
-  connect(npus_count - 1, 0, bandwidth, latency, bidirectional);
+  // construct connectivity
+  construct_connections();
 }
 
-Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
+Ring::Ring(
+    const Devices& npus,
+    const Bandwidth bandwidth,
+    const Latency latency,
+    const bool bidirectional) noexcept
+    : bidirectional(bidirectional),
+      BasicTopology(npus, std::nullopt, bandwidth, latency) {
+  assert(!npus.empty());
+  assert(bandwidth > 0);
+  assert(latency >= 0);
+
+  // set topology type
+  set_basic_topology_type(TopologyBuildingBlock::Ring);
+
+  // construct connectivity
+  construct_connections();
+}
+
+Route Ring::route(const DeviceId src, const DeviceId dest) const noexcept {
   // assert npus are in valid range
   assert(0 <= src && src < npus_count);
   assert(0 <= dest && dest < npus_count);
@@ -72,4 +88,30 @@ Route Ring::route(DeviceId src, DeviceId dest) const noexcept {
 
   // return the constructed route
   return route;
+}
+
+void Ring::construct_connections() noexcept {
+  // connect npus in a ring
+  for (auto i = 0; i < npus_count - 1; i++) {
+    const auto src = devices[i];
+    const auto dest = devices[i + 1];
+    connect(src, dest, bandwidth, latency, bidirectional);
+  }
+
+  // append the last connection
+  // but this should be skipped when
+  //    (1) the ring size is 2 and
+  //    (2) connectivity is bidirectional
+  // cause for this scenario, the returning connectivity has been
+  // already established by the above statement.
+
+  if (npus_count == 2 && bidirectional) {
+    // skip for such scenario
+    return;
+  }
+
+  // connect returning connection
+  const auto src = devices[npus_count - 1];
+  const auto dest = devices[0];
+  connect(src, dest, bandwidth, latency, bidirectional);
 }

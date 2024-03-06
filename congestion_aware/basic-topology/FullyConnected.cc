@@ -18,16 +18,26 @@ FullyConnected::FullyConnected(
   assert(latency >= 0);
 
   // set topology type
-  topology_per_dim.push_back(TopologyBuildingBlock::FullyConnected);
+  set_basic_topology_type(TopologyBuildingBlock::FullyConnected);
 
-  // fully-connect every src-dest pairs
-  for (auto src = 0; src < npus_count; src++) {
-    for (auto dest = 0; dest < npus_count; dest++) {
-      if (src != dest) {
-        connect(src, dest, bandwidth, latency, false);
-      }
-    }
-  }
+  // construct connectivity
+  construct_connections();
+}
+
+FullyConnected::FullyConnected(
+    const Devices& npus,
+    Bandwidth bandwidth,
+    Latency latency) noexcept
+    : BasicTopology(npus, std::nullopt, bandwidth, latency) {
+  assert(!npus.empty());
+  assert(bandwidth > 0);
+  assert(latency >= 0);
+
+  // set topology type
+  set_basic_topology_type(TopologyBuildingBlock::FullyConnected);
+
+  // construct connectivity
+  construct_connections();
 }
 
 Route FullyConnected::route(const DeviceId src, const DeviceId dest)
@@ -43,4 +53,15 @@ Route FullyConnected::route(const DeviceId src, const DeviceId dest)
   route.push_back(devices[dest]);
 
   return route;
+}
+
+void FullyConnected::construct_connections() noexcept {
+  // fully-connect every src-dest pairs
+  for (const auto& src : devices) {
+    for (const auto& dest : devices) {
+      if (src->get_id() != dest->get_id()) {
+        connect(src, dest, bandwidth, latency, false);
+      }
+    }
+  }
 }

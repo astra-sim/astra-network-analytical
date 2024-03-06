@@ -32,7 +32,7 @@ namespace NetworkAnalyticalCongestionAware {
 class Ring final : public BasicTopology {
  public:
   /**
-   * Constructor.
+   * Constructor, when creating new NPUs.
    *
    * @param npus_count number of npus in a ring
    * @param bandwidth bandwidth of link
@@ -46,10 +46,30 @@ class Ring final : public BasicTopology {
       bool bidirectional = true) noexcept;
 
   /**
+   * Constructor, when using existing NPUs.
+   *
+   * @param npus vector of pointer to the NPUs to be used
+   * @param bandwidth bandwidth of link
+   * @param latency latency of link
+   * @param bidirectional true if ring is bidirectional, false otherwise
+   */
+  Ring(
+      const Devices& npus,
+      Bandwidth bandwidth,
+      Latency latency,
+      bool bidirectional = true) noexcept;
+
+  /**
    * Implementation of route function in Topology.
    */
   [[nodiscard]] Route route(DeviceId src, DeviceId dest)
       const noexcept override;
+
+ protected:
+  /**
+   * Implementation of construct_connections in BasicTopology.
+   */
+  void construct_connections() noexcept override;
 
  private:
   /// true if the ring is bidirectional, false otherwise

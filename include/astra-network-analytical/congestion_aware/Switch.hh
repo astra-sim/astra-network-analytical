@@ -6,6 +6,7 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <cassert>
+#include <memory>
 #include "common/Type.hh"
 #include "congestion_aware/BasicTopology.hh"
 
@@ -31,7 +32,7 @@ namespace NetworkAnalyticalCongestionAware {
 class Switch final : public BasicTopology {
  public:
   /**
-   * Constructor.
+   * Constructor, when creating new NPUs.
    *
    * @param npus_count number of npus connected to the switch
    * @param bandwidth bandwidth of link
@@ -39,15 +40,27 @@ class Switch final : public BasicTopology {
    */
   Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
+  Switch(
+      const Devices& npus,
+      std::shared_ptr<Device> switch_device,
+      Bandwidth bandwidth,
+      Latency latency) noexcept;
+
   /**
    * Implementation of route function in Topology.
    */
   [[nodiscard]] Route route(DeviceId src, DeviceId dest)
       const noexcept override;
 
+ protected:
+  /**
+   * Implementation of construct_connections in BasicTopology.
+   */
+  void construct_connections() noexcept override;
+
  private:
   /// node_id of the switch node
-  DeviceId switch_id;
+  std::shared_ptr<Device> switch_device;
 };
 
 } // namespace NetworkAnalyticalCongestionAware
