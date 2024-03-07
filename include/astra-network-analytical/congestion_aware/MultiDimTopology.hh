@@ -30,8 +30,6 @@ class MultiDimTopology : public Topology {
       const noexcept override;
 
  private:
-  using MultiDimAddress = std::vector<DeviceId>;
-
   /// store pointer to the basic_topology[of which NPU][of which network dim].
   std::vector<std::vector<std::shared_ptr<BasicTopology>>> basic_topology_map;
 
@@ -125,15 +123,9 @@ class MultiDimTopology : public Topology {
       int* group_stride,
       int* groups_count) noexcept;
 
-  // TODO: comment
-  [[nodiscard]] MultiDimAddress translate_id_to_address(
-      DeviceId npu_id) const noexcept;
-
-  // TODO: comment
-  [[nodiscard]] DeviceId translate_address_to_id(
-      const MultiDimAddress& address) const noexcept;
-
-  // TODO: comment
+  /**
+   * Initialize the basic_topology_map vector.
+   */
   void initialize_basic_topology_map() noexcept;
 };
 

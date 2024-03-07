@@ -4,9 +4,9 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "congestion_unaware/MultiDimTopology.hh"
-#include <cassert>
 #include <cstdlib>
 #include <iostream>
+#include "common/NetworkFunction.hh"
 
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
@@ -26,12 +26,12 @@ EventTime MultiDimTopology::send(
     const DeviceId dest,
     const ChunkSize chunk_size) const noexcept {
   // translate src and dest to multi-dim address
-  const auto src_address = translate_address(src);
-  const auto dest_address = translate_address(dest);
+  const auto src_address = translate_id_to_address(src, npus_count_per_dim);
+  const auto dest_address = translate_id_to_address(dest, npus_count_per_dim);
 
   // get dim to transfer
   const auto dim_to_transfer = get_dim_to_transfer(src_address, dest_address);
-  
+
   // prepare localized topology and address info
   auto* const topology = topology_per_dim[dim_to_transfer].get();
   const auto src_local_id = src_address[dim_to_transfer];
@@ -61,45 +61,6 @@ void MultiDimTopology::append_dimension(
   // push back topology and npus_count
   topology_per_dim.push_back(std::move(topology));
   npus_count_per_dim.push_back(topology_size);
-}
-
-MultiDimTopology::MultiDimAddress MultiDimTopology::translate_address(
-    const DeviceId npu_id) const noexcept {
-  // If units-count if [2, 8, 4], and the given id is 47, then the id should be
-  // 47 // 16 = 2, leftover = 47 % 16 = 15
-  // 15 // 2 = 7, leftover = 15 % 2 = 1
-  // 1 // 1 = 1, leftover = 0
-  // therefore the address is [1, 7, 2]
-
-  // create empty address
-  auto multi_dim_address = MultiDimAddress();
-  for (auto i = 0; i < dims_count; i++) {
-    multi_dim_address.push_back(-1);
-  }
-
-  auto leftover = npu_id;
-  auto denominator = npus_count;
-
-  for (auto dim = dims_count - 1; dim >= 0; dim--) {
-    // change denominator
-    denominator /= npus_count_per_dim[dim];
-
-    // get and update address
-    const auto quotient = leftover / denominator;
-    leftover %= denominator;
-
-    // update address
-    multi_dim_address[dim] = quotient;
-  }
-
-  // check address translation
-  for (auto i = 0; i < dims_count; i++) {
-    assert(0 <= multi_dim_address[i]);
-    assert(multi_dim_address[i] < npus_count_per_dim[i]);
-  }
-
-  // return retrieved address
-  return multi_dim_address;
 }
 
 int MultiDimTopology::get_dim_to_transfer(

@@ -50,15 +50,6 @@ class MultiDimTopology : public Topology {
   std::vector<std::unique_ptr<BasicTopology>> topology_per_dim;
 
   /**
-   * Translate the NPU ID into a multi-dimensional address.
-   *
-   * @param npu_id id of the NPU
-   * @return the same NPU in multi-dimensional address representation
-   */
-  [[nodiscard]] MultiDimAddress translate_address(
-      DeviceId npu_id) const noexcept;
-
-  /**
    * Given src and dest address in multi-dimensional form,
    * return the dimension where the transfer should happen.
    * i.e., the dimension where the src and dest addresses differ.

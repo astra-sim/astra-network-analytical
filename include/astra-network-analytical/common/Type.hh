@@ -6,6 +6,7 @@ LICENSE file in the root directory of this source tree.
 #pragma once
 
 #include <cstdint>
+#include <vector>
 
 namespace NetworkAnalytical {
 
@@ -32,5 +33,8 @@ using EventTime = uint64_t;
 
 /// Basic multi-dimensional topology building blocks
 enum class TopologyBuildingBlock { Undefined, Ring, FullyConnected, Switch };
+
+/// Address of each NPU for multi-dimensional networks
+using MultiDimAddress = std::vector<DeviceId>;
 
 } // namespace NetworkAnalytical
