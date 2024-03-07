@@ -111,9 +111,11 @@ void Topology::connect(
 
 std::shared_ptr<Device> Topology::create_device(const DeviceId id) noexcept {
   // check whether a device with id already exists
+#ifndef DEBUG
   for (const auto& device : devices) {
     assert(device->get_id() != id);
   }
+#endif
 
   // create new device
   const auto new_device = std::make_shared<Device>(id);

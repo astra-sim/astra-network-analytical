@@ -4,6 +4,7 @@ LICENSE file in the root directory of this source tree.
 *******************************************************************************/
 
 #include "congestion_unaware/MultiDimTopology.hh"
+#include <cassert>
 #include <cstdlib>
 #include <iostream>
 #include "common/NetworkFunction.hh"
@@ -25,6 +26,10 @@ EventTime MultiDimTopology::send(
     const DeviceId src,
     const DeviceId dest,
     const ChunkSize chunk_size) const noexcept {
+  assert(0 <= src && src < npus_count);
+  assert(0 <= dest && dest < npus_count);
+  assert(chunk_size > 0);
+
   // translate src and dest to multi-dim address
   const auto src_address = translate_id_to_address(src, npus_count_per_dim);
   const auto dest_address = translate_id_to_address(dest, npus_count_per_dim);
@@ -47,6 +52,8 @@ EventTime MultiDimTopology::send(
 
 void MultiDimTopology::append_dimension(
     std::unique_ptr<BasicTopology> topology) noexcept {
+  assert(topology.get() != nullptr);
+
   // increment dims_count
   dims_count++;
 
@@ -66,6 +73,10 @@ void MultiDimTopology::append_dimension(
 int MultiDimTopology::get_dim_to_transfer(
     const MultiDimAddress& src_address,
     const MultiDimAddress& dest_address) const noexcept {
+  assert(!src_address.empty());
+  assert(!dest_address.empty());
+  assert(src_address.size() == dest_address.size());
+
   for (auto dim = 0; dim < dims_count; dim++) {
     // check the dim that has different address
     if (src_address[dim] != dest_address[dim]) {

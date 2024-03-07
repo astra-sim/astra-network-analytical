@@ -28,12 +28,14 @@ MultiDimTopology::MultiDimTopology(
   assert(bandwidth_per_dim.size() == dims_count);
   assert(latency_per_dim.size() == dims_count);
 
+#ifndef NDEBUG
   for (auto i = 0; i < dims_count; i++) {
     assert(topology_per_dim[i] != TopologyBuildingBlock::Undefined);
     assert(npus_count_per_dim[i] > 0);
     assert(bandwidth_per_dim[i] > 0);
     assert(latency_per_dim[i] >= 0);
   }
+#endif
 
   // move values
   this->dims_count = dims_count;
