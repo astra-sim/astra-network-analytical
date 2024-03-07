@@ -110,6 +110,20 @@ class Topology {
    */
   [[nodiscard]] Latency get_latency_of_dim(int dim) const noexcept;
 
+  /**
+   * Get the number of NPUs per each dimension.
+   *
+   * @return number of NPUs per each dimension
+   */
+  [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept;
+
+  /**
+   * Get the bandwidth per each network dimension.
+   *
+   * @return bandwidth per each dimension
+   */
+  [[nodiscard]] std::vector<Bandwidth> get_bandwidth_per_dim() const noexcept;
+
  protected:
   /**
    * Connect src -> dest with the given bandwidth and latency.

@@ -67,6 +67,18 @@ Bandwidth Topology::get_bandwidth_of_dim(const int dim) const noexcept {
   return bandwidth_per_dim[dim];
 }
 
+std::vector<int> Topology::get_npus_count_per_dim() const noexcept {
+  assert(npus_count_per_dim.size() == dims_count);
+
+  return npus_count_per_dim;
+}
+
+std::vector<Bandwidth> Topology::get_bandwidth_per_dim() const noexcept {
+  assert(bandwidth_per_dim.size() == dims_count);
+
+  return bandwidth_per_dim;
+}
+
 Latency Topology::get_latency_of_dim(const int dim) const noexcept {
   assert(0 <= dim && dim < dims_count);
 
