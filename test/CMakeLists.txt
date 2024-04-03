@@ -25,7 +25,7 @@ include(GoogleTest)
 # Compile Congestion Unaware Backend
 if (BUILDTARGET STREQUAL "congestion_unaware")
     # compile test target
-    add_executable(TestAnalyticalCongestionUnaware ${CMAKE_CURRENT_SOURCE_DIR}/test_congestion_unaware.cc)
+    add_executable(TestAnalyticalCongestionUnaware ${CMAKE_CURRENT_SOURCE_DIR}/test_congestion_unaware.cpp)
     target_link_libraries(TestAnalyticalCongestionUnaware PRIVATE Analytical_Congestion_Unaware)
 
     # link with gtest
@@ -34,7 +34,7 @@ if (BUILDTARGET STREQUAL "congestion_unaware")
 
 elseif (BUILDTARGET STREQUAL "congestion_aware")
     # compile test target
-    add_executable(TestAnalyticalCongestionAware ${CMAKE_CURRENT_SOURCE_DIR}/test_congestion_aware.cc)
+    add_executable(TestAnalyticalCongestionAware ${CMAKE_CURRENT_SOURCE_DIR}/test_congestion_aware.cpp)
     target_link_libraries(TestAnalyticalCongestionAware PRIVATE Analytical_Congestion_Aware)
 
     # link with gtest

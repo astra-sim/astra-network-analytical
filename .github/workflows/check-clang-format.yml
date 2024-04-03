@@ -1,0 +1,44 @@
+name: Code Formatting
+
+on: [ pull_request ]
+
+permissions:
+  contents: read
+
+jobs:
+  check-code-formatting:
+    name: Code Formatting
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v4
+
+    - name: Check format of `common` directory
+      uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '18'
+        check-path: 'common'
+
+    - name: Check format of `congestion_aware` directory
+      uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '18'
+        check-path: 'congestion_aware'
+
+    - name: Check format of `congestion_unaware` directory
+      uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '18'
+        check-path: 'congestion_unaware'
+
+    - name: Check format of `include` directory
+      uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '18'
+        check-path: 'include'
+
+    - name: Check format of `test` directory
+      uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '18'
+        check-path: 'test'

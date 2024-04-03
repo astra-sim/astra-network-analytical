@@ -24,21 +24,21 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extern/yaml-cpp yaml-cpp)
 
 # Include src files to compile
 file(GLOB srcs_common
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/*.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/event-queue/*.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/network-parser/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/event-queue/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/network-parser/*.cpp
 )
 
 file(GLOB srcs_congestion_unaware
-        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/topology/*.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/basic-topology/*.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/multi-dim-topology/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/topology/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/basic-topology/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/multi-dim-topology/*.cpp
 )
 
 file(GLOB srcs_congestion_aware
-        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/network/*.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/topology/*.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/basic-topology/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/network/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/topology/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/basic-topology/*.cpp
 )
 
 # Compile Congestion Unaware Backend
@@ -55,7 +55,7 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_unaware")
         )
     else ()
         add_executable(Analytical_Congestion_Unaware ${srcs_congestion_unaware} ${srcs_common})
-        target_sources(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/example.cc)
+        target_sources(Analytical_Congestion_Unaware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_unaware/example.cpp)
 
         # Properties
         set_target_properties(Analytical_Congestion_Unaware
@@ -92,7 +92,7 @@ if (BUILDTARGET STREQUAL "all" OR BUILDTARGET STREQUAL "congestion_aware")
         )
     else ()
         add_executable(Analytical_Congestion_Aware ${srcs_congestion_aware} ${srcs_common})
-        target_sources(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/example.cc)
+        target_sources(Analytical_Congestion_Aware PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/congestion_aware/example.cpp)
 
         # Properties
         set_target_properties(Analytical_Congestion_Aware
