@@ -5,6 +5,7 @@ LICENSE file in the root directory of this source tree.
 
 #include "common/Event.h"
 #include <cassert>
+#include <iostream>
 
 using namespace NetworkAnalytical;
 
@@ -16,6 +17,10 @@ Event::Event(const Callback callback, const CallbackArg callback_arg) noexcept
 void Event::invoke_event() noexcept {
     // check the validity of the event
     assert(callback != nullptr);
+
+    // FIXME: remove this
+    std::cout << "Event invoked" 
+        << std::endl;
 
     // invoke the callback function
     (*callback)(callback_arg);
