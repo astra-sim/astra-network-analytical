@@ -1,4 +1,4 @@
-name: ubuntu-unaware
+name: build 
 
 on: [ push ]
 
@@ -7,6 +7,7 @@ permissions:
 
 jobs:
   build:
+    name: ubuntu-unaware
     runs-on: ubuntu-latest
 
     steps:
