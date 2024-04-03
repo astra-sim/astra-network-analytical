@@ -1,4 +1,4 @@
-name: build
+name: ubuntu-aware
 
 on: [ push ]
 

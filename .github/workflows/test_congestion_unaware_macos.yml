@@ -1,4 +1,4 @@
-name: build
+name: mac-unaware
 
 on: [ push ]
 
