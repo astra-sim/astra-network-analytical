@@ -12,7 +12,7 @@ using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionAware {
 
-    /**
+/**
  * Implements a ring topology.
  *
  * Ring(8) example:
@@ -29,26 +29,26 @@ namespace NetworkAnalyticalCongestionAware {
  * 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 0
  * 0 <- 1 <- 2 <- 3 <- 4 <- 5 <- 6 <- 7 <- 0
  */
-    class Ring final : public BasicTopology {
-    public:
-        /**
-   * Constructor.
-   *
-   * @param npus_count number of npus in a ring
-   * @param bandwidth bandwidth of link
-   * @param latency latency of link
-   * @param bidirectional true if ring is bidirectional, false otherwise
-   */
-        Ring(int npus_count, Bandwidth bandwidth, Latency latency, bool bidirectional = true) noexcept;
+class Ring final : public BasicTopology {
+  public:
+    /**
+     * Constructor.
+     *
+     * @param npus_count number of npus in a ring
+     * @param bandwidth bandwidth of link
+     * @param latency latency of link
+     * @param bidirectional true if ring is bidirectional, false otherwise
+     */
+    Ring(int npus_count, Bandwidth bandwidth, Latency latency, bool bidirectional = true) noexcept;
 
-        /**
-   * Implementation of route function in Topology.
-   */
-        [[nodiscard]] Route route(DeviceId src, DeviceId dest) const noexcept override;
+    /**
+     * Implementation of route function in Topology.
+     */
+    [[nodiscard]] Route route(DeviceId src, DeviceId dest) const noexcept override;
 
-    private:
-        /// true if the ring is bidirectional, false otherwise
-        bool bidirectional;
-    };
+  private:
+    /// true if the ring is bidirectional, false otherwise
+    bool bidirectional;
+};
 
 }  // namespace NetworkAnalyticalCongestionAware

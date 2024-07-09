@@ -13,7 +13,7 @@ using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionAware {
 
-    /**
+/**
  * Implements a switch topology.
  *
  * Switch(4) example:
@@ -28,25 +28,25 @@ namespace NetworkAnalyticalCongestionAware {
  * 0 -> switch -> 2
  * so takes 2 hops.
  */
-    class Switch final : public BasicTopology {
-    public:
-        /**
-   * Constructor.
-   *
-   * @param npus_count number of npus connected to the switch
-   * @param bandwidth bandwidth of link
-   * @param latency latency of link
-   */
-        Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
+class Switch final : public BasicTopology {
+  public:
+    /**
+     * Constructor.
+     *
+     * @param npus_count number of npus connected to the switch
+     * @param bandwidth bandwidth of link
+     * @param latency latency of link
+     */
+    Switch(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
 
-        /**
-   * Implementation of route function in Topology.
-   */
-        [[nodiscard]] Route route(DeviceId src, DeviceId dest) const noexcept override;
+    /**
+     * Implementation of route function in Topology.
+     */
+    [[nodiscard]] Route route(DeviceId src, DeviceId dest) const noexcept override;
 
-    private:
-        /// node_id of the switch node
-        DeviceId switch_id;
-    };
+  private:
+    /// node_id of the switch node
+    DeviceId switch_id;
+};
 
 }  // namespace NetworkAnalyticalCongestionAware

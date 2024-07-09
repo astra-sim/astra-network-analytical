@@ -13,12 +13,12 @@ using namespace NetworkAnalytical;
 
 namespace NetworkAnalyticalCongestionAware {
 
-    /**
+/**
  * Construct a topology from a NetworkParser.
  *
  * @param network_parser NetworkParser to parse the network input file
  * @return pointer to the constructed topology
  */
-    [[nodiscard]] std::shared_ptr<Topology> construct_topology(const NetworkParser& network_parser) noexcept;
+[[nodiscard]] std::shared_ptr<Topology> construct_topology(const NetworkParser& network_parser) noexcept;
 
 }  // namespace NetworkAnalyticalCongestionAware

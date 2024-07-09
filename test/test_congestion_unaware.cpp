@@ -12,7 +12,7 @@ using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
 
 class TestNetworkAnalyticalCongestionUnaware : public ::testing::Test {
-protected:
+  protected:
     void SetUp() override {
         // set chunk size
         chunk_size = 1'048'576;  // 1 MB

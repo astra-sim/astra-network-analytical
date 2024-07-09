@@ -31,7 +31,10 @@ void Chunk::chunk_arrived_next_device(void* const chunk_ptr) noexcept {
 }
 
 Chunk::Chunk(const ChunkSize chunk_size, Route route, const Callback callback, const CallbackArg callback_arg) noexcept
-    : chunk_size(chunk_size), route(std::move(route)), callback(callback), callback_arg(callback_arg) {
+    : chunk_size(chunk_size),
+      route(std::move(route)),
+      callback(callback),
+      callback_arg(callback_arg) {
     assert(chunk_size > 0);
     assert(!this->route.empty());
     assert(callback != nullptr);

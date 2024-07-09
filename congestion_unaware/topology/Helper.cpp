@@ -15,8 +15,8 @@ LICENSE file in the root directory of this source tree.
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
 
-std::shared_ptr<Topology>
-NetworkAnalyticalCongestionUnaware::construct_topology(const NetworkParser& network_parser) noexcept {
+std::shared_ptr<Topology> NetworkAnalyticalCongestionUnaware::construct_topology(
+    const NetworkParser& network_parser) noexcept {
     // get network_parser info
     const auto dims_count = network_parser.get_dims_count();
     const auto topologies_per_dim = network_parser.get_topologies_per_dim();

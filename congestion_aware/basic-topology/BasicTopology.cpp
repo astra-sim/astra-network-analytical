@@ -9,9 +9,14 @@ LICENSE file in the root directory of this source tree.
 using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionAware;
 
-BasicTopology::BasicTopology(const int npus_count, const int devices_count, const Bandwidth bandwidth,
+BasicTopology::BasicTopology(const int npus_count,
+                             const int devices_count,
+                             const Bandwidth bandwidth,
                              const Latency latency) noexcept
-    : bandwidth(bandwidth), latency(latency), basic_topology_type(TopologyBuildingBlock::Undefined), Topology() {
+    : bandwidth(bandwidth),
+      latency(latency),
+      basic_topology_type(TopologyBuildingBlock::Undefined),
+      Topology() {
     assert(npus_count > 0);
     assert(devices_count > 0);
     assert(devices_count >= npus_count);

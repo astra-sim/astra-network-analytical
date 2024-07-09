@@ -67,7 +67,10 @@ void Topology::send(std::unique_ptr<Chunk> chunk) noexcept {
     devices[src]->send(std::move(chunk));
 }
 
-void Topology::connect(const DeviceId src, const DeviceId dest, const Bandwidth bandwidth, const Latency latency,
+void Topology::connect(const DeviceId src,
+                       const DeviceId dest,
+                       const Bandwidth bandwidth,
+                       const Latency latency,
                        const bool bidirectional) noexcept {
     // assert the src and dest are valid
     assert(0 <= src && src < devices_count);

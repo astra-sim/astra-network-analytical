@@ -10,7 +10,8 @@ using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
 
 Ring::Ring(const int npus_count, const Bandwidth bandwidth, const Latency latency, const bool bidirectional) noexcept
-    : bidirectional(bidirectional), BasicTopology(npus_count, bandwidth, latency) {
+    : bidirectional(bidirectional),
+      BasicTopology(npus_count, bandwidth, latency) {
     assert(npus_count > 0);
     assert(bandwidth > 0);
     assert(latency >= 0);

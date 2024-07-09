@@ -40,7 +40,8 @@ void EventQueue::proceed() noexcept {
     event_queue.pop_front();
 }
 
-void EventQueue::schedule_event(const EventTime event_time, const Callback callback,
+void EventQueue::schedule_event(const EventTime event_time,
+                                const Callback callback,
                                 const CallbackArg callback_arg) noexcept {
     // time should be at least larger than current time
     assert(event_time >= current_time);

@@ -38,7 +38,10 @@ void Link::set_event_queue(std::shared_ptr<EventQueue> event_queue_ptr) noexcept
 }
 
 Link::Link(const Bandwidth bandwidth, const Latency latency) noexcept
-    : bandwidth(bandwidth), latency(latency), pending_chunks(), busy(false) {
+    : bandwidth(bandwidth),
+      latency(latency),
+      pending_chunks(),
+      busy(false) {
     assert(bandwidth > 0);
     assert(latency >= 0);
 

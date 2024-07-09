@@ -14,7 +14,7 @@ using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionAware;
 
 class TestNetworkAnalyticalCongestionAware : public ::testing::Test {
-protected:
+  protected:
     void SetUp() override {
         // set event queue
         event_queue = std::make_shared<EventQueue>();

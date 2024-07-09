@@ -11,7 +11,9 @@ using namespace NetworkAnalytical;
 using namespace NetworkAnalyticalCongestionUnaware;
 
 BasicTopology::BasicTopology(const int npus_count, const Bandwidth bandwidth, const Latency latency) noexcept
-    : latency(latency), basic_topology_type(TopologyBuildingBlock::Undefined), Topology() {
+    : latency(latency),
+      basic_topology_type(TopologyBuildingBlock::Undefined),
+      Topology() {
     assert(npus_count > 0);
     assert(bandwidth > 0);
     assert(latency >= 0);

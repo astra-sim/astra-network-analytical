@@ -9,7 +9,8 @@ LICENSE file in the root directory of this source tree.
 using namespace NetworkAnalytical;
 
 Event::Event(const Callback callback, const CallbackArg callback_arg) noexcept
-    : callback(callback), callback_arg(callback_arg) {
+    : callback(callback),
+      callback_arg(callback_arg) {
     assert(callback != nullptr);
 }
 
