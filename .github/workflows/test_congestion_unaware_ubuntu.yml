@@ -23,7 +23,6 @@ jobs:
       - name: Set Up CMake
         run: |
           sudo apt -y update
-          sudo apt -y upgrade
           sudo apt -y install cmake
 
       - name: Build Congestion Unaware Test
@@ -35,4 +34,4 @@ jobs:
       - name: Run Congestion Unaware Test on Ubuntu
         run: |
           cd test/build
-          ctest --config Debug --output-on-failure
+          ctest --output-on-failure

@@ -23,7 +23,6 @@ jobs:
       - name: Set Up CMake
         run: |
           brew update
-          brew upgrade
           brew install cmake
 
       - name: Build Congestion Aware Test
@@ -35,4 +34,4 @@ jobs:
       - name: Run Congestion Aware Test on macOS
         run: |
           cd test/build
-          ctest --config Debug --output-on-failure
+          ctest --output-on-failure

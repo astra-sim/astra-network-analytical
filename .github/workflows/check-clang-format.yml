@@ -24,7 +24,6 @@ jobs:
     - name: Set Up clang-format
       run: |
         sudo apt -y update
-        sudo apt -y upgrade
         sudo apt -y install clang-format
 
     - name: Check format of `common` directory
