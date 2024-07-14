@@ -1,5 +1,9 @@
-name: build 
+## ******************************************************************************
+## This source code is licensed under the MIT license found in the
+## LICENSE file in the root directory of this source tree.
+## ******************************************************************************
 
+name: build 
 on: [ push, pull_request ]
 
 permissions:
@@ -19,6 +23,7 @@ jobs:
       - name: Set Up CMake
         run: |
           brew update
+          brew upgrade
           brew install cmake
 
       - name: Build Congestion Unaware Test
