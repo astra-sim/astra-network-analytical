@@ -1,13 +1,11 @@
-/******************************************************************************
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-*******************************************************************************/
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
-#include "common/EventQueue.h"
-#include "common/NetworkParser.h"
-#include "common/Type.h"
-#include "congestion_aware/Chunk.h"
-#include "congestion_aware/Helper.h"
+#include <astra-network-analytical/common/EventQueue.h>
+#include <astra-network-analytical/common/NetworkParser.h>
+#include <astra-network-analytical/common/Type.h>
+#include <astra-network-analytical/congestion_aware/Chunk.h>
+#include <astra-network-analytical/congestion_aware/Helper.h>
 #include <gtest/gtest.h>
 
 using namespace NetworkAnalytical;
@@ -50,7 +48,7 @@ TEST_F(TestNetworkAnalyticalCongestionAware, Ring) {
 
     /// test
     const auto simulation_time = event_queue->get_current_time();
-    EXPECT_EQ(simulation_time, 60'093);
+    EXPECT_EQ(simulation_time, 60'093'750);
 }
 
 TEST_F(TestNetworkAnalyticalCongestionAware, FullyConnected) {
@@ -72,7 +70,7 @@ TEST_F(TestNetworkAnalyticalCongestionAware, FullyConnected) {
 
     /// test
     const auto simulation_time = event_queue->get_current_time();
-    EXPECT_EQ(simulation_time, 20'031);
+    EXPECT_EQ(simulation_time, 20'031'250);
 }
 
 TEST_F(TestNetworkAnalyticalCongestionAware, Switch) {
@@ -94,7 +92,7 @@ TEST_F(TestNetworkAnalyticalCongestionAware, Switch) {
 
     /// test
     const auto simulation_time = event_queue->get_current_time();
-    EXPECT_EQ(simulation_time, 40'062);
+    EXPECT_EQ(simulation_time, 40'062'500);
 }
 
 TEST_F(TestNetworkAnalyticalCongestionAware, AllGatherOnRing) {
@@ -116,7 +114,8 @@ TEST_F(TestNetworkAnalyticalCongestionAware, AllGatherOnRing) {
             // crate a chunk
             auto route = topology->route(i, j);
             auto* event_queue_ptr = static_cast<void*>(event_queue.get());
-            auto chunk = std::make_unique<Chunk>(chunk_size, route, callback, nullptr);
+            auto chunk =
+                std::make_unique<Chunk>(chunk_size, route, callback, nullptr);
 
             // send a chunk
             topology->send(std::move(chunk));
@@ -130,5 +129,5 @@ TEST_F(TestNetworkAnalyticalCongestionAware, AllGatherOnRing) {
 
     /// test
     const auto simulation_time = event_queue->get_current_time();
-    EXPECT_EQ(simulation_time, 704'116);
+    EXPECT_EQ(simulation_time, 704'125'000);
 }

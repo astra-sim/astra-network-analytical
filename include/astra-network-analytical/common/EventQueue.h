@@ -1,12 +1,11 @@
-/******************************************************************************
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-*******************************************************************************/
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
 #pragma once
 
-#include "common/EventList.h"
-#include "common/Type.h"
+#include <astra-network-analytical/common/EventList.h>
+#include <astra-network-analytical/common/Type.h>
+#include <map>
 
 namespace NetworkAnalytical {
 
@@ -50,14 +49,16 @@ class EventQueue {
      * @param callback callback function pointer
      * @param callback_arg argument of the callback function
      */
-    void schedule_event(EventTime event_time, Callback callback, CallbackArg callback_arg) noexcept;
+    void schedule_event(EventTime event_time,
+                        Callback callback,
+                        CallbackArg callback_arg) noexcept;
 
   private:
     /// current time of the event queue
     EventTime current_time;
 
-    /// list of EventLists
-    std::list<EventList> event_queue;
+    // map so that it is ordered
+    std::map<EventTime, EventList> event_queue;
 };
 
 }  // namespace NetworkAnalytical

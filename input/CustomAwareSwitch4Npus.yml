@@ -1,0 +1,81 @@
+# Custom topology description for the congestion-aware network backend
+#
+# This file describes Switch(4): 4 NPUs connected through a single switch,
+# where every link has bandwidth = 50 GB/s and latency = 2 us.
+#
+#          4            (switch)
+#    -------------
+#    |   |   |   |
+#    0   1   2   3      (NPUs)
+#
+# In this file, device IDs 0-3 are NPUs and device ID 4 is the switch.
+# In total, 5 devices = 4 NPUs + 1 switch.
+topology: [ Custom ]
+npus_count: [ 4 ]  # number of NPUs
+num_devices: [ 5 ]  # number of Devices
+
+# Bandwidth of every link, keyed by source and destination device IDs,
+# i.e., the entries below denote bandwidth[src][dest].
+# Links are unidirectional, so each physical link is listed in both directions.
+# Unit: GB/s (10^9 bytes/s)
+bandwidth:
+  0:
+    4: 50.0
+  1:
+    4: 50.0
+  2:
+    4: 50.0
+  3:
+    4: 50.0
+  4:
+    0: 50.0
+    1: 50.0
+    2: 50.0
+    3: 50.0
+
+# Latency of every link, keyed the same way: latency[src][dest].
+# Unit: ns
+latency:
+  0:
+    4: 2000.0
+  1:
+    4: 2000.0
+  2:
+    4: 2000.0
+  3:
+    4: 2000.0
+  4:
+    0: 2000.0
+    1: 2000.0
+    2: 2000.0
+    3: 2000.0
+
+# Route for every (src, dest) pair: routes[src][dest] lists the devices
+# a message traverses, from src to dest inclusive.
+# For example, NPU 0 reaches NPU 1 through the switch: [ 0, 4, 1 ].
+routes:
+  0:
+    1: [ 0, 4, 1 ]
+    2: [ 0, 4, 2 ]
+    3: [ 0, 4, 3 ]
+    4: [ 0, 4 ]
+  1:
+    0: [ 1, 4, 0 ]
+    2: [ 1, 4, 2 ]
+    3: [ 1, 4, 3 ]
+    4: [ 1, 4 ]
+  2:
+    0: [ 2, 4, 0 ]
+    1: [ 2, 4, 1 ]
+    3: [ 2, 4, 3 ]
+    4: [ 2, 4 ]
+  3:
+    0: [ 3, 4, 0 ]
+    1: [ 3, 4, 1 ]
+    2: [ 3, 4, 2 ]
+    4: [ 3, 4 ]
+  4:
+    0: [ 4, 0 ]
+    1: [ 4, 1 ]
+    2: [ 4, 2 ]
+    3: [ 4, 3 ]

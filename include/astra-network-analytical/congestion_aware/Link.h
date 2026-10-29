@@ -1,13 +1,11 @@
-/******************************************************************************
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-*******************************************************************************/
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
 #pragma once
 
-#include "common/EventQueue.h"
-#include "common/Type.h"
-#include "congestion_aware/Type.h"
+#include <astra-network-analytical/common/EventQueue.h>
+#include <astra-network-analytical/common/Type.h>
+#include <astra-network-analytical/congestion_aware/Type.h>
 #include <memory>
 
 using namespace NetworkAnalytical;
@@ -33,7 +31,8 @@ class Link {
      *
      * @param event_queue_ptr pointer to the event queue
      */
-    static void set_event_queue(std::shared_ptr<EventQueue> event_queue_ptr) noexcept;
+    static void set_event_queue(
+        std::shared_ptr<EventQueue> event_queue_ptr) noexcept;
 
     /**
      * Constructor.
@@ -79,14 +78,17 @@ class Link {
     /// event queue Link uses to schedule events
     static std::shared_ptr<EventQueue> event_queue;
 
-    /// bandwidth of the link in GB/s
+    /// bandwidth of the link in GiB/s
     Bandwidth bandwidth;
 
-    /// bandwidth of the link in B/ns, used in actual computation
-    Bandwidth bandwidth_Bpns;
+    /// bandwidth of the link in B/ps, used in actual computation
+    Bandwidth bandwidth_Bpps;
 
     /// latency of the link in ns
     Latency latency;
+
+    /// latency of the link in ps, used in actual computation
+    int64_t latency_ps;
 
     /// queue of pending chunks
     std::list<std::unique_ptr<Chunk>> pending_chunks;
@@ -101,7 +103,8 @@ class Link {
      * @param chunk_size size of the target chunk
      * @return serialization delay of the chunk
      */
-    [[nodiscard]] EventTime serialization_delay(ChunkSize chunk_size) const noexcept;
+    [[nodiscard]] EventTime serialization_delay(
+        ChunkSize chunk_size) const noexcept;
 
     /**
      * Compute the communication delay of a chunk.
@@ -110,7 +113,8 @@ class Link {
      * @param chunk_size size of the target chunk
      * @return communication delay of the chunk
      */
-    [[nodiscard]] EventTime communication_delay(ChunkSize chunk_size) const noexcept;
+    [[nodiscard]] EventTime communication_delay(
+        ChunkSize chunk_size) const noexcept;
 
     /**
      * Schedule the transmission of a chunk.

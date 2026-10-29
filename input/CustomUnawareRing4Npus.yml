@@ -1,0 +1,65 @@
+# Custom topology description for the congestion-unaware network backend
+#
+# This file describes Ring(4): 4 NPUs connected in a bidirectional ring,
+# where every link has bandwidth = 50 GiB/s and latency = 2 us.
+#
+# The congestion-unaware backend does not model routes.
+# It computes each transfer from a direct entry for the (src, dest) pair,
+# so the ring is flattened into direct NPU-to-NPU entries.
+# Each entry folds in the hops along the shorter path around the ring:
+# - Neighbors (1 hop, e.g., 0 -> 1): latency = 2 us
+# - Opposite NPUs (2 hops, e.g., 0 -> 1 -> 2): latency = 2 x 2 us = 4 us
+# Bandwidth stays 50 GiB/s for every pair.
+#
+#    0 ------- 1                     0 ----- 1
+#    |         |                     | \   / |
+#    |         |         ==>         |   X   |
+#    |         |                     | /   \ |
+#    3 ------- 2                     3 ----- 2
+#
+# In this file, device IDs 0-3 are NPUs. There are no switch devices.
+topology: [ Custom ]
+npus_count: [ 4 ]  # number of NPUs
+
+# Bandwidth between every NPU pair, keyed by source and destination IDs,
+# i.e., the entries below denote bandwidth[src][dest].
+# Entries are unidirectional, so each pair is listed in both directions.
+# Unit: GiB/s
+bandwidth:
+  0:
+    1: 50.0
+    2: 50.0
+    3: 50.0
+  1:
+    0: 50.0
+    2: 50.0
+    3: 50.0
+  2:
+    0: 50.0
+    1: 50.0
+    3: 50.0
+  3:
+    0: 50.0
+    1: 50.0
+    2: 50.0
+
+# Latency between every NPU pair, keyed the same way: latency[src][dest].
+# Neighbors (0-1, 1-2, 2-3, 3-0) are 2000 ns; opposite pairs (0-2, 1-3) are 4000 ns.
+# Unit: ns
+latency:
+  0:
+    1: 2000.0
+    2: 4000.0
+    3: 2000.0
+  1:
+    0: 2000.0
+    2: 2000.0
+    3: 4000.0
+  2:
+    0: 4000.0
+    1: 2000.0
+    3: 2000.0
+  3:
+    0: 2000.0
+    1: 4000.0
+    2: 2000.0

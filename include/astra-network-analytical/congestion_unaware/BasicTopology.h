@@ -1,12 +1,11 @@
-/******************************************************************************
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-*******************************************************************************/
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
 #pragma once
 
-#include "common/Type.h"
-#include "congestion_unaware/Topology.h"
+#include <astra-network-analytical/common/Type.h>
+#include <astra-network-analytical/congestion_unaware/Topology.h>
+#include <cstdint>
 
 using namespace NetworkAnalytical;
 
@@ -23,10 +22,14 @@ class BasicTopology : public Topology {
      * Constructor.
      *
      * @param npus_count number of NPUs in the topology
+     * @param num_devices number of network nodes in topology
      * @param bandwidth bandwidth of each link in the topology
      * @param latency latency of each link in the topology
      */
-    BasicTopology(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
+    BasicTopology(int npus_count,
+                  int num_devices,
+                  Bandwidth bandwidth,
+                  Latency latency) noexcept;
 
     /**
      * Destructor.
@@ -36,7 +39,17 @@ class BasicTopology : public Topology {
     /**
      * Implement the send method of Topology.
      */
-    [[nodiscard]] EventTime send(DeviceId src, DeviceId dest, ChunkSize chunk_size) const noexcept override;
+    [[nodiscard]] EventTime send(DeviceId src,
+                                 DeviceId dest,
+                                 ChunkSize chunk_size) const noexcept override;
+
+    /**
+     * Implement the read method of Topology.
+     */
+    [[nodiscard]] EventTime receive(
+        DeviceId src,
+        DeviceId dest,
+        ChunkSize chunk_size) const noexcept override;
 
     /**
      * Return the type of the basic topology
@@ -44,7 +57,8 @@ class BasicTopology : public Topology {
      *
      * @return type of the basic topology
      */
-    [[nodiscard]] TopologyBuildingBlock get_basic_topology_type() const noexcept;
+    [[nodiscard]] TopologyBuildingBlock get_basic_topology_type()
+        const noexcept;
 
   protected:
     /**
@@ -54,7 +68,8 @@ class BasicTopology : public Topology {
      * @param dest dest NPU ID
      * @return number of hops between src and dest
      */
-    [[nodiscard]] virtual int compute_hops_count(DeviceId src, DeviceId dest) const noexcept = 0;
+    [[nodiscard]] virtual int compute_hops_count(
+        DeviceId src, DeviceId dest) const noexcept = 0;
 
     /// type of the basic topology
     TopologyBuildingBlock basic_topology_type;
@@ -67,16 +82,20 @@ class BasicTopology : public Topology {
      * @param chunk_size size of the chunk
      * @return communication delay to send a chunk between src and dest
      */
-    [[nodiscard]] EventTime compute_communication_delay(int hops_count, ChunkSize chunk_size) const noexcept;
+    [[nodiscard]] EventTime compute_communication_delay(
+        int hops_count, ChunkSize chunk_size) const noexcept;
 
-    /// bandwidth of each link in GB/s
+    /// bandwidth of each link in GiB/s
     Bandwidth bandwidth;
 
-    /// bandwidth of each link in B/ns, used for actual computation
-    Bandwidth bandwidth_Bpns;
+    /// bandwidth of each link in B/ps, used for actual computation
+    Bandwidth bandwidth_Bpps;
 
     /// latency of each link in ns
     Latency latency;
+
+    /// latency of each link in ps
+    int64_t latency_ps;
 };
 
 }  // namespace NetworkAnalyticalCongestionUnaware

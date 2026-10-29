@@ -1,0 +1,72 @@
+# Custom topology description for the congestion-aware network backend
+#
+# This file describes Ring(4): 4 NPUs connected in a bidirectional ring,
+# where every link has bandwidth = 50 GB/s and latency = 2 us.
+#
+#    0 ------- 1
+#    |         |
+#    |         |
+#    3 ------- 2
+#
+# In this file, device IDs 0-3 are NPUs. There are no switch devices.
+# In total, 4 devices = 4 NPUs.
+topology: [ Custom ]
+npus_count: [ 4 ]  # number of NPUs
+num_devices: [ 4 ]  # number of Devices
+
+# Bandwidth of every link, keyed by source and destination device IDs,
+# i.e., the entries below denote bandwidth[src][dest].
+# Links are unidirectional, so each physical link is listed in both directions.
+# Unit: GB/s (10^9 bytes/s)
+bandwidth:
+  0:
+    1: 50.0
+    3: 50.0
+  1:
+    0: 50.0
+    2: 50.0
+  2:
+    1: 50.0
+    3: 50.0
+  3:
+    0: 50.0
+    2: 50.0
+
+# Latency of every link, keyed the same way: latency[src][dest].
+# Unit: ns
+latency:
+  0:
+    1: 2000.0
+    3: 2000.0
+  1:
+    0: 2000.0
+    2: 2000.0
+  2:
+    1: 2000.0
+    3: 2000.0
+  3:
+    0: 2000.0
+    2: 2000.0
+
+# Route for every (src, dest) pair: routes[src][dest] lists the devices
+# a message traverses, from src to dest inclusive.
+# Neighbors communicate directly, e.g., [ 0, 1 ].
+# Opposite NPUs are 2 hops apart in either direction;
+# this file always takes the increasing direction, e.g., [ 0, 1, 2 ].
+routes:
+  0:
+    1: [ 0, 1 ]
+    2: [ 0, 1, 2 ]
+    3: [ 0, 3 ]
+  1:
+    0: [ 1, 0 ]
+    2: [ 1, 2 ]
+    3: [ 1, 2, 3 ]
+  2:
+    0: [ 2, 3, 0 ]
+    1: [ 2, 1 ]
+    3: [ 2, 3 ]
+  3:
+    0: [ 3, 0 ]
+    1: [ 3, 0, 1 ]
+    2: [ 3, 2 ]
