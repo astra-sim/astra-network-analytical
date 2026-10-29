@@ -1,12 +1,10 @@
-/******************************************************************************
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-*******************************************************************************/
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
 #pragma once
 
-#include "common/Type.h"
-#include "congestion_aware/BasicTopology.h"
+#include <astra-network-analytical/common/Type.h>
+#include <astra-network-analytical/congestion_aware/BasicTopology.h>
 
 namespace NetworkAnalyticalCongestionAware {
 
@@ -30,15 +28,20 @@ class FullyConnected final : public BasicTopology {
      * Constructor.
      *
      * @param npus_count number of npus in the FullyConnected topology
+     * @param devices_count number of devices in the topology
      * @param bandwidth bandwidth of each link
      * @param latency latency of each link
      */
-    FullyConnected(int npus_count, Bandwidth bandwidth, Latency latency) noexcept;
+    FullyConnected(int npus_count,
+                   int devices_count,
+                   Bandwidth bandwidth,
+                   Latency latency) noexcept;
 
     /**
      * Implementation of route function in Topology.
      */
-    [[nodiscard]] Route route(DeviceId src, DeviceId dest) const noexcept override;
+    [[nodiscard]] Route route(DeviceId src,
+                              DeviceId dest) const noexcept override;
 };
 
 }  // namespace NetworkAnalyticalCongestionAware

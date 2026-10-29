@@ -1,8 +1,11 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
+
 # CMake Requirement
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.19)
 
 # C++ requirement
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Setup project
@@ -19,13 +22,8 @@ option(NETWORK_BACKEND_BUILD_AS_LIBRARY "Build as a library" ON)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/.. analytical)
 
 # Compile GoogleTest
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG 1204d63 # Commit of 2024-10-31
-)
-FetchContent_MakeAvailable(googletest)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+include(FetchGoogleTest)
 include(GoogleTest)
 
 # Compile Congestion Unaware Backend

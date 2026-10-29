@@ -1,13 +1,14 @@
-/******************************************************************************
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-*******************************************************************************/
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
 #pragma once
 
-#include "common/EventQueue.h"
-#include "congestion_aware/Chunk.h"
-#include "congestion_aware/Device.h"
+#include <algorithm>
+#include <astra-network-analytical/common/BaseTopology.h>
+#include <astra-network-analytical/common/EventQueue.h>
+#include <astra-network-analytical/congestion_aware/Chunk.h>
+#include <astra-network-analytical/congestion_aware/Device.h>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -18,19 +19,23 @@ namespace NetworkAnalyticalCongestionAware {
 /**
  * Topology abstracts a network topology.
  */
-class Topology {
+class Topology : public BaseTopology {
   public:
     /**
      * Set the event queue to be used by the topology.
      *
      * @param event_queue pointer to the event queue
      */
-    static void set_event_queue(std::shared_ptr<EventQueue> event_queue) noexcept;
+    static void set_event_queue(
+        std::shared_ptr<EventQueue> event_queue) noexcept;
 
     /**
      * Constructor.
      */
     Topology() noexcept;
+
+    // stats
+    virtual std::vector<int> calc_router_occupancy(int sys_id);
 
     /**
      * Construct the route from src to dest.
@@ -44,7 +49,12 @@ class Topology {
      *
      * @return route from src NPU to dest NPU
      */
-    [[nodiscard]] virtual Route route(DeviceId src, DeviceId dest) const noexcept = 0;
+    [[nodiscard]] virtual Route route(DeviceId src,
+                                      DeviceId dest) const noexcept = 0;
+
+    [[nodiscard]] virtual Route route(DeviceId src,
+                                      DeviceId dest,
+                                      uint64_t chunk_address) const noexcept;
 
     /**
      * Initiate a transmission of a chunk.
@@ -54,62 +64,48 @@ class Topology {
     void send(std::unique_ptr<Chunk> chunk) noexcept;
 
     /**
-     * Get the number of NPUs in the topology.
-     * NPU excludes non-NPU devices such as switches.
+     * Check credits and return if sending allowed
      *
-     * @return number of NPUs in the topology
+     * @param route ordered vector of Devices that request will travel
+     *
+     * @return bool if sending allowed for this request
      */
-    [[nodiscard]] int get_npus_count() const noexcept;
+    virtual bool is_send_allowed_on_route(Route route) const noexcept;
 
     /**
-     * Get the number of devices in the topology.
-     * Device includes non-NPU devices such as switches.
+     * Decrement resources along route (Devices)
      *
-     * @return number of devices in the topology
+     * @param route ordered vector of Devices that request will travel
+     *
+     * @return list of resources that were decremented
      */
-    [[nodiscard]] int get_devices_count() const noexcept;
+    virtual std::vector<DeviceId> claim_tickets_on_route(Route route) noexcept;
 
     /**
-     * Get the number of network dimensions.
+     * Association of resource to system maintained by topology. Get associated
+     * resources along route
      *
-     * @return number of network dimensions
+     * @param route ordered vector of Devices that request will travel
+     *
+     * @return list of resource ids associated with this route
      */
-    [[nodiscard]] int get_dims_count() const noexcept;
+    virtual std::vector<DeviceId> get_associated_resources_on_route(
+        Route route) const noexcept;
 
     /**
-     * Get the number of NPUs per each dimension.
+     * For later callbacks, figure out most critical resource along route.
+     * Policy may differ between implementations
      *
-     * @return number of NPUs per each dimension
-     */
-    [[nodiscard]] std::vector<int> get_npus_count_per_dim() const noexcept;
-
-    /**
-     * Get the bandwidth per each network dimension.
+     * @param route ordered vector of Devices that request will travel
      *
-     * @return bandwidth per each dimension
+     * @return resource ID considered most "constraining"
      */
-    [[nodiscard]] std::vector<Bandwidth> get_bandwidth_per_dim() const noexcept;
+    virtual DeviceId query_constraining_resource_on_route(
+        Route route) const noexcept;
 
   protected:
-    /// number of total devices in the topology
-    /// device includes non-NPU devices such as switches
-    int devices_count;
-
-    /// number of NPUs in the topology
-    /// NPU excludes non-NPU devices such as switches
-    int npus_count;
-
-    /// number of network dimensions
-    int dims_count;
-
-    /// number of NPUs per each dimension
-    std::vector<int> npus_count_per_dim;
-
     /// holds the entire device instances in the topology
     std::vector<std::shared_ptr<Device>> devices;
-
-    /// bandwidth per each network dimension
-    std::vector<Bandwidth> bandwidth_per_dim;
 
     /**
      * Instantiate Device objects in the topology.
@@ -128,7 +124,11 @@ class Topology {
      * @param latency latency of link
      * @param bidirectional true if connection is bidirectional, false otherwise
      */
-    void connect(DeviceId src, DeviceId dest, Bandwidth bandwidth, Latency latency, bool bidirectional = true) noexcept;
+    void connect(DeviceId src,
+                 DeviceId dest,
+                 Bandwidth bandwidth,
+                 Latency latency,
+                 bool bidirectional = true) noexcept;
 };
 
 }  // namespace NetworkAnalyticalCongestionAware

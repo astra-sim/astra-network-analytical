@@ -1,10 +1,8 @@
 #!/bin/bash
-set -e
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
-## ******************************************************************************
-## This source code is licensed under the MIT license found in the
-## LICENSE file in the root directory of this source tree.
-## ******************************************************************************
+set -e
 
 # find the absolute path to this script
 SCRIPT_DIR=$(dirname "$(realpath "$0")")

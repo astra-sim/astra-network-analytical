@@ -1,11 +1,9 @@
-/******************************************************************************
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-*******************************************************************************/
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
 #pragma once
 
-#include "common/Type.h"
+#include <astra-network-analytical/common/Type.h>
 #include <tuple>
 
 namespace NetworkAnalytical {
@@ -33,7 +31,8 @@ class Event {
      *
      * @return callback function and its argument
      */
-    [[nodiscard]] std::pair<Callback, CallbackArg> get_handler_arg() const noexcept;
+    [[nodiscard]] std::pair<Callback, CallbackArg> get_handler_arg()
+        const noexcept;
 
   private:
     /// pointer to the callback function

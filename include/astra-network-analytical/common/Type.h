@@ -1,7 +1,5 @@
-/******************************************************************************
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-*******************************************************************************/
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Advanced Micro Devices, Inc.
 
 #pragma once
 
@@ -21,16 +19,34 @@ using DeviceId = int;
 /// Chunk size in Bytes
 using ChunkSize = uint64_t;
 
-/// Bandwidth in GB/s
+/// Bandwidth in GiB/s
 using Bandwidth = double;
 
 /// Latency in ns
 using Latency = double;
 
-/// Event time in ns
-using EventTime = uint64_t;
+/// Event time in ps
+using EventTime = int64_t;
+
+/// System/GPU IDs
+using Sys_ID = uint32_t;
+
+/// CU
+using CU_ID = uint32_t;
+
+/// Request size
+using Req_Size = uint64_t;
+
+/// Byte offset into a buffer
+using Buf_Offset = uint64_t;
 
 /// Basic multi-dimensional topology building blocks
-enum class TopologyBuildingBlock { Undefined, Ring, FullyConnected, Switch };
+enum class TopologyBuildingBlock {
+    Undefined,
+    Custom,
+    Ring,
+    FullyConnected,
+    Switch
+};
 
 }  // namespace NetworkAnalytical

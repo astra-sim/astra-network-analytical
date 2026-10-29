@@ -1,0 +1,61 @@
+# Custom topology description for the congestion-unaware network backend
+#
+# This file describes Switch(4): 4 NPUs connected through a single switch.
+#
+# The congestion-unaware backend does not model switches or routes.
+# It computes each transfer from a direct entry for the (src, dest) pair,
+# so the switch is flattened into direct NPU-to-NPU entries.
+# Each entry folds in the 2 hops through the switch (NPU -> switch -> NPU):
+# bandwidth = 50 GiB/s, latency = 2 hops x 2 us = 4 us.
+#
+#          4                         0 ----- 1
+#    -------------                   | \   / |
+#    |   |   |   |       ==>         |   X   |
+#    0   1   2   3                   | /   \ |
+#                                    2 ----- 3
+#
+# In this file, device IDs 0-3 are NPUs. There are no switch devices.
+topology: [ Custom ]
+npus_count: [ 4 ]  # number of NPUs
+
+# Bandwidth between every NPU pair, keyed by source and destination IDs,
+# i.e., the entries below denote bandwidth[src][dest].
+# Entries are unidirectional, so each pair is listed in both directions.
+# Unit: GiB/s
+bandwidth:
+  0:
+    1: 50.0
+    2: 50.0
+    3: 50.0
+  1:
+    0: 50.0
+    2: 50.0
+    3: 50.0
+  2:
+    0: 50.0
+    1: 50.0
+    3: 50.0
+  3:
+    0: 50.0
+    1: 50.0
+    2: 50.0
+
+# Latency between every NPU pair, keyed the same way: latency[src][dest].
+# Unit: ns
+latency:
+  0:
+    1: 4000.0
+    2: 4000.0
+    3: 4000.0
+  1:
+    0: 4000.0
+    2: 4000.0
+    3: 4000.0
+  2:
+    0: 4000.0
+    1: 4000.0
+    3: 4000.0
+  3:
+    0: 4000.0
+    1: 4000.0
+    2: 4000.0
